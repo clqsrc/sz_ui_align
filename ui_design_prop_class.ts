@@ -38,7 +38,30 @@ function ui_design_prop_class_create(parent_edit:any)
 
     let parent = pnlDesign;
 
-    parent_edit.parent_edit = parent_edit;
+    form.parent_edit = parent_edit;
+
+    //父控件被点击时显示
+    $(parent_edit).click(function(){ 
+        //alert("parent_edit 段落被点击了。"); 
+        
+        //form.OnClick_btnSelect();
+
+        let root_view = form.uijson.root_view;
+
+        form.uijson.root_view.backgroundColor("#ff0000");
+        form.uijson.root_view.Height("1000px");
+
+        $(form.uijson.root_view).toggle();
+
+        //$(form.uijson.root_view).hide();
+
+        root_view.SetPos("100px", "100px");
+
+        //(uijson as ui_json).
+        
+    }); 
+
+    $(form.uijson.root_view).hide();
 
     form.onCreate(parent);
 
@@ -75,18 +98,37 @@ class Class_DesignClassSelectForm
         //let btn = document.getElementById("map_btnShowFile");
 
         //this.uijson.SetOnClick(btn, this, this.OnClick_btnShowFile);
-        this.uijson.SetOnClick(this.uijson.GetView("btnEdit" ), "edit" , this.OnClick_btnSelect);
-        this.uijson.SetOnClick(this.uijson.GetView("btnMemo" ), "memo" , this.OnClick_btnSelect);
-        this.uijson.SetOnClick(this.uijson.GetView("btnImage"), "image", this.OnClick_btnSelect);
+        //this.uijson.SetOnClick(this.uijson.GetView("btnEdit" ), "edit" , this.OnClick_btnSelect);
+        //this.uijson.SetOnClick(this.uijson.GetView("btnMemo" ), "memo" , this.OnClick_btnSelect);
+        //this.uijson.SetOnClick(this.uijson.GetView("btnImage"), "image", this.OnClick_btnSelect);
+
+        this.SetOnClick_btnSelect("btnEdit", "edit");
+        this.SetOnClick_btnSelect("btnMemo", "memo");
+        this.SetOnClick_btnSelect("btnImage", "image");
         
 
     }//
 
+    SetOnClick_btnSelect(id:string, class_name:string):void
+    {
+        //this.uijson.SetOnClick(this.uijson.GetView("btnImage"), "image", this.OnClick_btnSelect);
+        let view = this.uijson.GetView(id);
+        view.isDesign = true;
+
+        //还要阻止点击事件穿透
+        //view.
+
+        //this.uijson.SetOnClick(view, "image", this.OnClick_btnSelect);
+        //js 的事件里面不能用 this ，所以制造一个
+        this.uijson.SetOnClick(view, {_this:this, class_name:"image"}, this.OnClick_btnSelect);
+    }//
+
     //注意，这里传的不再是 self ，而是 item
     //lua 中的 self 是很特殊的，不要用这个，在需要的时候 typescript-to-lua 会自己生成 self 的
-    OnClick_btnSelect(class_name:string):void
+    //OnClick_btnSelect(class_name:string):void
+    OnClick_btnSelect(param:any):void
     {
-        //alert("aaa");
+        //alert("OnClick_btnSelect:" + class_name);
         //什么都不做，只是为了屏蔽 OnClick_pnlMain
 
         //local item = newItem();  --//只是为了代码提示
@@ -95,8 +137,12 @@ class Class_DesignClassSelectForm
         //let edit = this.uijson.GetView("map_txtFileName_edit");  //根据 js 事件的特点，这时候的 this 并不是类本身
         //所以还要传一个另外的 self 参数进来
 
-        let edit = this.parent_edit;
+        //let edit = this.parent_edit; //事件里面不能用 this
+
+        let class_name:string = param.class_name;
+        let edit = param._this.parent_edit; 
         
+        alert("OnClick_btnSelect:" + class_name);
 
         View_Edit_SetText(edit, class_name);
 
