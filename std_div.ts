@@ -139,7 +139,8 @@ function MakeStdDiv(div)
 //标明最后一个点击的 div ，目前用在设计中
 //var ui_last_click_div = null;
 var ui_last_click_div:TStdDiv;
-var ui_at_desgin = true;
+//var ui_at_desgin = true;
+var ui_at_desgin = false;
 var ui_design_root_form = null; //还是显示整体的源码吧 //设计窗体根 dom
 
 
@@ -185,6 +186,9 @@ interface TStdDiv extends HTMLDivElement  {  //HTMLImageElement //HTMLElement //
 	//ts 的成员函数写法，如果写成 js 的语法就不能有代码提示了
 	backgroundColor(color:any) :void;
 
+	isControlPart:any;
+	isCaption:any; //isCaption 和 isSubControl, isControlPart 都表示事件要给父亲控件处理
+	isSubControl:any;
 	isDesign:any;  //表明自己是设计时的控件
 
 	Width(w:any) :void;
@@ -292,13 +296,15 @@ function _MakeStdDiv(div)
 	
 	//---------------------------------------------------------------
 	//点击事件
+	div.isCaption = false; //isCaption 和 isSubControl, isControlPart 都表示事件要给父亲控件处理
+	div.isSubControl = false;
 	div.isDesign = false; //表明自己不是设计时的控件
 	$(div).click(function(){
 		//alert("段落被点击了。2"); 
-		if (div.isCaption) 
+		if (div.isCaption || div.isSubControl || div.isControlPart) 
 		{
 			//alert("我是 caption"); 
-			return;
+			return;  //会把事件传递给父控件
 		}
 		
 		//if (div.isDesign) return;  //设计器自身的 div 就不向下走了
