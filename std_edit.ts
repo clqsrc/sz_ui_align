@@ -127,6 +127,10 @@ interface TStdEdit extends HTMLDivElement  {  //HTMLImageElement //HTMLElement /
 
 	backgroundColor(color:any) :void;
 
+	//isDesign:any;  //表明自己是设计时的控件
+	isControlPart:any;
+	isCaption:any; //isCaption 和 isSubControl, isControlPart 都表示事件要给父亲控件处理
+	isSubControl:any;
 	isDesign:any;  //表明自己是设计时的控件
 
 	Width(w:any) :void;
