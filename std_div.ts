@@ -299,12 +299,15 @@ function _MakeStdDiv(div)
 	div.isCaption = false; //isCaption 和 isSubControl, isControlPart 都表示事件要给父亲控件处理
 	div.isSubControl = false;
 	div.isDesign = false; //表明自己不是设计时的控件
+	div.isSetEventFunc = false; //已经设置了点击事件，即自己响应各种事件，设计上其他事件也一样
+	//通常的 app 里是一个控件设置了事件就不会传递给父控件了
 	$(div).click(function(){
 		//alert("段落被点击了。2"); 
+		//if (div.isCaption || div.isSubControl || div.isControlPart || false == div.isSetEventFunc) 
 		if (div.isCaption || div.isSubControl || div.isControlPart) 
 		{
 			//alert("我是 caption"); 
-			return;  //会把事件传递给父控件
+			return;  //会把事件传递给父控件 //等同于 return true;
 		}
 		
 		//if (div.isDesign) return;  //设计器自身的 div 就不向下走了
@@ -313,16 +316,42 @@ function _MakeStdDiv(div)
 		
 		ui_last_click_div = div;
 		
-		if (true == ui_at_desgin) 
+		if (true == ui_at_desgin) //设计状态时也不让父控件响应，因为要显示自己的属性
 		{		
 			
 			ui_design_prop_form.GetControlAllAttrib(); //取控件的所有属性 //如果有设计器的话
 			this.FlashWindow(); //处于设计状态的话就闪烁一下窗体
+
+			return false; //不让父控件响应
+		}
+
+
+		if (false == div.isSetEventFunc) //没有设置事件的话就把事件传递给父控件
+		{
+			//alert("我是 caption"); 
+			return;  //会把事件传递给父控件 //等同于 return true;
 		}
 		
 		return false; //不让父控件响应
 	}); 
 	//---------------------------------------------------------------
+	//设置点击事件，这种设置方式与 ios 的 app 类似，子控件设置后父控件的事件就不响应了   //2022
+	div.SetOnClick = function (obj:any, func:any) {
+
+		div.isSetEventFunc = true;
+
+		$(div).click(function(){ 
+            //alert("段落被点击了。"); 
+
+            func(obj);
+            
+        });
+
+	}//
+
+
+
+	//--------------------------------------------------------
 	
 	div.backgroundColor = function (color) {
 		$(this).css({"background-color": color});
