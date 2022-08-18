@@ -559,7 +559,7 @@ func ExtractFileName(s string) (string) {
 	
     for i:=len(array)-1; i >=0; i--{
 		ch := array[i];
-		fmt.Println(i, ch) //ch的类型为rune 默认utf-8编码，一个汉字三个字节
+		//fmt.Println(i, ch) //ch的类型为rune 默认utf-8编码，一个汉字三个字节
 		
 		//if (ch == (string(".")[0])) { return r; }
 		//if (ch == ch1) { return r; }
@@ -567,6 +567,40 @@ func ExtractFileName(s string) (string) {
 		if (ch == rune('/'))  {  return r; }
 		if (ch == rune('\\')) {  return r; }
 		//if (ch == rune('.'))  { r = string(ch) + r; return r; }
+		
+		r = string(ch) + r;
+	}	
+
+	
+	return r;
+
+	
+}//
+
+//2022 奇怪，以前应该实现过了的
+func ExtractFilePath(s string) (string) {
+	
+	r := "";
+	
+	//一定要参考早期的 ExtractFileExt() 函数
+	//-----------------
+
+	//	fmt.Println(i, ch) //ch的类型为rune 默认utf-8编码，一个汉字三个字节
+	
+	array := []rune(s);
+	
+	var findPathSP = false;  //是否找到路径分隔符号了
+	
+    for i:=len(array)-1; i >=0; i--{
+		ch := array[i];
+		//fmt.Println(i, ch) //ch的类型为rune 默认utf-8编码，一个汉字三个字节
+		
+
+		
+		if (false == findPathSP)&&(ch == rune('/'))  {  findPathSP = true; continue; }  //不包括分隔符号本身，所以是 continue
+		if (false == findPathSP)&&(ch == rune('\\')) {  findPathSP = true; continue; }
+		
+		if (false == findPathSP) {  continue; }  //没找到之前也是 continue
 		
 		r = string(ch) + r;
 	}	
