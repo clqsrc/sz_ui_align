@@ -734,7 +734,7 @@ func TestPutObject_andOssProgress() {
 
 
 //正式版本
-func PutObject_andOssProgress() {
+func PutObject_andOssProgress(full_path_local string, full_path_server string) {
 	
 	
 	defer PrintError("PutObject_andOssProgress");
@@ -761,11 +761,13 @@ func PutObject_andOssProgress() {
 
 	//--------------------------------------------------------
 	
-	//objectName := RandStr(8) + ".jpg"
-	objectName := "test_progress_rand.jpg"; //上传后的文件
-	//localFile := "../sample/The Go Programming Language.html"
-	localFile := "d:/go1.18.3.windows-amd64.zip"
+	//objectName := "test_progress_rand2.jpg"; //full_path_server;  //"test_progress_rand.jpg"; //上传后的文件
+	//localFile := "d:/apns_test.exe"; //full_path_local;    //"d:/go1.18.3.windows-amd64.zip"  //本地的全路径名
+	objectName := full_path_server;  //"test_progress_rand.jpg"; //上传后的文件
+	localFile := full_path_local;    //"d:/go1.18.3.windows-amd64.zip"  //本地的全路径名
 
+	/*
+	//这个应该是第 1 种用法
 	fileInfo, err := os.Stat(localFile)
 	//c.Assert(err, IsNil)
 	fmt.Println(fileInfo, err);
@@ -780,13 +782,21 @@ func PutObject_andOssProgress() {
 	err = bucket.PutObject(objectName, fd, oss.Progress(&progressListener))
 	//c.Assert(err, IsNil)
 	//c.Assert(progressListener.TotalRwBytes, Equals, fileInfo.Size())
+	*/
+	
+	progressListener := OssProgressListener{}
 
+	//这个应该是第 2 种用法
 	// PutObjectFromFile
 	progressListener.TotalRwBytes = 0
 	err = bucket.PutObjectFromFile(objectName, localFile, oss.Progress(&progressListener))
 	//c.Assert(err, IsNil)
 	//c.Assert(progressListener.TotalRwBytes, Equals, fileInfo.Size())
+	
+	return;
 
+	//后面的，其实是展示另外一种用法
+	/*
 	// DoPutObject
 	fd, err = os.Open(localFile)
 	//c.Assert(err, IsNil)
@@ -809,7 +819,10 @@ func PutObject_andOssProgress() {
 	//c.Assert(err, IsNil)
 	//c.Assert(progressListener.TotalRwBytes, Equals, int64(0))
 
-	fmt.Println("OssProgressSuite.TestPutObject")
+	//fmt.Println("OssProgressSuite.TestPutObject")
+	
+	fmt.Println("PutObject_andOssProgress() ok");
+	*/
 }//
 
 
