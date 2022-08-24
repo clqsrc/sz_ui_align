@@ -306,6 +306,31 @@ func _RecvLine2(gRead * bufio.Reader, gWrite * bufio.Writer) (string, error) {
     return line, nil;
 }//
 
+
+//2022 可指定结束符号(分隔符)的 //使用终止分隔符的
+//目前的返回值中应该包括了分隔符
+func _RecvString(gRead * bufio.Reader, gWrite * bufio.Writer, sp string) (string) {
+	
+	defer PrintError("_RecvString()"); //不一定有效果，因为后面的 gRead.ReadString 会多次调用 nil 的指针
+
+    
+    //defer conn.Close();
+    ////reader := bufio.NewReader(conn);
+    //reader := bufio.NewReaderSize(conn,409600)
+    
+    //line, err := reader.ReadString('\n'); //如何设定超时?
+    ////line, err := gRead.ReadString('\n'); //如何设定超时?
+    line, err := gRead.ReadString(sp[0]); //如何设定超时?
+    
+    
+    if err != nil { return ""; }
+    
+    //line = strings.Split(line, "\r")[0]; //还要再去掉 "\r"，其实不去掉也可以
+    
+    return line;
+}//
+
+
 //接收到一个缓冲区中去//参考非常稳定了的 D:\gopath\src_http_proxy\tcp_server.go
 //func RecvBuf(conn net.Conn, obuf []byte) int{
 func RecvBuf(conn net.Conn, obuf * []byte) int{ //这种声明很怪异，不过还算能用
@@ -341,6 +366,16 @@ func SendLine(gRead * bufio.Reader, gWrite * bufio.Writer, line string){
 	defer PrintError("SendLine()");
 	
     gWrite.WriteString(line + "\r\n");
+    gWrite.Flush();
+}//
+
+//2022
+func SendString(gRead * bufio.Reader, gWrite * bufio.Writer, line string){
+	
+	defer PrintError("SendLine()");
+	
+    //gWrite.WriteString(line + "\r\n");
+    gWrite.WriteString(line);
     gWrite.Flush();
 }//
 
