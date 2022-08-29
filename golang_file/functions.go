@@ -21,9 +21,13 @@ import (
     "encoding/hex"
 	"encoding/base64"
 	"net/url"
-	//"net/http"
+	"net/http"
 	"mime/multipart"
 	"html/template"
+	"crypto/tls"
+	"net"
+	"unsafe"
+//	"sync"
 
 	//_ "github.com/bmizerany/pq"
 	_ "github.com/lib/pq" //驱动的写法一定要这样写,否则会当做无效的导入
@@ -1026,6 +1030,126 @@ func HTTPEncode_kv(s string) string {
 	return url.QueryEscape(s);
 	
 }//
+
+//--------------------------------------------------
+//有超时的 http 请求,单位秒
+func HttpGet_TimeOut(url string, second time.Duration) ([]byte) {
+
+	defer PrintError("HttpGet_TimeOut");
+	
+	//var r []byte = nil;
+
+	var c *http.Client = &http.Client{
+	
+	    Transport: &http.Transport{
+			
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //InsecureSkipVerify参数值只能在客户端上设置有效//clq add 让客户端跳过对证书的校验
+			
+	        Dial: func(netw, addr string) (net.Conn, error) {
+	            ////c, err := net.DialTimeout(netw, addr, time.Second*3)
+	            c, err := net.DialTimeout(netw, addr, time.Second * second);
+	            if err != nil {
+	                fmt.Println("HttpGet_TimeOut() dail timeout", err);
+	                return nil, err;
+	            }
+				
+				fmt.Println("HttpGet_TimeOut 连接成功 ..."); //test 仍然有卡死的情况
+				
+				//clq add 似乎可以在这里设置整个通话过程中的时间，超时
+				SetConnectTimeOut(c, 10);//test add
+				//c.SetDeadline( //其实这样也可以
+				
+	            return c, nil;
+	
+	        },
+	        MaxIdleConnsPerHost:   10,
+	        ////ResponseHeaderTimeout: time.Second * 2,
+	        ResponseHeaderTimeout: time.Second * second, //这个应该指的是读取头信息时的超时
+			//IdleConnTimeout: time.Second * second, //test 据说 可以控制连接池中一个连接可以idle多长时间
+			IdleConnTimeout: time.Second * 60, //test add 据说 可以控制连接池中一个连接可以idle多长时间
+	    },
+	}
+	
+	//c.Get(url);
+	//resp, err := http.Get(url);
+	fmt.Println("HttpGet_TimeOut c.Get(url) ..."); //test 仍然有卡死的情况
+	resp, err := c.Get(url);
+	fmt.Println("HttpGet_TimeOut c.Get(url)end  ..."); //test 仍然有卡死的情况
+	
+    if err != nil {
+        fmt.Println("error:", err);
+        return nil;
+    }	
+	
+	defer resp.Body.Close(); //一定要有
+	fmt.Println("HttpGet_TimeOut ioutil.ReadAll ..."); //test 仍然有卡死的情况
+	//resp.Header
+	fmt.Println(resp.Header.Get("Content-Length")); //test
+	fmt.Println(resp.Header.Get("Date")); //test
+	fmt.Println(resp.Header); //test
+	
+	fmt.Println("resp.ContentLength: ", resp.ContentLength); //test //https://www.bitstamp.net/api/ticker/ 没有这个头，也许是这个原因导致后面的 ioutil.ReadAll 无效 
+	
+	body, err := ioutil.ReadAll(resp.Body); //就是这里卡的
+	fmt.Println("HttpGet_TimeOut ioutil.ReadAll end ..."); //test 仍然有卡死的情况
+	//fmt.Println(string(body));	
+    if err != nil {
+        fmt.Println("error:", err);
+        return nil;
+    }	
+			
+	//return r;	
+	return body;	
+
+}//
+
+//get请求可以直接http.Get方法，非常简单。
+func HttpGet(url string) string {
+	
+	defer PrintError("HttpGet");
+	
+//    resp, err := http.Get("http://www.01happy.com/demo/accept.php?id=1")
+    resp, err := http.Get(url);
+	
+//    if err != nil {
+//        // handle error
+//    }
+	CheckErr(err);
+
+    defer resp.Body.Close(); //一定要记得关闭
+	
+    body, err := ioutil.ReadAll(resp.Body);
+	
+//    if err != nil {
+//        // handle error
+//    }
+	CheckErr(err);
+ 
+    //fmt.Println(string(body));
+	
+	return string(body);
+}//
+
+
+//2019.04.09 
+//https://blog.csdn.net/u010154462/article/details/78412833
+//取得一个 dll 的结果字符串
+//根据DLL返回的指针，逐个取出字节，到0字节时判断为字符串结尾，返回字节数组转成的字符串
+func prttostr2(vcode uintptr, maxlen int) string {
+	var vbyte []byte;
+	//for i:=0; i<10; i++ { 
+	for i:=0; i<maxlen; i++ { 
+		sbyte:=*((*byte)(unsafe.Pointer(vcode)));
+		
+		if sbyte==0{ 
+			break;
+		} 
+		vbyte=append(vbyte,sbyte);
+		vcode += 1;
+	} 
+	return string(vbyte); 
+}//
+
 
 //利用 golang 的断言转换字符串，这个是一定成功的//2020 不一定，还得用 Sprintf
 func ToString(s interface{}) string {
