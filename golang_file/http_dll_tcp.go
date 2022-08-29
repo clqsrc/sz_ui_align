@@ -344,6 +344,43 @@ func tcp_recv_string(i_client int, sp *C.char) (*C.char) {
 }//
 
 
+//--------------------------------------------------------
+//
+
+//export http_get
+func http_get(url *C.char) (*C.char) {
+	
+	defer PrintError("http_get");
+	
+	var buf = HttpGet_TimeOut(C.GoString(url), 20);
+	
+	var s = string(buf);
+	
+	return C.CString(s);
+}//
+
+//export http_get_to_file
+func http_get_to_file(url *C.char, fn *C.char) {
+	
+	defer PrintError("http_get_to_file");
+	
+	var buf = HttpGet_TimeOut(C.GoString(url), 20);
+	
+	//return string(buf);
+	
+	Bytes2File(buf, C.GoString(fn));
+	
+}//
+
+
+//--------------------------------------------------------
+
+//从别的文件复制过来的函数
+
+
+//--------------------------------------------------------
+
+
 //ssl/tls 有带超时的连接
 //带超时的连接，单位是秒//TCP 的
 func Connect_TimeOut_TCP_SSL(host string, port int, timeout_second int) (net.Conn, * bufio.Reader, * bufio.Writer) {
