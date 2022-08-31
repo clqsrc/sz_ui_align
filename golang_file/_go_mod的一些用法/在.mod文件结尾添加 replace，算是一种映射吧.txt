@@ -1,0 +1,34 @@
+
+
+https://www.jianshu.com/p/7b4a821d9ab8
+
+方法1、
+
+在.mod文件结尾添加 replace，算是一种映射吧
+
+    replace <remotePackage> <localPackage>
+
+例如：
+module github.com/user/object
+go 1.16
+require (
+...
+gopkg.in/yaml.v2 v2.4.0
+...
+)
+replace "github.com/username/projectname/abcdefg" => "/Users/macbook/workplace/go/src/github/username/projectname/abcdefg"  
+
+使用时依旧按原方式使用
+package main
+import {
+  "fmt"
+  "github.com/username/projectname/abcdefg"
+}
+方法2、
+
+就是放到GOROOT下面，未测。
+方法3、
+
+通过IDE让它来帮你import，未测。
+
+
