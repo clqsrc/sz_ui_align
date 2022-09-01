@@ -2,6 +2,14 @@
 
 主要是放运行环境的配置，免得老忘记。
 
+一般由两个文件组成 launch.json 和 settings.json
+
+通常的说明只会说到前面的那个，但如果每个项目的 sdk(jdk/go/gcc这些) 版本不尽相同的话，就要在本地另外写一个 settings.json
+
+1.换命令行/终端系统
+参考 ts 下面的 settings ，里面有一个将默认的 ps 改为 cmd.exe 的方法。 当初 ts 更换似乎是为了解决 ps 对 nodejs 不兼容的一些问题吧。
+
+
 
 
 
