@@ -1,0 +1,18 @@
+{
+    "editor.minimap.enabled": false,
+    "editor.fontFamily": "'宋体2000',Verdana,'新宋体',Verdana,Consolas, 'Courier New', monospace",
+    "window.zoomLevel": 0,
+    "terminal.integrated.fontFamily": "monospace",
+    "go.goroot": "D:/go1.18.3.windows-amd64/go",
+    "go.gopath": "D:/gopath1.18.3", 
+    "go.buildFlags": [],
+    "go.buildTags": " ",
+    "go.formatFlags": [],  //不格式化
+    "go.formatTool": "aaa",   //不格式化
+    "editor.fontLigatures": false,
+    "workbench.editor.wrapTabs": true,
+    "editor.fontSize": 15,
+    "emmylua.codeLens": true,
+    "emmylua.hint.paramHint": false,
+
+}
