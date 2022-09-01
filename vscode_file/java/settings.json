@@ -1,0 +1,24 @@
+{
+    "java.debug.settings.stepping.skipClasses": [
+    
+    ],
+
+    //配置 java/jdk/jre 的版本 //这是插件 https://github.com/Microsoft/vscode-java-debug 需要的配置
+    //参考 https://github.com/redhat-developer/vscode-java/wiki/JDK-Requirements#java.configuration.runtimes
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-1.8",
+            "path": "D:\\Java\\jdk1.8.0_131",
+            "default": true
+        },
+        {
+            "name": "JavaSE-11",
+            "path": "/path/to/jdk-11"
+        },
+        {
+            "name": "JavaSE-17",
+            "path": "/path/to/jdk-17",
+            "default": false,
+        }
+    ],
+}
