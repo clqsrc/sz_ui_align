@@ -1,14 +1,10 @@
 {
-    "java.debug.settings.stepping.skipClasses": [
-    
-    ],
-
-    //这个是安装了全部微软 java 套件后才能按下 ctrl+shift+p 选择 create java 项目（好几种，用的是不要配置的那种）后自动添加的
-    //含义应该是把依赖的库放到 lib 子目录中。实测确实是可以的，不过不知为何在 launch.json 中的 classPaths 添加内容会破坏全部的类路径
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
     ],
-
+        
     //配置 java/jdk/jre 的版本 //这是插件 https://github.com/Microsoft/vscode-java-debug 需要的配置
     //参考 https://github.com/redhat-developer/vscode-java/wiki/JDK-Requirements#java.configuration.runtimes
     "java.configuration.runtimes": [
