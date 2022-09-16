@@ -1192,3 +1192,21 @@ func LoadFromFile_String(fn string) string {
 	
 }//
 
+
+//2022 原因可参考 https://studygolang.com/articles/11545
+func max_int(a, b int64) int64 {
+	r := a;
+	
+	if (b>r) { r = b; }
+	
+	return r;
+}//
+
+
+func min_int(x, y int64) int64 {
+	
+    if x < y {
+        return x;
+    }
+    return y;
+}//
