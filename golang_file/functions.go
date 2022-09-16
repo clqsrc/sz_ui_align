@@ -1193,8 +1193,9 @@ func LoadFromFile_String(fn string) string {
 }//
 
 
+
 //2022 原因可参考 https://studygolang.com/articles/11545
-func max_int(a, b int64) int64 {
+func max_int64(a, b int64) int64 {
 	r := a;
 	
 	if (b>r) { r = b; }
@@ -1202,11 +1203,23 @@ func max_int(a, b int64) int64 {
 	return r;
 }//
 
+//追求性能的话要重写，假如强制转换证实影响速度的话
+func max_int(a, b int) int {
+	
+	return int(max_int64(int64(a), int64(b)));
+}//
 
-func min_int(x, y int64) int64 {
+
+func min_int64(x, y int64) int64 {
 	
     if x < y {
         return x;
     }
     return y;
 }//
+
+func min_int(x, y int) int {
+	
+    return int(min_int64(int64(x), int64(y)));
+}//
+
