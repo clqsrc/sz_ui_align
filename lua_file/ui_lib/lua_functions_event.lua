@@ -122,9 +122,9 @@ function UI_OnClick(s_key)
 
     local obj = func;
 
-    ShowMessage("UI_OnClick:" .. tostring(s_key)); 
-    --2022 for qt //似乎 qt 下没有传递这个参数过来
-    ShowMessage("UI_OnClick:" .. type(obj));  --//没有用，这个是 "table"
+    --ShowMessage("UI_OnClick:" .. tostring(s_key)); 
+    --2022 for qt //似乎 qt 下没有传递这个参数过来,有的，是参数传给 lua 时的问题
+    --ShowMessage("UI_OnClick:" .. type(obj));  --//没有用，这个是 "table"
 
     local theType = type(func)
     if theType == "number" then
@@ -141,8 +141,8 @@ function UI_OnClick(s_key)
             --//2022 tsc 生成的 lua 会自带 self 参数，所以这时候 obj 不能给第一个参数 //那么怎么知道这个 func 是有两个参数的呢？
             --//debug.getinfo(f).nparams给出f中的参数数量
             local count = debug.getinfo(event.func).nparams;
-            ShowMessage("UI_OnClick: count=" .. tostring(count));
-            ShowMessage("UI_OnClick: event.obj=" .. tostring(event.obj));
+            --ShowMessage("UI_OnClick: count=" .. tostring(count));
+            --ShowMessage("UI_OnClick: event.obj=" .. tostring(event.obj));
             --event.func(event.obj);
 
             --//其实可以直接调用两个参数，动态语言多给一个参数也是可以的
