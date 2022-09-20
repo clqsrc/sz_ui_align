@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    We are using Node.js <span id="node-version"></span>,
+    Chromium <span id="chrome-version"></span>,
+    and Electron <span id="electron-version"></span>.
+
+
+<script>
+
+
+//http://t.zoukankan.com/lingnweb-p-9945027.html
+//放到独立的 js 文件中才会有代码提示
+var fs = require('fs');
+
+ //读文件
+ fs.readFile('package.json', function (err, data) {
+  if (err) {
+
+    document.write( err.message);
+
+    return;
+
+  } else {
+    document.write("aaa");
+  console.log(data);
+
+}
+
+});
+
+
+
+
+</script>
+
+
+  </body>
+</html>
