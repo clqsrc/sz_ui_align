@@ -1223,3 +1223,92 @@ func min_int(x, y int) int {
     return int(min_int64(int64(x), int64(y)));
 }//
 
+//golang 获取当前程序执行路径
+func GetCurrentPath() (string) {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]));
+	if err != nil {
+		//log.Fatal(err)
+		return "";
+	}
+	fmt.Println(dir);
+	
+	return dir;
+}//
+
+
+
+//同 LoadConfig，只是直接读取字符串而已
+func LoadConfig_string(s string) (map[string]string, error){
+	
+    //logger.Infof("get file content as lines: %v", filePath) 
+	
+	var result = make(map[string]string);//map[string]string;
+
+    //s := string(b)  
+    for _, lineStr := range strings.Split(s, "\n") {  
+        lineStr = strings.TrimSpace(lineStr)  
+		
+        if lineStr == "" { continue; }
+		
+		var kv = strings.Split(lineStr, "=");
+					
+		if (len(kv) < 2) {continue;}
+			
+		k := kv[0];
+		v := kv[1];
+		
+		result[k] = v;
+		 
+    }  
+	
+    //logger.Infof("get file content as lines: %v, size: %v", filePath, len(result))
+	//fmt.Println("读取文件完成:", fn);
+	
+    return result, nil;
+	
+}//
+
+//fn 是相对路径的文件名
+func LoadConfig(fn string) (map[string]string, error){
+	
+    //logger.Infof("get file content as lines: %v", filePath) 
+	fmt.Println("读取文件:", fn);
+	
+	var result = make(map[string]string);//map[string]string;
+	
+    b, err := ioutil.ReadFile(fn)  
+    if err != nil {  
+        //logger.Errorf("read file: %v error: %v", filePath, err)  
+		fmt.Println("读取文件失败:", fn, err);
+        return result, err  
+    }  
+    s := string(b)  
+    
+	result,_ = LoadConfig_string(s);  
+	
+    //logger.Infof("get file content as lines: %v, size: %v", filePath, len(result))
+	fmt.Println("读取文件完成:", fn);
+	
+    return result, nil;
+	
+}//
+
+//fn 是相对路径的文件名
+func SaveConfig(fn string, stringlist map[string]string) (bool){
+	
+	defer PrintError("SaveConfig");
+	
+	s := "";
+	
+    for k, v := range stringlist {  
+
+		
+		s = s + k + "=" + v + "\r\n";
+		 
+    }  	
+	
+	return SaveToFile(s, fn);
+	
+	
+}//
+
