@@ -18,6 +18,14 @@ https://nwjs.io/
 这样也可以
 nw D:\test1\nodejs1\nw1\nwt1
 
+5.
+目前 windows 对同一个目录是不能开多实例的。不过可以加 "--user-data-dir=" 参数解决
+	//Windows 要指定附加参数才能开多实例 //--user-data-dir=aaa
+	
+	//这里有个问题，"--user-data-dir=" 所指向中的目录是一定要存在的。
+
+总觉得应该有更好的方法，不过目前是如此。参考 https://segmentfault.com/q/1010000040576912 说是 “package.json文件中的single-instance弃用”
+
 --------------------------------------------------------
 http://t.zoukankan.com/lingnweb-p-9945027.html
 Package.json可以理解为应用的配置文件，为必须；index.html作为应用的入口文件，内容和一般网页类似，名字可以按自己喜好起，但是一定要和配置中的“main”参数设置一致；如果要引用node模块，可以在目录结构中增加一个node_modules的目录，以存放APP所需的node模块。
