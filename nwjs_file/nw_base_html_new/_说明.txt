@@ -1,0 +1,7 @@
+
+加入 nwjs 是想直接打开/保存硬盘上的文件到 html 中。目前 windows 下已经实现。其实修改的地方很少。
+
+在 index.html 中引入 nodejs/nw 的 js 文件；
+修改装载和保存时的文件 app_save.js 让存入 h5 中的内容改成操作 nodejs 本地文件接口就完事了。顺便还存出了一个 js 版本的文件。
+
+
