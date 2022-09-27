@@ -74,7 +74,7 @@ function SetSaveKey(key, v)
 
 		src_js_json = src_js_json + '`\r\n';  //注意这是反引号
 		src_js_json = src_js_json + ');\r\n'
-		src_js_json = src_js_json + 'import_ok("' + fn_js + '");\r\n';
+		src_js_json = src_js_json + 'import_ok("' + fn_js + '.js");\r\n';
 
 
 		SaveToFile(fn_cmd + ".js", src_js_json, 1);
