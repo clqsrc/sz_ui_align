@@ -1,0 +1,96 @@
+
+1.
+安装 zls 插件
+
+Zig Language Server (zls) for VSCode
+https://marketplace.visualstudio.com/items?itemName=AugusteRame.zls-vscode
+
+并配置各个 zig 及 zls 的路径.
+同时我还安装了 zig 插件，不过这个插件只能高亮等几个简单的内容。
+这样还是不能用的，只能提示本文件中的简单变量。原因是没有找到 zig 标准库 std 这些的路径。
+这时可打开 vscode 的终端和输出窗口，可以看到 zls 的提示。比如缺少什么文件参数，多了什么参数等等。
+
+比如我直接下载的 windows 下的 0.9 的 zls 就是不能和现在的 vscode 的 debug log 参数的。
+
+根据提示，是要我们指定一个 zls.json 配置文件。
+
+2.
+zls.json 配置文件。
+
+要说的是，直接在 zls.exe 的目录下写这个文件是用不了的。
+目前我用的 0.9 可以用 zls config 向导来生成，不过在官网上的最新版本中似乎改成了 “zls --config”
+
+配置后生成的路径大致为 “C:\Users\ccc\AppData\Local/zls.json”。
+
+好了，这时候在 vscode 中关闭 zig 代码的项目目录，然后再重新打开，vscode 会重启 zls.exe 这时候可以看到各个变量的提示很精确了。
+
+
+原来对 vscode 相关的 lsp 服务器的理解不太正确，所以没配置成功，直到看到了
+https://zhuanlan.zhihu.com/p/385214753
+特别是 “专业 Emacs 入门（七）：插件篇——编程开发类” https://zhuanlan.zhihu.com/p/467681146
+后才知道，原来 vscode 把代码提示的功能已经服务器化了，甚至对调试也服务器化了。也知道了现在编辑器配置中是可以选择是不是 lsp 的提示机制的。
+那么当然是说调试机制也是可选择的了。这当然也是说 zig 的代码提示肯定是要正确配置 zls 了 -- 因为它毕竟不象内置的 typescript 这样的内置的提示。
+因为 zig 它太新了。
+
+3.
+zig 的目录结构。
+
+zig 似乎是推荐用它的命令来生成一个默认工程的，生成后至少有两个 zig 文件，除了源码外，还有一个用来编译它的脚本，这个脚本也是 zig 的！
+
+参考 https://www.bilibili.com/read/cv15451709/
+“
+在任意你喜欢的地方创建一个文件夹，并在文件夹中运行zig init-exe（或者init-lib）
+zig会问你创建默认的项目结构
+选择你喜欢的编辑器打开（如果需要语法检查器可以看https://ziglang.org/learn/tools/ 这里），
+运行
+zig build run 
+”
+
+zig 的完成程度还是很高的，目前有一个杀手应用
+http://news.sohu.com/a/565676781_827544
+
+“
+Zig编写的 “全家桶” JavaScript 运行时Bun，性能完爆Node.js和Deno
+Bun 是采用 Zig 语言编写的高性能 “全家桶” Java 运行时，官方称其为 "all-in-oneJava runtime"。
+”
+项目地址为
+https://bun.sh/
+https://github.com/oven-sh/bun
+
+4.
+zig 在 vscode 里似乎是可以调试的，好像是用的 gcc 项目。大家可以搜一搜。
+
+
+
+--------------------------------------------------------
+
+
+https://github.com/zigtools/zls
+
+
+vscode 中打开目录时没有这个文件的话会提示错误。
+
+
+--------------------------------------------------------
+
+[Info  - 15:07:26] [info-main] No config file zls.json found.
+[Warn  - 15:07:26] [warn-main] Zig executable path not specified in zls.json and could not be found in PATH
+[Warn  - 15:07:26] [warn-main] Zig standard library path not specified in zls.json and could not be resolved from the zig executable
+[Info  - 15:07:26] [info-main] zls initialized
+[Info  - 15:07:26] [info-main] ClientCapabilities{ .supports_snippets = true, .supports_semantic_tokens = true, .hover_supports_md = true, .completion_doc_supports_md = true }
+[Info  - 15:07:26] [info-main] Using offset encoding: utf16
+
+
+--------------------------------------------------------
+
+You can configure zls by running zls --config or manually creating your own zls.json configuration file. zls will look for a zls.json configuration file in multiple locations with the following priority:
+
+    In the local configuration folder of your OS (as provided by known-folders)
+    In the global configuration folder of your OS (as provided by known-folders)
+
+
+
+--------------------------------------------------------
+可以通过执行 zls config 向导来生成 zls.json
+
+ C:\Users\ccc\AppData\Local/zls.json ... successful.
