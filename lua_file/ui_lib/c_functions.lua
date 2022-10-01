@@ -35,6 +35,25 @@ function self_require(filename)
     return c2l_self_require(fn);
 end
 
+--//2022 //试图解决 lualib_bundle.lua 的问题
+function require(filename)
+
+    --return self_require(filename);
+
+    local fn = filename .. ".lua";
+
+    return c2l_self_require(fn);  --//奇怪，这时候 self_require 还不能用，要用原始的 c2l_self_require 才行
+
+    --//self_require("lualib_bundle.lua");
+    -- self_require("lualib_bundle_self.lua");
+
+    -- local ____lualib = lualib_bundle_self_return();
+
+    -- return ____lualib;
+
+end
+
+
 function long_ref(obj)
 
     return c2l_long_ref(obj);
@@ -452,6 +471,8 @@ function ScrollView_ShowAllChild(view)
 
 end
 
+
+--//这会在事件发生时调用 lua_functions_event.lua 中的 UI_OnClick 函数，在里面会再转换出 obj ，所以不要直接调用这个函数，而是要调用 ui_json:SetOnClick 来间接使用
 function UI_SetOnClick(view, func)
 
     return c2l_UI_SetOnClick(view, func);
