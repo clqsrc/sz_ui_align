@@ -35,24 +35,6 @@ function self_require(filename)
     return c2l_self_require(fn);
 end
 
---//2022 //试图解决 lualib_bundle.lua 的问题
-function require(filename)
-
-    --return self_require(filename);
-
-    local fn = filename .. ".lua";
-
-    return c2l_self_require(fn);  --//奇怪，这时候 self_require 还不能用，要用原始的 c2l_self_require 才行
-
-    --//self_require("lualib_bundle.lua");
-    -- self_require("lualib_bundle_self.lua");
-
-    -- local ____lualib = lualib_bundle_self_return();
-
-    -- return ____lualib;
-
-end
-
 function long_ref(obj)
 
     return c2l_long_ref(obj);
@@ -470,7 +452,6 @@ function ScrollView_ShowAllChild(view)
 
 end
 
---//这会在事件发生时调用 lua_functions_event.lua 中的 UI_OnClick 函数，在里面会再转换出 obj ，所以不要直接调用这个函数，而是要调用 ui_json:SetOnClick 来间接使用
 function UI_SetOnClick(view, func)
 
     return c2l_UI_SetOnClick(view, func);
@@ -502,6 +483,124 @@ function UI_HttpGet(url, obj, func)
     UI_HttpPost_v2(url, obj, func);
 
 end;
+
+--//2022.09
+--//参考 View_GetRect_dp() json 格式的返回值会引起异常，要做保护处理
+function RunJson(json_param)
+    
+    --//return c2l_RunJson(json_param);
+
+    --local s_json = c2l_View_GetRect_dp(view);
+    local s_json = c2l_RunJson(json_param);
+
+    --ShowMessage(s_json);
+
+    --ShowMessage(tostring(json));
+
+    --s_json = '{left:100, top:100}'; --//no
+    --s_json = '{"left":100, "top":100, "width":150}'; --//ok 即 lua 的 json 一定要把 key 加双引号
+
+
+    --//太容易出错，保护起来吧
+    --函数执行成功返回2个值，分别为true和另外一个函数的返回值,如果没有返回值则返回nil
+    --函数执行失败返回2个值，分别为false和出错信息
+
+    local r, j = pcall(function (str_json)
+
+        local obj_json = json.decode(str_json);
+
+        --ShowMessage(str_json);
+        --ShowMessage(obj_json.width);
+
+        return obj_json
+
+    end, s_json);
+
+    --ShowMessage("r:" .. tostring(r) .. " result:" .. j.width);
+
+    if r then
+        return {response=s_json, result=1, json=j};
+    else
+        ShowMessage("no json format at RunJson():" .. str_json);
+        --ShowMessage(j.width);
+        return {response=s_json, result=0, error="no json format at RunJson()"};
+    end
+
+
+    --local j = json.decode(s_json);
+
+    --ShowMessage(j.width);
+    --//return "0";
+end;
+
+--//--------------------------------------------------------
+-- 这里都是基本 RunJson 的 “伪函数”
+
+--//创建一个 tcp 连接  //实现方将返回一个数字，用来表示生成的对象，实际上不是指针，而是在对象列表中的索引
+--//不需要传入回调函数指针，统一回调 lua 的回调函数就行。但 lua 里面还是要指定接收函数，以便处理
+
+function UI_create_tcp_connect(func)
+
+    --------
+
+    local event = UiEvent:new();
+    --event.obj = obj;
+    event.func = func;
+
+    --------
+
+    local i_func = SaveFunc(event);  --//这个要传递给 c 语言，回调时会传回来。传回来的按这个得到 event 对象实例
+    -- 再通过 event.func 回调。为简单起见，这里的 func 全部实现为不带参数的函数（原来的 onclick 这些都有，太复杂了）。
+    -- 以后觉得不够的话再增加有一个 obj 参数的。
+
+    --------
+    local param = { function_name="create_tcp_connect", func=i_func };
+
+    local json_param = json.encode(param);
+
+    --ShowMessage(json_param);
+
+    --//要先执行 c 语言的 json 调用得到结果
+    local r = RunJson(json_param);
+
+    --//r.result 为 1 时，里面的 json 才是真实的 c 语言函数的返回结果
+    if (1 == r.result) then
+
+        ShowMessage("UI_create_tcp_connect()" .. r.response);
+
+        return StrToInt(r.json.result);  --//j.json 中才是 c 语言接口实际返回的内容 //j.json.result 会是它在 java 对象列表中的索引
+
+    end;
+
+    return 0;
+
+end;
+
+--//socket 其实是 UI_create_tcp_connect() 返回的伪值，其实等于 java 对象列表中的索引值。不能小于 1
+function UI_tcp_connect(socket, host, port, use_ssl)
+
+    --------
+    if (socket < 1) then
+        ShowMessage("UI_tcp_connect() socket index error.");
+        return;
+    end;
+    --------
+    local param = { function_name="tcp_connect", host=host, port=port, use_ssl=use_ssl };
+
+    local json_param = json.encode(param);
+    local j = RunJson(json_param);
+
+    -- 这个是非阻塞函数，不用返回值
+    -- if (1 == j.result) then
+    --     return j.json.result;  
+    -- end;
+
+    -- return 0;
+
+end;
+
+--//--------------------------------------------------------
+
 
 --//保存到文件
 function UI_HttpGetToFile(url, fn, obj, func)
