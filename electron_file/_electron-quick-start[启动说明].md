@@ -30,7 +30,7 @@ npm start
 1.
 安装好 nodejs 环境后。
 
-2.
+2.[我的 ubuntu 22.04 装不上，请参考 《_linux_下安装的一些问题.md》]
 使用 npm 得速度速度超慢，推荐可以把 npm 的仓库切换到国内淘宝仓库，注册 cnpm 命令：
 
 npm install -g cnpm --registry=https://registry.npm.taobao.org
