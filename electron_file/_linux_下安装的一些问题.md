@@ -11,20 +11,17 @@ ubuntu 22.04 下似乎无法安装 cnpm
 查看npm配置
 npm config list
 
-    设置淘宝镜像
+设置淘宝镜像
 npm config set registry https://registry.npm.taobao.org
 
-    重置registry
-
+重置registry
 npm config set registry https://registry.npmjs.org
 或
 npm config delete registry （未验证）
-
 npm config edit
     用此命令打开 ".npmrc"文件
     添加或删除
 registry=https://registry.npm.taobao.org/
-
 
     cnpm的用法同npm，且registry为国内淘宝镜像
     全局安装
