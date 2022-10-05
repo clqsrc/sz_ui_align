@@ -1,0 +1,38 @@
+
+
+http://newbt.net/ms/vdisk/show_bbs.php?id=47079C2DF9240CE0EB489F37B19225DD&pid=164
+
+
+https://liujiacai.net/blog/2022/04/30/modern-c/
+
+
+下面看看使用 cleanup 后的写法：
+
+void free_char(char **str) {
+  if (*str) {
+    printf("free %s\n", *str);
+    free(*str);
+  }
+}
+
+int main() {
+  char *str __attribute((cleanup(free_char))) = malloc(10);
+  sprintf(str, "hello");
+  printf("%s\n", str);
+  return 0;
+}
+
+// 依次输出：
+
+// hello
+// free hello
+
+
+可以看到， str 在 main 函数退出前执行了 free_char 来进行资源使用。为了方便使用，可以通过 #define 定义下面的宏：
+
+#define auto_char_t char* __attribute((cleanup(free_char)))
+
+// 使用方式：
+auto_char_t str = malloc(10);
+
+
