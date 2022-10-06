@@ -542,7 +542,7 @@ function RunJson(json_param)
     if r then
         return {response=s_json, result=1, json=j};
     else
-        ShowMessage("no json format at RunJson():" .. str_json);
+        ShowMessage("no json format at RunJson():" .. s_json);
         --ShowMessage(j.width);
         return {response=s_json, result=0, error="no json format at RunJson()"};
     end
@@ -559,7 +559,6 @@ end;
 
 --//创建一个 tcp 连接  //实现方将返回一个数字，用来表示生成的对象，实际上不是指针，而是在对象列表中的索引
 --//不需要传入回调函数指针，统一回调 lua 的回调函数就行。但 lua 里面还是要指定接收函数，以便处理
-
 function UI_create_tcp_connect(func)
 
     --------
