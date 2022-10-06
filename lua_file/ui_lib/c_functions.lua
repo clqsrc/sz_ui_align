@@ -559,6 +559,20 @@ end;
 
 --//创建一个 tcp 连接  //实现方将返回一个数字，用来表示生成的对象，实际上不是指针，而是在对象列表中的索引
 --//不需要传入回调函数指针，统一回调 lua 的回调函数就行。但 lua 里面还是要指定接收函数，以便处理
+
+--//RunJsonObj({ function_name="create_tcp_connect", func=111 });  --//ok //这个更好用，而且不容易出错
+function RunJsonObj(ojb_json_param)
+    local json_param = json.encode(ojb_json_param);
+
+    --ShowMessage(json_param);
+
+    --//要先执行 c 语言的 json 调用得到结果
+    local r = RunJson(json_param);
+
+    return r;
+end;
+
+
 function UI_create_tcp_connect(func)
 
     --------
