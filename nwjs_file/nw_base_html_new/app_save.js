@@ -53,7 +53,8 @@ function SetSaveKey(key, v)
 		//let fn_cmd = "D:/clq/base_html/base_html_new/ui_json_form_map_main.json";  //从命令行参数中取得文件名
 
 		//nwjs 取命令行参数
-		let fn_cmd = NW_GetCmd();
+		//let fn_cmd = NW_GetCmd();
+		let fn_cmd = NW_GetCmd()[0];  //linux 下要这样
 
 		// let s = SaveToFile(fn_cmd, v);
 		SaveToFile(fn_cmd, v, 1);
