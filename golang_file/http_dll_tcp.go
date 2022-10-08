@@ -7,6 +7,7 @@ package main;
 import "C"
 
 import (
+	"time"
     "fmt"
     "bufio"
 //    "crypto/tls"
@@ -187,7 +188,7 @@ func _to_tcp_connect(i_client int) (*DLL_TcpClient) {
 //连接一个地址，并可选择是否使用 ssl/tls
 func GO_tcp_connect(i_client int, host string, port int, use_ssl int) int {
 	
-	defer PrintError("tcp_connect");
+	defer PrintError("GO_tcp_connect");
 
 	var r int = 0;	
 	
@@ -245,6 +246,8 @@ func tcp_send_line(i_client int, line string){
 
 func GO_tcp_send_string(i_client int, line string){
 	
+	defer PrintError("GO_tcp_send_string");
+	
 	var client * DLL_TcpClient = _to_tcp_connect(i_client);
 	
 	if (nil == client) { return; }
@@ -295,6 +298,8 @@ func GO_tcp_recv_Line(i_client int) string {
 //export tcp_recv_line
 func tcp_recv_line(i_client int) (*C.char) {
 	
+	defer PrintError("tcp_recv_line");
+	
 	var client * DLL_TcpClient = _to_tcp_connect(i_client);
 	
 	if (nil == client) { return C.CString(""); }
@@ -320,6 +325,8 @@ func tcp_recv_line(i_client int) (*C.char) {
 
 //export tcp_recv_string
 func tcp_recv_string(i_client int, sp *C.char) (*C.char) {
+	
+	defer PrintError("tcp_recv_string");
 	
 	var client * DLL_TcpClient = _to_tcp_connect(i_client);
 	
@@ -397,10 +404,21 @@ func Connect_TimeOut_TCP_SSL(host string, port int, timeout_second int) (net.Con
     
     //--------------------------------------------------------
     
-    //奇怪，tls 怎么处理超时
-    conn, err := tls.Dial("tcp", addr, tlsConfig);
+    //奇怪，tls 怎么处理超时 //要用 return DialWithDialer(new(net.Dialer), network, addr, config)
+    //conn, err := tls.Dial("tcp", addr, tlsConfig);
+    
+    //--------
+    //dialer *net.Dialer
+    var dialer = new(net.Dialer);
+    
+    dialer.Timeout = time.Second * time.Duration(timeout_second); //2;  //这个的单位应该是 Nanosecond 纳秒 ，因为它的类型是 time.Duration ，而 time.Duration 的 1 个单位就是 1 纳秒
+    
+    conn, err := tls.DialWithDialer(dialer, "tcp", addr, tlsConfig);
+    
+    //--------
     
     SetConnectTimeOut_ssl(conn, 20);
+    //SetConnectTimeOut_ssl(conn, timeout_second);
     
 
 	//conn, err := tls.DialTimeout("tcp", addr, time.Duration(timeout_second) * time.Second); //超时单位为秒，原始函数有点难理解
