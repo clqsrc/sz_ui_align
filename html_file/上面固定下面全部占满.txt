@@ -1,0 +1,25 @@
+
+https://blog.csdn.net/qq_33237207/article/details/100102757
+
+有两个方法比较好。1 是用 
+方法1：用flex布局：
+
+给content添加 display: flex;flex-direction: column; 属性，给bottom添加 flex: 1; 属性。
+
+.content {
+    /* ... */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ... */
+
+.bottom {
+    /* ... */
+    flex: 1;
+}
+
+方法2：用calc设置高度：
+
+给bottom添加 height: calc(100% - 100px); 属性。
+
