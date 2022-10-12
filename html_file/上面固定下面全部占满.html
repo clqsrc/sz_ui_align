@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <link href="./styles.css" rel="stylesheet">
+
+    <style type="text/css">
+
+        html
+        {
+            margin:0; 
+            padding:0;
+            width:100%;
+            height:100%;
+        
+        } 
+    
+        
+    </style>
+
+    <meta name="viewport" content="width=device-width, 
+                                     initial-scale=1.0, 
+                                     maximum-scale=1.0, 
+                                     user-scalable=no">
+
+    
+
+
+    <title>Hello World!</title>
+  </head>
+
+  <body style="width:100%; height:100%; margin:0; padding:0;">
+
+    <div style="display:flex; flex-direction: column; width1: 100%; width: calc(100% - 16px); height: 100%;">
+
+        <div id="top" style="width: 100%; height: 100px;">
+
+            <!--
+            <h1>Hello World!</h1>
+            We are using Node.js <span id="node-version"></span>,
+            Chromium <span id="chrome-version"></span>,
+            and Electron <span id="electron-version"></span>.
+            -->
+
+            <!-- You can also require other files to run in this process -->
+            <!-- <script src="./renderer.js"></script> -->
+
+            <!-- -------------------------------------------------------- -->
+            <div id="pnlTool" style="position: relative; width: 100%; height: 50px; overflow-y:scroll; " >
+
+                <div id="btnAddPage" style="position:absolute; width: 80px; right: 100px; 
+                text-align: center; height: 32px;
+                background-color: #dddddd; border-radius: 4px;" > + </div>
+
+            </div>
+            <!-- -------------------------------------------------------- -->
+        
+        </div>
+
+        <div id="main_div" style="flex: 1; position: relative;">
+
+            <!-- <webview id="sub_webview1" src1="https://www.baidu.com" style="position: fixed;width: 100%;height: 100%"></webview> -->
+            <!-- 
+                //1.有 allowpopups 才会弹出新链接
+                //2.参考 https://www.electronjs.org/zh/docs/latest/api/webview-tag 
+                //只能使用 display:flex 样式
+            
+            -->
+            <webview id="sub_webview1" src1="https://www.baidu.com" style="position111: fixed;width: 100%;height: 100%" allowpopups></webview>
+
+            <div style="left: 300px; top: 300px; width: 200px; height: 200px; background-color: #0000ff; position:absolute; "></div>
+        
+        </div>
+
+    </div>
+
+
+
+
+
+
+    
+
+    <script src="./renderer.js"></script>
+    <script src="./web_app.js"></script>
+
+  </body>
+</html>
