@@ -1,0 +1,43 @@
+{
+    "editor.minimap.enabled": false,
+    "editor.fontFamily": "'宋体2000',Verdana,'新宋体',Verdana,Consolas, 'Courier New', monospace",
+    "window.zoomLevel": 0,
+    "terminal.integrated.fontFamily": "monospace",
+    "go.goroot": "D:/go1.18.3.windows-amd64/go",
+    "go.gopath": "D:/gopath1.18.3", 
+    "go.buildFlags": [],
+    "go.buildTags": " ", //不格式化
+    "go.formatTool": "aaa",   //不格式化
+    "go.formatFlags": [],  //不格式化
+    "go.formatOnSave": false,
+
+    //解决未用的 import 被自动删除的问题 //应该是针对 .go 后缀的文件
+    "[go]": {
+        "editor.insertSpaces": false,
+        //"editor.formatOnSave": true,
+        "editor.formatOnSave": false,   //不自动格式化
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": false, //默认是 true ，会删除掉不用的 import
+            "source.fixAll": false,
+        },
+        "editor.suggest.snippetsPreventQuickSuggestions": false
+    },
+
+    "editor.fontLigatures": false,
+    "workbench.editor.wrapTabs": true,
+    "editor.fontSize": 15,
+    "emmylua.codeLens": true,
+    "emmylua.hint.paramHint": false,
+    "zls.path": "D:/no_install/zls/x86_64-windows/bin/zls.exe",
+    "zls.zig_exe_path": "D:/no_install/zig-x86_64-0.10/zig.exe",
+    "zls.zig_lib_path": "D:/no_install/zig-x86_64-0.10/lib",
+    "zls.build_runner_path": "D:/no_install/zls/x86_64-windows/bin/build_runner.zig",
+    "zls.check_for_update": false,
+    "zls.enable_import_embedfile_argument_completions": true,
+    "zls.enable_ast_check_diagnostics": true,
+    "zls.enable_inlay_hints": true,
+    "zls.enable_snippets": true,
+    "zls.include_at_in_builtins": true,
+    "editor.detectIndentation": false,
+
+}
