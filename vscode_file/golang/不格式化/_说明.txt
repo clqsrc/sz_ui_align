@@ -2,3 +2,15 @@
 
 比较啰嗦，要修改 C:\Users\ccc\AppData\Roaming\Code\User\settings.json
 
+    //解决未用的 import 被自动删除的问题 //应该是针对 .go 后缀的文件
+    "[go]": {
+        "editor.insertSpaces": false,
+        //"editor.formatOnSave": true,
+        "editor.formatOnSave": false,   //不自动格式化
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": false, //默认是 true ，会删除掉不用的 import
+            "source.fixAll": false,
+        },
+        "editor.suggest.snippetsPreventQuickSuggestions": false
+    },
+
