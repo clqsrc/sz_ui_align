@@ -1,0 +1,31 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            //"program": "${fileDirname}"
+
+            //--------------------------------------------------------
+            //这里是自定义的，其他都是 vscode 自动生成的
+            "program": "${workspaceFolder}/http_server.go",
+
+            //--------------------------------------------------------
+
+            "env": {
+
+                //"PATH":"D:/new/mingw64-8.1.0-sjlj/mingw64/bin;%GOROOT%/bin;%PATH%",
+                //这是运行路径，编译的话要 terminal.integrated.env.windows 里也添加 gcc 路径 
+                "PATH":"D:/new/mingw64-8.1.0-sjlj/mingw64/bin;D:/go1.18.3.windows-amd64/go/bin",
+            }
+        },
+    ],
+
+
+
+}

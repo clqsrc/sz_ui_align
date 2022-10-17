@@ -1,0 +1,30 @@
+
+
+// settings.json 文件内容如下：主要是goroot和gopath
+{
+    // "files.autoSave": "onFocusChange",
+    // "go.buildOnSave": true,
+    // "go.lintOnSave": true,
+    // "go.vetOnSave": true,
+    // "go.buildTags": "",
+    // "go.buildFlags": [],
+    // "go.lintFlags": [],
+    // "go.vetFlags": [],
+    "go.coverOnSave": false,
+    "go.useCodeSnippetsOnFunctionSuggest": false,
+    "go.formatOnSave": false,
+    // "go.formatTool": "goreturns",
+    //"go.goroot": "D:/go1.10.8.windows-amd64/go",    
+    "go.goroot": "D:/go1.18.3.windows-amd64/go",    
+    //"go.gopath": "D:/gopath1.10.8", 
+    "go.gopath": "D:/gopath1.18.3", 
+    // "go.gocodeAutoBuild": true
+
+    "terminal.integrated.env.windows": {
+
+        "GOROOT":"D:/go1.18.3.windows-amd64/go",
+        "PATH":"D:/new/mingw64-8.1.0-sjlj/mingw64/bin;D:/go1.18.3.windows-amd64/go/bin",
+    },
+
+}
+
