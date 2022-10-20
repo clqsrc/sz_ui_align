@@ -1,0 +1,27 @@
+
+https://blog.csdn.net/zdhsoft/article/details/125498888
+
+安装electron失败的解决办法
+过客猫2022
+于 2022-06-28 11:21:55 发布 1171
+收藏 6
+分类专栏： javascript/typescript/node electron 文章标签： 大数据
+版权
+javascript/typescript/node 同时被 2 个专栏收录
+129 篇文章 3 订阅
+订阅专栏
+electron
+1 篇文章 0 订阅
+订阅专栏
+
+使用electron，安照官方例子，结果是失败的。原因是下载官网的二进制包失败，结果不能执行。
+
+也用了npm的镜像：registry = "https://registry.npmmirror.com/"，也不行。
+
+后来网上折腾一段时间，看到一个开源项目（基于electron)，写到要在npm设置electron的镜像，才可以。
+
+使用命令：npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
+
+完后，再重新npm install，再npm start，解决。
+
+
