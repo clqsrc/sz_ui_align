@@ -13,6 +13,7 @@ npm config list
 
 设置淘宝镜像
 npm config set registry https://registry.npm.taobao.org
+npm config set registry http://registry.npmmirror.com
 =============================================  下面是说要恢复的情况下，才做的
 重置registry
 npm config set registry https://registry.npmjs.org

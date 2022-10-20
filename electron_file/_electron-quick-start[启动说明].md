@@ -34,6 +34,7 @@ npm start
 使用 npm 得速度速度超慢，推荐可以把 npm 的仓库切换到国内淘宝仓库，注册 cnpm 命令：
 
 npm install -g cnpm --registry=https://registry.npm.taobao.org
+npm install -g cnpm --registry=http://registry.npmmirror.com
 
 3.
 然后使用 cnpm 进行安装：
@@ -52,3 +53,12 @@ electron -v
 
 npm install -g electron-packager
 
+-------------------------------------------------------------
+原淘宝npm域名即将停止解析，请切换至新域名 npmmirror.com
+
+http://npm.taobao.org和 http://registry.npm.taobao.org 将在 2022.06.30 号正式下线和停止 DNS 解析。
+
+新域名为 npmmirror.com, 相关服务域名切换规则请参考：
+
+http://npm.taobao.org => http://npmmirror.com
+http://registry.npm.taobao.org => http://registry.npmmirror.com
