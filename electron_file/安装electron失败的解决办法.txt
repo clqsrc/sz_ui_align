@@ -24,4 +24,9 @@ electron
 
 完后，再重新npm install，再npm start，解决。
 
+--------------------------------------------------------
+npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
+可能要改为
+npm config set ELECTRON_MIRROR https://registry.npmmirror.com/binary.html?path=electron/
+
 
