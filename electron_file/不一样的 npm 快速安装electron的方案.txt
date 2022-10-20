@@ -1,0 +1,74 @@
+
+https://www.jianshu.com/p/d892132b56af
+
+不一样的 npm 快速安装electron的方案
+一颗人心
+2022.04.03 16:22:15
+字数 529阅读 1,246
+一、获取npm命令
+方式1、
+
+    安装nvm
+    安装node(以最新版为例)
+    nvm install latest
+    确认一下命令是否可用
+    node -v 和 npm -v
+
+方式2
+
+直接去nodejs官网下载
+二、安装electron步骤
+1、安装electron
+
+在需要安装electron的目录下使用命令npm install electron进行electron的安装。
+
+如果安装成功了，请原路返回， 不远送了；
+然后问题来了, 我下载报错了， 错误信息如下 。
+
+    .....RequestError: read ECONNRESET.....
+    npm ERR! code ELIFECYCLE
+    npm ERR! errno 1
+    npm ERR! electron@17.2.0 postinstall: node install.js
+    npm ERR! Exit status 1
+    npm ERR!
+    npm ERR! Failed at the electron@17.2.0 postinstall script.
+    npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+    npm ERR! A complete log of this run can be found in:
+    npm ERR! E:\nodejs\npm_cache_logs\2022-03-25T15_49_12_347Z-debug.log
+
+这个时候，不要急不要慌，我们没有失败，一切都在意料之中，他只是为我们打地基来了，正文开始。
+2、手动下载出错的文件
+
+打开浏览器输入 下述网址， 找到你要的版本号， 点击后找到你的平台点击即可下载了。
+https://registry.npmmirror.com/binary.html?path=electron/
+3. 表演开始
+
+    进入目录 yourProjects/node_modules/electron
+    新建文件夹 dist
+    新建文件path.txt，根据自己的系统类型输入：
+    windows系统输入： electron.exe
+    mac系统输入：Electron.app/Contents/MacOS/Electron
+    linux系统输入：electron
+    解压缩刚下载的文件到dist目录
+
+4. 启动 electron
+
+尝试一下electron示例npm start
+or
+启动你自己的项目
+
+成功了！！！
+
+image.png
+附：直接复制粘贴到地址栏也可下载上述压缩包
+
+将 x.x.x 替换为版本号，根据自己的系统版本选择不同的url。
+https://registry.npmmirror.com/-/binary/electron/x.x.x/electron-vx.x.x-win32-x64.zip
+
+https://registry.npmmirror.com/-/binary/electron/x.x.x/electron-vx.x.x-linux-x64.zip
+
+https://registry.npmmirror.com/-/binary/electron/x.x.x/electron-vx.x.x-darwin-arm64.zip
+
+https://registry.npmmirror.com/-/binary/electron/17.2.0/electron-v17.2.0-darwin-x64.zip
+
+
