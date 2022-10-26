@@ -1,0 +1,48 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Launch file",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            //"buildFlags": "-mod=vendor",
+            //"program": "${file}"
+            //当运行单个文件时{workspaceFolder}可改为{file}
+            "program": "${workspaceFolder}",
+            "env": {
+                //"GOPROXY":"https://goproxy.io,direct", //这里不行，要写到环境变量中 //https://goproxy.io/zh/
+                //现在是这个命令 $env:GOPROXY = "https://proxy.golang.com.cn,direct"
+                //"GOPATH":"D:/gopath1.18.3",
+                
+                "GOPATH":"D:/gopath1.10.8",
+
+                //"GOROOT": "D:/go1.18.3.windows-amd64/go",   
+                //"GOROOT": "D:/go1.10.8.windows-amd64/go",   
+
+                //----
+                //"PATH":"D:/new/mingw64-8.1.0-sjlj/mingw64/bin;%GOROOT%/bin;%PATH%", //不支持 %变量% 这种写法 
+                //"PATH":"D:/new/mingw64-8.1.0-sjlj/mingw64/bin;D:/go1.18.3.windows-amd64/go/bin",
+                ////"PATH":"D:/new/mingw64-8.1.0-sjlj/mingw64/bin;D:/go1.10.8.windows-amd64/go/bin", //换这个路径是可以在 vscode 运行的，但按道理不应该这样
+                
+                //实测不用修改这个 PATH，在本项目中的 setting.json 中修改 go 版本就可以了，除非代码提示想换一个不同的版本
+
+                //----
+                //GO111MODULE 在 1.18.3 这样的版本中一定要配合正确的 GOPATH 才能正常工作
+                // #go 1.18.3 下也还是可以用的. 有了这个变量定义 1.18.3 或者说 1.10.8 之后的版本才会去找项目自身下的 vendor 目录
+                // #因为 gomod 目前已知是一定要找 gopath 然后在下面生成一个 pkg 目前的，不利于不同项目分别备份代码，所以还是用 vendor
+                // #比较简单。要特别注意的是，开启 gomod 的情况下，是不推荐手改 vendor 下的代码的，因为 gomod 会下载全新代码覆盖它!
+                //目前实测不要 GO111MODULE 就是默认打开 mod 又能使用原来的 vendor 代码结构的方式是: 将子项目中的 vendor 中的包复制到
+                //主目录的 vendor 一份。尚未找到如何在开启 gomod 的情况下使用子项目的 vendor
+                "GO111MODULE":"off",
+            },
+            //VSCode 不支持 Vendor //支持的，看上面的配置方法
+            "args": [""]
+        }
+
+    ]
+}
