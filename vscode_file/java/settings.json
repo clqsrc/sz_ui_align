@@ -13,6 +13,11 @@
     //参考 https://github.com/redhat-developer/vscode-java/wiki/JDK-Requirements#java.configuration.runtimes
     "java.configuration.runtimes": [
         {
+            "name": "JavaSE-9",
+            "path": "D:\\Java\\jdk9.0.4",
+            "default": true
+        },
+        {
             "name": "JavaSE-1.8",
             "path": "D:\\Java\\jdk1.8.0_131",
             "default": true
