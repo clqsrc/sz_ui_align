@@ -1,0 +1,12 @@
+
+
+typescript-to-lua
+
+在我的环境下要用 sudo 
+
+sudo npm install -D typescript typescript-to-lua
+
+否则会报 
+npm ERR! Cannot read property 'insert' of undefined
+
+
