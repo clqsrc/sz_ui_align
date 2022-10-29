@@ -9,4 +9,17 @@ sudo npm install -D typescript typescript-to-lua
 否则会报 
 npm ERR! Cannot read property 'insert' of undefined
 
+---------------------------------------------------------------
+https://typescripttolua.github.io/
+
+Getting started
+
+Getting started with TSTL is easy, simply install typescript-to-lua from npm:
+
+$ npm install -D typescript typescript-to-lua
+
+You can now run tstl via command line, similar to tsc
+
+$ npx tstl
+
 
