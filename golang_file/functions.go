@@ -27,6 +27,7 @@ import (
 	"crypto/tls"
 	"net"
 	"unsafe"
+	"encoding/json"
 //	"sync"
 
 	//_ "github.com/bmizerany/pq"
@@ -1311,4 +1312,53 @@ func SaveConfig(fn string, stringlist map[string]string) (bool){
 	
 	
 }//
+
+//2022.11.08 其实和 js 一样，golang 任何对象都能转换成 json
+func ObjToJson(data interface{}) string {
+
+    b, err := json.Marshal(data);
+    if err != nil {
+		
+		//w.Write([]byte("json error"));
+		
+        return "{}";
+    }
+    // w.Write(b);
+    
+    return string(b);
+	
+}//
+
+func ToJson(data interface{}) string {
+    
+    return ObjToJson(data);
+	
+}//
+
+
+//模拟 js 的 json map 和 json 数组
+// type dbline map[string]string //定义一个记录行
+// //type dblines []dbline; //定义一个记录行动态数组,做为结果集//奇怪,这样在后面无法赋值
+// type dblines []map[string]string //定义一个记录行动态数组,做为结果集
+
+type json_map map[string]interface{} //定义一个记录行
+type json_arr []interface{} //定义一个记录行动态数组,做为结果集
+
+//这两个结构体配合 ToJson() 函数，基本上可以写出和 js 一样方便的 json obj 的构造语法代码，例如：（原始需求来自 oss 的 sts 请求构造）
+	// var policy_item1 json_map = json_map{
+	
+	// 	"Effect": "Allow",
+	// 	"Action":json_arr{"oss:ListObjects"},
+		
+	// 	//"Resource":_Resource_arr ,
+	// 	"Condition":json_map{
+	// 				"StringLike":json_map{
+	// 					"oss:Prefix":"$path/*",
+	// 					//"oss:Prefix":path + "/*",
+	// 				},
+	//     },
+	
+	// };
+
+// var r = ToJson(policy_item1);
 
