@@ -1,0 +1,41 @@
+ucrt64.exe[奇怪，似乎默认启动的是这个]
+
+--------------------------------------------------------
+
+https://www.zhihu.com/question/463666011/answer/1927907983
+
+clang 和 gcc 是两个不同的 C/C++ 编译器，而 mingw-w64 是一个 Windows 上的编译和运行时环境。注意，mingw-w64 本身并不是一个编译器，而是一组库、头文件和实用工具。gcc 需要 mingw-w64 环境才能在 Windows 上编译程序，加上最初（现已过时）的 mingw 项目就是专为 gcc 设计的，因此通常用 mingw64 代指 64 位的 gcc 和 mingw-w64 环境。mingw64、ucrt64、clang64 都是 Windows 原生程序（不依赖 cygwin.dll
+
+作者：银河-蜗牛
+链接：https://www.zhihu.com/question/463666011/answer/1927907983
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
+
+https://blog.csdn.net/lvwx369/article/details/39293331
+
+--------------------------------------------------------
+
+
+pacman -S mingw-w64-x86_64-vala-language-server
+
+来自 https://github.com/vala-lang/vala-language-server
+
+
+--------------------------------------------------------
+https://wiki.gnome.org/Projects/Vala/ValaOnWindows
+
+To install Vala on 64-bit Windows:
+
+pacman -S mingw-w64-x86_64-gcc 
+pacman -S mingw-w64-x86_64-pkg-config
+pacman -S mingw-w64-x86_64-vala
+
+
+
+
+
+
+
+
