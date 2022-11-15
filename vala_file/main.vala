@@ -44,6 +44,9 @@ cmd /k "set PATH=D:\new\msys64\mingw64\bin;%PATH% "
 
 */
 
+//  F:\new\Meld\libgtk-3-0.dll  应该是可以用的，它有 gtk_window_new 函数
+//  https://blog.csdn.net/weixin_48842132/article/details/121249430
+
 //--------------------------------------------------------
 
 
