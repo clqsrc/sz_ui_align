@@ -1,5 +1,7 @@
 
 
+rem //this file nodejs.bat
+
 rem cmd /k "set PATH=D:\no_install\node-v16.15.1-win-x64;%PATH% "
 
 
