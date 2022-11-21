@@ -34,3 +34,11 @@ typescript-to-lua 会象 tsc 一样将关联的 ts 文件一并编译。
 //----
 另外一个很重要的一点: 成员函数中不用加 self 参数，生成 lua 时会自动加上的。
 实际上所有的 this 都会转换成 self
+
+//----
+//tstl ui_page_car_main_ts.ts --allowJs  --noImplicitSelf true  //这个会说 "true" 有问题
+// rem cmd /k "set PATH=D:\no_install\node-v16.15.1-win-x64;%PATH% "
+// rem D:\no_install\node-v16.15.1-win-x64\node_modules\.bin   //tstl 也要设置目录。因为用 npx typescript-to-lua 的话会先去网络更新！！！
+// cmd /k "set PATH=D:\no_install\node-v16.15.1-win-x64;D:\no_install\node-v16.15.1-win-x64\node_modules\.bin;%PATH% "
+//以后再研究 tstl 怎么传递 true boolean 参数进去，现在先用以下命令，似乎也差不多
+//tstl ui_page_car_main_ts.ts --allowJs  --noImplicitSelf
