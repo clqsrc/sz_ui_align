@@ -4,3 +4,82 @@ lstring 的库暂时全部最新代码暂存在这里
 
 有时间再复制到主仓库去。另外所有 ndk_cpp 下的 lstring 都用这同一份，不要开多个。
 
+--------------------------------------------------------
+http://newbt.net/ms/vdisk/show_bbs.php?id=D97173CA6126E5E53DFA2D03E5471DA5&pid=164
+
+记一次 qt 引发的 lstring 释放指针检测
+
+查找多日发现是操作了已释放的内存指针。最后的解决办法是利用 lstring 是统一分配统一释放的特点，只要检查它的 mempool 是否已经释放就可以了。
+逻辑代码类似如下：
+
+//内存池,用于释放一次函数过程中分配的内存
+struct MemPool{
+
+struct MemPool_Item * Items;
+int Count;
+char * str;
+byte _const; //是否是只读的,如果是只读的就是从数组中构造的,不要释放它
+int id; //只是为调试释放而已
+
+//检测是否已经释放的标志 //默认是 4 字节
+//分配了内存的就是字符串 "cccc"，释放了的就是 "ffff" //为了方便内存查看器而已，在程序里面用整数
+union{
+
+int free_check_tag_int; //64 位下是 1717986918，这是 pc 字节序，其他机器还不一定，所以不能用它来和 'ffff' 硬比较
+char free_check_tag_char[4];
+};
+
+};
+
+void CheckFree_LStringMemPool(mempool * mem)
+{
+printf_err1("CheckFree_LStringMemPool \r\n");
+
+//莫名崩溃的话一般在以下两个地方打断点就可以知道
+if (_lstring_free_check_tag_int_ALLOC_ != mem->free_check_tag_int)
+{
+_lstring_check_mem_ShowError_APP("CheckFree_LStringMemPool(). error: no alloc!");
+}
+
+if (_lstring_free_check_tag_int_FREE_ == mem->free_check_tag_int)
+{
+_lstring_check_mem_ShowError_APP("CheckFree_LStringMemPool(). error: is free!");
+}
+
+}//
+
+lstring StringConst(const char * str, int len, struct MemPool * pool)
+{
+CheckFree_LStringMemPool(pool);
+...
+
+
+ps. 其实修改了好几个类似的地方，不过也不用全部增加这种检查，因为有几个基础函数是会被其他函数调用的，会一起检测出来。
+
+
+其中
+//64 位下是 1717986918，这是 pc 字节序，其他机器还不一定，所以不能用它来和 'ffff' 硬比较
+//同理 'cccc' 在 pc 64 位下是 1667457891
+const int _lstring_free_check_tag_int_FREE_ = 1717986918; //已经释放
+const int _lstring_free_check_tag_int_ALLOC_ = 1667457891; //已经分配内存
+
+这是个比较巧妙的设计，目的是在内存视图中目视检测出错误。
+
+原理是内存释放后一般情况下不会马上重新使用，所以是可以用这些个预定义的常数判断的。
+
+为什么不会马上重新使用，这里面的文章就大了，刚好我重写过 delphi 的内存分配器，所以知道一些。当然了，按道理说 CheckFree_LStringMemPool 应该还再判断是下其他的随机值严谨一些。
+不过本质来说，如果已经释放，访问的话就应该崩溃了，只是因为内存分配器的原理下不会这样。这种检查的可用性类似于 hash 校验码： 虽然不是理论上的 100% 可靠，但在实际应用中非常有效。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
