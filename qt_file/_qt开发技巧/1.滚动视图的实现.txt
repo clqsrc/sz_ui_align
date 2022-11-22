@@ -1,0 +1,49 @@
+
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+    //--------------------------------------------------------
+    TStdDiv * div = new TStdDiv();
+    div->setParent(this);
+
+
+    div->move(100, 100);
+    div->resize(200, 150);
+
+//    div->setAutoFillBackground(true);
+
+//    QPalette p = div->palette();
+
+//    //QColor color = QColor(44,50,61);
+
+//    p.setColor(QPalette::Window, QColor(190,190,190));
+
+//    //透明色
+//    p.setColor(QPalette::Window, QColor(190,190,190, 0));
+
+//    //p.setBrush(QPalette::Window,brush);
+
+//    div->setPalette(p);
+
+    //--------------------------------------------------------
+    QScrollArea * scrollArea = new QScrollArea(this);
+
+    QWidget * pWgt = new QWidget;
+    scrollArea->setWidget(pWgt);
+
+    pWgt->setGeometry(0, 0, 100, 100);  //qt 的 “滚动视图” 比较奇怪。如果是在代码中，则设置 setGeometry 改变大小就可以了
+    //而在设计器中，则要修改它的 “scrollAreaWidgetContents” 的 mini..size，这个是拖放控件时自己会生成的子控件。
+    //参考 https://blog.csdn.net/naozhuo0615/article/details/81875076
+    //https://www.jb51.net/article/182499.htm [说法不完全对，但可参考]
+
+    //setWidget 的内容应该是这样取出的
+    scrollArea->widget()->setGeometry(0,0,2000,2000);
+
+    //--------------------------------------------------------
+
+
+}
