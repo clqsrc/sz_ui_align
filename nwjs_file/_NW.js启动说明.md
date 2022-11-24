@@ -60,6 +60,8 @@ npm install --save-dev @types/node --local
 5.
 Debugger for NWjs
 似乎有一个调试 nwjs 的方法
+https://blog.csdn.net/lichong951/article/details/126746446
+nwjsVersion
 
 
 
