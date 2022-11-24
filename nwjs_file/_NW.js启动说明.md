@@ -57,6 +57,9 @@ npm install --save-dev @types/node --location=local
 npm install --save-dev @types/node --local
 
 
+5.
+Debugger for NWjs
+似乎有一个调试 nwjs 的方法
 
 
 
