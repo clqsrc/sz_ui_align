@@ -1,0 +1,49 @@
+
+
+http://newbt.net/ms/vdisk/show_bbs.php?id=E71A1B15FAE300AC67431A98DFBCA224&pid=164
+
+[nwjs/vscode]windows 下使用 vscode 调试 nwjs 程序
+
+其实非常方便，和调试 nodejs 差不多。有两个关键点。
+1. 是要安装插件 "Debugger for NWjs"；
+2. 是要将 nwjs 的一个 sdk 版本安装到当前用户目录下。
+
+然后按 F5 就可以开始调试了。
+入口点就是 package.json 中的 "main": "index.html", 这样的定义的。
+
+
+示例 launch.json
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            
+        
+            "type": "nwjs",
+            "request": "launch",
+            "name": "Launch NWjs",
+            "nwjsVersion": "any",
+            "webRoot": "${workspaceFolder}",
+            "reloadAfterAttached": true,
+
+            //---- 上面是自己生成的，下面是修改的 //先安装"Debugger for NWjs"
+            //You can open command palette with F1 or Ctrl + Shift + P
+            //It will start the installation at UserDir/.nwjs/version-names-nwjs. Wait install.
+            //参考 https://blog.csdn.net/lichong951/article/details/126746446
+            //https://blog.csdn.net/yuer5531/article/details/114939904
+            //其实关键是要在用户目录下安装或者复制一份 nwjs sdk 版本，至于具体的版本号例如是无所谓
+            //"在系统用户根目录下创建文件夹C:\Users\Administrator\.nwjs" 这句话不一定对，其他用户有可能是 
+            //C:\Users\ccc\.nwjs\nwjs-sdk-v0.68.1-win-ia32
+            //这样的目录。可以不是物理文件，windows 下用 mklink /d 生成软链接即可
+            //插件说明的原文为 "It will start the installation at UserDir/.nwjs/version-names-nwjs. Wait install."
+
+
+
+            //----------------------------------------------------------------
+        }
+    ]
+}
+
