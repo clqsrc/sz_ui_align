@@ -1,0 +1,14 @@
+
+
+Python安装matplotlib
+第一步 ：命令窗口输入并执行python -m pip install -U pip setuptools进行升级。
+第二步：输入python -m pip install matplotlib进行自动的安装，系统会自动下载安装包
+第三步：启动python终端会话，输入import matplotlib，没有出现错误信息，则安装成功
+
+https://blog.csdn.net/m0_46405703/article/details/109553422
+
+其实不用第一步。
+
+
+
+
