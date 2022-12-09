@@ -9,6 +9,10 @@ https://blog.csdn.net/m0_46405703/article/details/109553422
 
 其实不用第一步。
 
+--------------------------------------------------------
+https://matplotlib.org/stable/plot_types/index.html
+https://matplotlib.org/stable/plot_types/arrays/contourf.html
 
+有等值线的示例
 
 
