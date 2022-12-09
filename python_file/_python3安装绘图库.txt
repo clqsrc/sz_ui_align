@@ -9,6 +9,12 @@ https://blog.csdn.net/m0_46405703/article/details/109553422
 
 其实不用第一步。
 
+安装时提示
+
+The script f2py.exe is installed in 'D:\new\python310\Scripts' which is not on PATH.
+
+似乎应该加路径。
+
 --------------------------------------------------------
 https://matplotlib.org/stable/plot_types/index.html
 https://matplotlib.org/stable/plot_types/arrays/contourf.html
