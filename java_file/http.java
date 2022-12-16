@@ -173,10 +173,13 @@ class ThreadSocket implements Runnable{
                 //如果路径对上了就用它处理  //按道理换用 map 更快，不过无所谓了，本项目访问压力不大
                 if (page.http_path.equals(this.http_url_path)) {
 
-                    page.get_params = this.get_params;
-                    page.params = this.params;
+                    //注意这是每次请求都新建的实例
+                    http_page.cur_page _cur_page = new http_page.cur_page();
 
-                    String response = page.hander();
+                    _cur_page.get_params = this.get_params;
+                    _cur_page.params = this.params;
+
+                    String response = page.hander(_cur_page);
 
                     SendHttpResponse(response);
 

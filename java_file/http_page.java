@@ -41,8 +41,18 @@ public class http_page {
     //自己要处理的路径
     public String http_path = "";  //只读，由调用者传入
 
-    public Hashtable<String, String> get_params;  //get 请求的参数 //只读，由调用者传入
-    public Hashtable<String, String> params;  //get 和 pos 请求的参数 //只读，由调用者传入
+    //当前页面的数据是每次请求都不同的，注意 http_path 则是一样的，不同的属性都要写到 cur_page 中
+    //因为 http_page 只创建一次，是单实例的，而 cur_page 每次请求会产生一个
+
+    //--------------------------------------------------------
+    public static class cur_page extends Object{
+        public Hashtable<String, String> get_params;  //get 请求的参数 //只读，由调用者传入
+        public Hashtable<String, String> params;  //get 和 pos 请求的参数 //只读，由调用者传入
+    }
+
+    //--------------------------------------------------------
+
+    
 
     //指明自己要处理的路径 //加入到 http.page_list 中
     public static void AddToPageList(http_page page, String http_path)
@@ -56,7 +66,7 @@ public class http_page {
     }//
 
     //处理函数 //返回值为 0 的话就是没处理
-    public String hander() 
+    public String hander(cur_page page) 
     {
         try {
 
