@@ -3,6 +3,7 @@
 ui_align 点击等事件的实现[QT版]
 
 http://newbt.net/ms/vdisk/show_bbs.php?id=7636D666A696E40B18FF01A027646163&pid=164
+http://newbt.net/ms/vdisk/show_bbs.php?id=DA71D3887B11AAA56B6C4FCCC8795DDB&pid=161
 
 原有的实现太过复杂，打算简化，用一个接口函数通道实现全部事件。
 
@@ -91,3 +92,43 @@ end; --//if 2
 调用一个新函数 SetOnEvent 专门针对太频繁的事件，普通事件还是不需要。然后调用时设置 win->func_onclick_param 为一个特殊值就可以了，算了这样会混淆，给一个新字段
 do_on_event_all 。当它为 1 是才传递那些会频繁触发的事件。
 
+================================================================
+----------------------------------------------------------------
+http://newbt.net/ms/vdisk/edit_bbs.php?id=DA71D3887B11AAA56B6C4FCCC8795DDB&pid=161
+中的内容同步如下:
+
+跨平台 UI 框架的事件传递设计及简化历程 [持续更新进化中]
+
+----------------------------------------------------------------
+本文对应 github 中的
+qt_file/_ui_align 点击等事件的实现[QT版].txt
+https://github.com/clqsrc/sz_ui_align/qt_file/_ui_align 点击等事件的实现[QT版].txt
+http://newbt.net/ms/vdisk/show_bbs.php?id=7636D666A696E40B18FF01A027646163&pid=164
+
+对应源码
+lua_functions_event.lua
+lua_functions_event_new.lua
+
+----------------------------------------------------------------
+
+框架已在工作中使用多年，不过没开源，还没想好叫什么名称，不过估计会带有 ui_align UIAlign newbt_ui_align 这样的。
+
+其实并不难。
+
+不过这之中事件的转递改了好几个版本，原因是开始时针对 lua 的特点设计得非常精巧，目的是想在 lua 中使用方便点。不过需要改进时发现这样我很难想起当初是为什么要这样设计的，同时涉及的代码太多，加个功能差一点点没弄好就不起效。
+
+现在是版本是这样的，当 ui 中有事件，例如 qt ，时直接调用 lua 中的全局函数 UI_OnEvent 怎么知道是哪个控件触发的呢？
+直接将对应的 QWidget * view 指针转换为字符串就好了。因为 lua 创建控件或者取控件时得到的就是这个指针的字符串，所以它是知道界面中谁发生了事件的。
+
+而对于 java 这样不好直接使用指针的，那么双方约定一个相同的指针向整数转换的方法，同时使用这个转换后的整数结果就可以了。这样 lua 方完全不用将自己的参数转递给 c 语言端。
+那么事件触发时 lua 如何知道是调用哪个函数去处理呢？
+答案是 lua 自己绑定控件与函数的关系，比如 lua 中定好：key 为 "控件1" + 事件 "鼠标按下" 时，value 为 处理事件为 "函数1"，参数为 "参数1"。
+这样当 UI_OnEvent 被调用时，通过其中的控件指针和事件类型就可以找到对应的 value 从而调用其中的 "函数1"。
+
+新增加一个文件 lua_functions_event_new.lua
+只有两个函数。
+--//设置 UI_OnEvent 时要调用的函数和参数 //obj 可以是 UiEvent, func 等，设置时是什么，取出时就是什么
+function Set_UI_OnEvent_Func(view, event_name, obj)
+
+--//UI_OnEvent 触发时根据传入的内容取出设置的 obj (如果有设置的话)
+function Get_UI_OnEvent_Func(index)
