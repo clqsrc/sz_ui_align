@@ -132,3 +132,23 @@ function Set_UI_OnEvent_Func(view, event_name, obj)
 
 --//UI_OnEvent 触发时根据传入的内容取出设置的 obj (如果有设置的话)
 function Get_UI_OnEvent_Func(index)
+
+增加了三个函数来对以上操作进行辅助
+function MakeEventObj(func, param)
+
+-- //ts 是不支持返回返回值的（严格来说是无法正确转换成 lua 的）
+function GetEventObj_func(eobj)
+function GetEventObj_param(eobj);
+
+设置事件函数时大概是这样
+Set_UI_OnEvent_Func(file1, "mouse_down_right", RClick_Desktop_file);
+这个 RClick_Desktop_file 可以直接是函数也可以是 MakeEventObj 后的东西，不过为了统一最后是 MakeEventObj 后的东西。
+
+事件发生时会告知 view 的事件的名称，即这里的 [file1, "mouse_down_right"]，这两个东西 qt 是直接知道的，并不用 lua 转入参数
+在 lua 中会触发 UI_OnEvent 根据这个函数中的 s_key, event_key 对应到上面的 [file1, "mouse_down_right"] 用它们组成 key ，通过 GetEventObj_func GetEventObj_param 取出设置的函数和参数，
+最后调用就可以了。
+
+这里要注意的是 ts 转换成 lua 函数时会在成员函数中带一个 self 参数，所以我们为了最大兼容性通通忽略掉事件响应函数中的第一个参数。
+同时因为 c 语言/qt 里在事件触发时，除了知道是什么事件外，还会有自己的参数，所以在 lua 的事件函数中还得有一个参数来接收它。所以 lua 的事件函数最好是有三个参数：
+第一个交给 ts 不使用，第二个是自己传入的参数，第三个是 c语言/qt 传入的参数。
+
