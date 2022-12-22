@@ -34,19 +34,27 @@ function UI_HttpPost(url, param, funcHttp_OnEvent)
 	//url_post_async(url, post_data, funcHttp_OnEvent);
 
     //--------------------------------------------------------
-    //为了兼容自动生成的 lua 代码中有 
+    //为了兼容自动生成的 lua 代码中第一个参数是 self 的情况，如果是带有 self 的，则忽略第 1 个参数
     var f = function(){};
-    f.length; 
+    f.length;   //length 是函数对象的一个属性值，指明该函数期望多少个参数，意即形参的个数
     f.arguments; //arguments.length 是函数被调用时实际传参的个数
+
+    //alert(funcHttp_OnEvent.length);
+
+    var _lua_self_ = false;
+    if (funcHttp_OnEvent.length >= 3) _lua_self_ = true;
 
 	//--------------------------------------------------------
 	function func(s){
 
+        if (_lua_self_) { funcHttp_OnEvent(null, s, "ok"); return ;}
 		funcHttp_OnEvent(s, "ok");
 
 	}//成功
 	
 	function func_error(s){
+
+        if (_lua_self_) { funcHttp_OnEvent(null, s, "error"); return ;}
 
 		funcHttp_OnEvent(s, "error");
 
