@@ -1,0 +1,22 @@
+
+
+index.html直接在chrome中调试
+
+如果生成了 fn.js.map 文件，直接可以调试 typescript 的 ts 源码。
+但还没有找到调试前编译的方法，因为它不支持 preLaunchTask
+
+        //--------------------------------------------------------
+        {
+            "name": "Launch index.html",    //调试选项的名称，我们在vscode的调试选项中选择这个 名字，用户可以自行修改，
+            "type": "chrome",    // 系统设定，用户不能随意修改
+            "request": "launch",  // 系统设定，用户不能随意修改
+            "file": "${workspaceFolder}/index.html"   // 此配置中workspaceFolder为当前调试js的index.html所在的目录，index.html自己可以随意更改，其他的配置暂时不需要管
+            //"file": "${workspaceFolder}/dom1.js"   // 此配置中workspaceFolder为当前调试js的index.html所在的目录，index.html自己可以随意更改，其他的配置暂时不需要管
+        
+            //---- 应该也可以加上 tsc 的编译脚本过程 //不行
+            //"preLaunchTask": "tsc3",
+            //""
+        },
+        //--------------------------------------------------------
+
+
