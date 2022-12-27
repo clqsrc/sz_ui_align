@@ -1,3 +1,19 @@
 
 
 
+
+https://blog.csdn.net/ak47007tiger/article/details/99051344
+
+
+set p0=%0
+set p1=%1
+set p2=%2
+
+echo %0
+echo %p0%
+echo %p1%
+echo %p2%
+
+pause
+
+
