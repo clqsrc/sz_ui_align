@@ -1,0 +1,39 @@
+
+主要是 "type": "shell", 这个参数。
+
+--------------------------------------------------------
+
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "echo",
+            "type": "shell",
+            "command": "echo Hello"
+        },
+        //--------------------------------------------------------
+        //ok 成功传递文件名去进行编译
+        {
+            "label": "tsc3",
+            "type": "shell",
+            "command": "./1.bat ${fileBasename} ${workspaceRoot}",
+            //有文章说加下面的参数，但实测加上去后反而错误
+            // "args": [
+            //     "-p",
+            //     ".",
+            //     "-w"
+            // ],
+
+        },
+        //--------------------------------------------------------
+        {
+            "label": "tsc4",
+            "type": "cppbuild",
+            "command": "gcc"
+        },
+
+    ]
+}
+
