@@ -4,7 +4,7 @@
 
 https://blog.csdn.net/ak47007tiger/article/details/99051344
 
-
+rem %0 应该是文件自身的全路径
 set p0=%0
 set p1=%1
 set p2=%2
