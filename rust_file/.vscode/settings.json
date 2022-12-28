@@ -1,0 +1,30 @@
+{
+    "workbench.colorCustomizations": {
+    
+    },
+
+    "terminal.integrated.env.windows": {
+
+        //"GOROOT":"D:/go1.18.3.windows-amd64/go",
+        "PATH":"C:/Users/ccc/.cargo/bin",
+    },
+
+    "rust-analyzer.runnableEnv": [
+
+        {
+            //"mask":null,
+            "env": {
+            //     "APP_ID": "2", // overwrites only APP_ID
+            "PATH":"C:/Users/ccc/.cargo/bin",
+            }
+        },
+
+        {
+            "mask": "test_name",
+            "env": {
+            //     "APP_ID": "2", // overwrites only APP_ID
+            "PATH":"C:/Users/ccc/.cargo/bin",
+            }
+        }
+    ]
+}

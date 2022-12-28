@@ -1,0 +1,81 @@
+
+
+https://blog.csdn.net/spooking/article/details/126737984
+
+VsCode 安装配置 Rust
+spooking
+于 2022-09-07 08:54:31 发布 153
+收藏
+分类专栏： rust 文章标签： rust vscode 开发语言
+版权
+rust 专栏收录该内容
+1 篇文章 0 订阅
+订阅专栏
+下载 rustup-init
+配置环境变量
+
+CARGO_HOME = E:\Soft\Rust\.cargo
+RUSTUP_HOME = E:\Soft\Rust\.rustup
+RUSTUP_UPDATE_ROOT = http://mirrors.ustc.edu.cn/rust-static/rustup
+RUSTUP_DIST_SERVER = http://mirrors.ustc.edu.cn/rust-static
+path 添加 %CARGO_HOME%\bin
+
+    1
+    2
+    3
+    4
+    5
+
+命令行下安装,
+
+set RUSTUP_UPDATE_ROOT = http://mirrors.ustc.edu.cn/rust-static/rustup
+set RUSTUP_DIST_SERVER = http://mirrors.ustc.edu.cn/rust-static
+rustup-init
+
+    1
+    2
+    3
+
+不要安装 nightly 版本 , rls 无法工作在 nightly 下
+
+    如果装错了 , 运行 rustup toolchain install stable-i686-pc-windows-msvc 重装
+    运行 rustup default stable-i686-pc-windows-msvc 设为默认
+
+vscode 安装 扩展 Rust support for Visual Studio Code
+
+    如果提示需要安装XXX, 一路确定
+
+ctrl + shift + p 输入 tasks
+
+选择 任务:配置默认生成任务
+选择 Rust: cargo run …
+ctrl + shift + b 运行
+
+--------------------------------------------------------
+不过现在用的是 
+https://www.runoob.com/rust/rust-setup.html
+
+的方法。
+在安装第二步时选择了 .....pc....中最后的 msvc 改为了 gnu .
+然后会自动退后到第一步，选择 1 开始下载安装。
+安装过程似乎也没有去下载 gnu 相关的东西。
+
+2. 用 cargo new  新建立一个项目。
+
+3. 编译和运行。命令会提示没有在路径中，应该是 vscode 插件 rust-analyzer 或者 rust-analyzer 提示的
+
+
+F:\test1\rust1\rt1>cargo new rt1
+     Created binary (application) `rt1` package
+
+F:\test1\rust1\rt1>cargo run --package rt1 --bin rt1
+   Compiling rt1 v0.1.0 (F:\test1\rust1\rt1)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.51s
+     Running `target\debug\rt1.exe`
+Hello, world!
+
+也就是说，把 ..\.cargo\bin 加入到系统 path 应该就可以用来运行/调试了。
+
+这个 path 当然是可以放到 .vscode 中的了。[不过没成功]
+
+
