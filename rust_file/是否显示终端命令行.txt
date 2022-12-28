@@ -1,0 +1,7 @@
+
+编译
+
+现在使用 gtk-rs创建项目。如果不想在运行时弹出终端窗口，请将以下内容添加到main.rs.
+
+#![windows_subsystem = "windows"]
+
