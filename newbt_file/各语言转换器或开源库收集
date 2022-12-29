@@ -1,0 +1,553 @@
+
+各语言转换器或开源库收集
+
+各语言转换器或开源库收集
+
+最近在做这样的工作，发现现在有些工具/库的转换非常成熟，是相当可用的。因此收集一下。
+（图标来自 https://www.runoob.com/charsets/ref-emoji.html）
+
+1.TypeScript 相关
+因为 ts 本身就是要转换成 js 才能用的，可能是因此它的 AST 树什么的设计上就好转换吧，所以它的转换器是非常有可用度的。
+
+2.ts2c
+https://github.com/andrei-markeev/ts2c
+https://andrei-markeev.github.io/ts2c/
+
+在查找 ts2 c# 工具时意外找到的，非常有意思。可用度未知。
+
+3.TypeLite 套件
+应该也是一个冷门工具，不过记录一下。
+https://www.open-open.com/news/view/1e72156
+
+快速将C#类型转成TypeScript介面定义
+“
+ 使用 TypeScript 处理 AJAX 请求时，常需要在前端定义与 C# 物件属性一致的 TypeScript 类型，以便将后端传来的 JSON 资料还原成强类型物件。针对较正式的资料模型，我会用 CodeGen 方式同步 C# 与 TypeScript 端的类型定义（顺便处理多语系问题）。但蛮多时候处理对象只是零散的小类型，不必杀鸡用牛刀，针对这类需求，推荐一个好用工具－TypeLITE。
+
+在 NuGet 查关键字"typelite"，很快就可找到 TypeLite 套件。
+”
+
+4.
+https://github.com/RafaelSalguero/CSharp2TS
+
+这是一个很简单的 C# 转 ts 的 vscode 插件。
+
+5.
+java 1.6 后可直接运行 js 。
+另外 https://github.com/mozilla/rhino 也一直在更新。
+
+6.
+https://github.com/aws/jsii
+https://aws.amazon.com/cn/blogs/china/generate-python-java-dotnet-software-libraries-from-typescript-source/
+
+7.
+golang 运行 javascript
+https://github.com/robertkrimen/otto
+
+7.2
+golang 运行 javascript
+https://github.com/dop251/goja
+这个的星数没有 otto 多，不过也有 3k+ ，另外它写明了至少灵感来自于 otto
+
+7.3
+https://github.com/grafana/k6/
+https://www.cnblogs.com/rongfengliang/p/14232784.html
+ 
+goja 支持es6的一种方法
+goja 对于es6 的module 模式是不支持的，但是我们可以通过扩展模式支持
+
+goja 的更新很近，不过它指明了要 go 1.16 以上。而 otto 还是支持 1.10 的。
+
+8.
+C# 运行 js
+https://github.com/sebastienros/jint/
+https://www.jb51.net/article/233715.htm
+
+ast js
+https://blog.csdn.net/weixin_40539892/article/details/89327076
+
+9.(补充 2.1)
+用 tsc 加 zig 和可做出很有趣的组合。似乎 tsc 还不支持 class ，不过可以根据 https://www.5axxw.com/wiki/content/rnryfz
+中的示例改成结构体中的成员函数，用 c++ 的估计很失望，不过对我们就是要用纯 c 模拟类的就太合适了！ 最后生成的 c 语言代码还可以再用 zig 转换成 zig 后加上 try 异常处理。
+这样的话没有 seh 也基本解决了 c 语言的异常问题。对于我来说，zig 的出现还解决了一个大问题，原来我们就是用的纯 c 写基础库，业务逻辑是用的 lua ，但一直担心在性能高的地方还是得上纯 c ，这时候业务逻辑就不能用
+比较放松的方式来写了。而 zig 的出现解决了这个问题，在相对比较“乱”或者是没太多精力精心编写的逻辑代码现在可以在性能有要求时由 lua 转用 zig ，完美！至少目前来说是这样。（golang 其实在这个场合不太合适）
+
+以下是结构体中的 js 转换成 c 语言的结果示例，直接在 
+https://andrei-markeev.github.io/ts2c/
+中输入，转换。就可以看到，还是比较好用的
+
+----------------------------------------------------------------
+console.log("Hello world!");
+function a(){}
+
+var obj = { key: "hello" };
+obj["newKey"] = a;
+
+----------------------------------------------------------------
+#include |stdlib.h|
+#include |assert.h|
+#include |stdio.h|
+
+struct obj_t {
+    const char * key;
+    void (*newKey)();
+};
+
+static struct obj_t * obj;
+void a()
+{
+    
+}
+
+int main(void) {
+    printf("Hello world!\n");
+    obj = malloc(sizeof(*obj));
+    assert(obj != NULL);
+    obj->key = "hello";
+    obj->newKey = a;
+    free(obj);
+
+    return 0;
+}
+----------------------------------------------------------------
+
+
+10.
+https://github.com/hazzard993/LuaToTypeScript
+
+另外一个没有星的国人作品，似乎也还是可以的
+https://github.com/xiangnanscu/lua2js
+
+11.
+有类型的 luau ，查找 lua 的 vscode 插件时发现的。
+不过它的实现语言是 c++ ，并且要求 c++11 甚至某些功能要求 c++17 这显然是个大问题。
+https://baijiahao.baidu.com/s?id=1715651153158895793&wfr=spider&for=pc
+https://www.xujun.org/note-146982.html
+https://github.com/Roblox/luau/releases/tag/0.520
+
+12.
+https://github.com/TypeScriptToLua/TypeScriptToLua
+想要写有类型的 lua ，推荐还是用这个，可以完美的转换成 lua ，我见过有个大神的 lua 项目也是这样用的，源码就是 TypeScript 的，运行时转换成 lua 。这比 luau 的实现要实际得多。
+不过，我在使用的时候加了参数 “ --allowJs  --noImplicitSelf true” 。否则转换出来的东西会很怪异。我对它转换出来的东西一定要加上 prototype 也是不太喜欢。
+不过确实可以良好运行。
+
+----
+更新：那个大神的项目是 https://github.com/jose-elias-alvarez/typescript.nvim
+
+
+13.
+https://github.com/fyne-io/fyne
+这是一个 ui 库，不过因为它是 golang 的所以特意放过来。据说是纯 golang 下星最高的，我主要是看它在国内有很多人的推荐，有些好奇。
+特别是它支持 ios 和安卓，想看看它是不是可以替代 qt - 至少某些情况下。
+
+14.
+https://github.com/ddliu/motto
+ Motto提供了类似于Nodejs的模块环境，可以在golang中运行javascript文件。基于 otto 。
+
+15.
+js 语法标准中的 ES6 转 ES5 的方法
+http://newbt.net/ms/vdisk/show_bbs.php?id=64324DAD2BBFAD6B14712BC1F172E642&pid=164
+
+16.
+https://zhuanlan.zhihu.com/p/55479666
+JavaScriptCore
+
+JavaScriptCore是一个C++实现的开源项目。使用Apple提供的JavaScriptCore框架，你可以在Objective-C或者基于C的程序中执行Javascript代码，也可以向JavaScript环境中插入一些自定义的对象。JavaScriptCore从iOS 7.0之后可以直接使用。
+
+17.
+ rhino
+https://github.com/mozilla/rhino
+https://www.jianshu.com/p/048229e8d59b
+安卓中目前是无法使用 ScriptEngineManager 的。所以要用第三方库。
+
+18.
+lua 与 u3d 的非常多
+
+https://www.zhihu.com/question/28619506
+据说 slua 最好
+https://github.com/pangweiwei/slua
+
+https://github.com/Tencent/luapanda
+lua 在 vscode 下的调试器。
+
+19.
+https://github.com/jasonsantos/luajava
+似乎用的人也比较多，不过原地址 www.keplerproject.org/luajava/ 似乎已经不维护了。
+
+20.
+u3d 生成类参考文件的方法  
+http://newbt.net/ms/vdisk/show_bbs.php?id=DC426EF15A8B070E53BE3927EF53CE12&pid=160
+
+21.
+据说 kotlin 也可以转换成 js
+https://www.kotlincn.net/docs/reference/js-overview.html
+
+22.
+c/c++ 编译为 js 的标准官方方法 【来自大神 阮一峰 大侠的 blog】
+https://www.ruanyifeng.com/blog/2017/09/asmjs_emscripten.html
+
+https://emscripten.org/
+Emscripten 简介
+虽然 asm.js 可以手写，但是它从来就是编译器的目标语言，要通过编译产生。目前，生成 asm.js 的主要工具是 Emscripten。
+Emscripten 的底层是 LLVM 编译器，理论上任何可以生成 LLVM IR（Intermediate Representation）的语言，都可以编译生成 asm.js。 但是实际上，Emscripten 几乎只用于将 C / C++ 代码编译生成 asm.js。
+    C/C++ &#8658; LLVM ==> LLVM IR &#8658; Emscripten &#8658; asm.js
+
+"[其中阮神说用比较难安装，下载 sdk 比较好]
+RedNax 说：
+安装emscripten的更简单办法（自称）是DockerHub：
+https://hub.docker.com/r/apiaryio/emcc/
+这个直接可以编译WebAsm了。
+
+顺便推销我自己用Emscripten包的unrar作例子：
+https://github.com/YuJianrong/node-unrar.js
+"
+emscripten的Docker image的話 這個可能更好，維護得更密集：
+https://hub.docker.com/r/trzeci/emscripten/
+
+我从网上下了一个C语言的库，希望可以编译成asm.js，但现在只生成wasm，老大指教一下原因？
+
+jupiterben 说：
+
+-s WASM=1改成0
+
+killinux 说：
+
+https://bellard.org/jslinux/ 这个最新版的就是用的Emscripten 和tinyemu，脑洞爆炸了
+--------------------------------------------------------
+从作者 https://bellard.org/jslinux/tech.html
+的描述来看 asm.js(http://asmjs.org/) 和  emscripten(http://kripken.github.io/emscripten-site/) 并不是同一个东西，他用前者代替了后者或者相反。
+--------------------------------------------------------
+"
+四、用途
+asm.js 不仅能让浏览器运行 3D 游戏，还可以运行各种服务器软件，比如 Lua、Ruby 和 SQLite。 这意味着很多工具和算法，都可以使用现成的代码，不用重新写一遍。
+另外，由于 asm.js 的运行速度较快，所以一些计算密集型的操作（比如计算 Hash）可以使用 C / C++ 实现，再在 JS 中调用它们。
+真实的转码实例可以看一下 gzlib 的编译，参考它的 Makefile 怎么写。 
+"
+--------------------------------------------------------
+“
+asm.js 只提供两种数据类型。
+
+        32位带符号整数
+        64位带符号浮点数
+
+垃圾回收机制
+
+asm.js 没有垃圾回收机制，所有内存操作都由程序员自己控制。asm.js 通过 TypedArray 直接读写内存。
+
+下面就是直接读写内存的例子。
+
+
+    var buffer = new ArrayBuffer(32768);
+    var HEAP8 = new Int8Array(buffer);
+    function compiledCode(ptr) {
+      HEAP[ptr] = 12;
+      return HEAP[ptr + 4];
+    }  
+
+如果涉及到指针，也是一样处理。
+
+
+    size_t strlen(char *ptr) {
+      char *curr = ptr;
+      while (*curr != 0) {
+        curr++;
+      }
+      return (curr - ptr);
+    }
+
+上面的代码编译成 asm.js，就是下面这样。
+
+
+    function strlen(ptr) {
+      ptr = ptr|0;
+      var curr = 0;
+      curr = ptr;
+      while (MEM8[curr]|0 != 0) {
+        curr = (curr + 1)|0;
+      }
+      return (curr - ptr)|0;
+    }
+
+
+”
+这段说明很奇怪，按道理说标准 js 似乎是不能操作二进制的。是说使用 int8 的数组吗？
+而且又说浏览器能跑编译出来的 js 又有人说 safari 不支持，奇怪。
+
+23.
+https://github.com/fengari-lua/fengari
+
+这似乎是一个成熟的 js 环境下的 lua 脚本库。从页面上看它解决了二进制的问题。
+同时支持 node 和 web 。
+“
+Strings
+Lua strings are 8-bits clean and can embed \0. Which means that invalid UTF-8/16 strings are valid Lua strings. Lua functions like string.dump even use strings as a way of storing binary data.
+
+To address that issue, Fengari uses Uint8Array objects containing the raw bytes to implement lua strings. To push a JS string on the stack you can use lua_pushliteral which will convert it to an array of bytes before pushing it. To get a Lua string on the stack as a JS string you can use lua_tojsstring which will attempt to convert it to a UTF-16 JS string. The latter won't give you what you expect if the Lua string is not a valid UTF-16 sequence. You can also convert strings with luastring_of, to_luastring, to_jsstring and to_uristring.
+”
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+中文版本居然和这个版本不太一样
+https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7
+
+兼容性说明
+
+从 ECMAScript 2015 开始，Uint8Array 构造函数需要通过 new 操作符调用。即日起如果没有使用 new 调用 Uint8Array 的构造函数，将会抛出 TypeError 。
+
+var dv = Uint8Array([1, 2, 3]);
+// TypeError: calling a builtin Uint8Array constructor
+// 不使用 new 将会被禁止
+
+var dv = new Uint8Array([1, 2, 3]);
+
+----
+https://zhuanlan.zhihu.com/p/349655250
+处有比较详细的说明。
+
+24.
+https://github.com/c-smile/quickjspp
+"
+如果你想为RmlUi集成一个JavaScript引擎，那么QuickJs可能是不二之选（V8太大了），然而QuickJs在Windows下编译比较麻烦，这个时候你可能需要借助Sciter作者开源的这个库：https://github.com/c-smile/quickjspp
+"
+https://zhuanlan.zhihu.com/p/528968940
+
+25.
+今天才知道原来 “Free Pascal 团队维护着一个用于 pascal 到 Javascript 的编译器，称为 pas2js”
+https://freepascal.cn/
+https://gitlab.com/freepascal.org/fpc/
+https://wiki.freepascal.org/pas2js
+“FPC 已迁移至 Gitlab”
+
+26.
+一个据说 u3d 都在使用的 c/c++ 版本的 gc 库。
+https://blog.csdn.net/weixin_45981643/article/details/105939300
+"
+贝姆垃圾收集器（Boehm-Demers-Weiser garbage collector）也就是著名的Boehm GC，是计算机应用在C/C++语言上的一个保守的垃圾回收器（garbage collector），可应用于许多经由C/C++开发的专案，同时也适用于其它运行环境的各类编程语言，包括了GNU版Java编译器运行环境，以及Mono的Microsoft .NET移植平台。同时支持许多的作业平台，如各种Unix操作系统，微软的操作系统（Microsoft Windows），以及麦金塔上的操作系统（Mac OS X），还有更进一步的功能，例如：渐进式收集（incremental collection），平行收集（parallel collection）以及终结语意的变化（variety of finalizer semantics）
+
+垃圾收集器作用于未变性的（unmodified）C程序，只要简单的将malloc调用用GC_malloc取代，将realloc取代为GC_realloc调用，如此一来便不需要使用到free的函式。下列的代码展示出如何用Boehm取代传统的malloc以及free。.
+
+#include "gc.h"
+ #include assert.h
+ #include stdio.h
+ int main()
+ {
+     int i;
+GC_INIT();
+     for(i = 0; i < 10000000; I)
+     {
+         int **p = (int **) GC_MALLOC(sizeof (int *));
+         int *q = (int *) GC_MALLOC_ATOMIC(sizeof (int));
+         assert(*p == 0);
+         *p = (int *) GC_REALLOC(q, 2 * sizeof (int));
+              if(i % 100000 == 0)
+             printf("Heap size = %d\n", GC_get_heap_size());
+     }
+     return 0;
+ }
+"
+来自 
+https://github.com/remobjects/gc
+https://github.com/ivmai/bdwgc
+
+----------------------------------------------------------------
+https://www.cnblogs.com/lancidie/
+“
+运行时的另外一个重要的部分，就是垃圾收集器。在Unity 5中，我们使用libgc垃圾收集器。它是一个典型的贝姆垃圾收集器（Boehm-Demers-Weiser garbage collector）。（译注：相对使用保守垃圾回收策略）。然而我们的libil2cpp被设计成可以方便使用其他垃圾回收器。因此我们现在也在研究集成微软开源的垃圾回收器（Microsoft GC）。对于垃圾回收器这一点，我们会在后续的一篇中专门的讨论，这里就不多说了。
+”
+什么是IL2CPP？
+
+　　从技术层面上来说，我们说的IL2CPP包含了两部分：
+
+　　一个进行 预先编译（译注：ahead-of-time，又叫AOT，以下一律使用AOT缩写）的编译器
+
+　　一个支持虚拟机的运行时库
+
+　　AOT编译器将由.NET 输出的中间语言(IL)代码生成为C++代码。运行时库则提供诸如垃圾回收，与平台无关的线程，IO以及内部调用（C++原生代码直接访问托管代码结构）这样的服务和抽象层。
+
+　　 AOT编译器
+
+　　IL2CPP AOT编译器实际的执行文件是il2cpp.exe。在Windows平台你可以在Unity安装路径的Editor\Data\il2cpp目录下找到。对于OSX平台，它位于Unity安装路径的Contents/Frameworks/il2cpp/build目录内。 il2cpp.exe这个工具是一个托管代码可执行文件，其完全由C#写成。在开发IL2CPP的过程中，我们同时使用.NET和Mono编译器对其进行编译。
+
+　　il2cpp 接受来自Unity自带的或者由Mono编译器产生的托管程序集，将这些程序集转换成C++代码。这些转换出的C++代码最终由部署目标平台上的C++编译器进行编译。
+
+
+27.
+Vala使用类似C#的语法，编译过程是先转换成C源码，然后使用标准的C编译器，生成二进制执行文件，这样编译出的文件，执行速度飞快。同时，这样的编译过程，对系统的编译环境要求很低，只要你的系统自带了C编译环境（这对于几乎任何系统都不成问题）。
+https://valadoc.org/
+
+    在Windows下安装Vala
+
+    下载Vala IDE。最新版本为Valide 0.7.1。在安装Vala IDE的过程中，可以选择自动下载并安装Vala以及MinGW（minimalist GNU environment for Windows，MinGW提供了GNU C Compiler），也可以手动下载安装vala。
+    下载libgee。libgee提供了非常丰富的容器类和接口，比如ArrayList, HashSet, HashMap等等。下载后直接把包中的include、lib、bin、share目录解压到vala安装目录下，覆盖原有的include、lib、bin、share目录。
+    下载MinGW API for MS-Windows。下载后直接把包中的include、lib目录解压到vala安装目录下，覆盖原有的include,lib目录。如果不安装这个MinGW API，在编译使用到GTK的程序时，会报不能加载libcomdlg32的错误。
+
+
+https://code.google.com/archive/p/vala-win32/downloads
+https://github.com/GNOME/vala
+NOTE: in order to get code intelligence, you must install the Vala Language Server (https://github.com/benwaffle/vala-language-server).
+
+--------------------------------------------------------
+https://blog.csdn.net/weixin_34187862/article/details/89444038
+"
+容器
+Vala 实现了一些常用的泛型容器，例如单向列表、双向列表、并发式列表、队列、哈希表、红黑树等。这些容器是以库的形式实现的，这个库叫 Gee，其 API 文档见 http://valadoc.org/#!wiki=gee-0.8/index
+"
+
+28.
+Wasmer支持基于WebAssembly的超轻量级容器，该容器可以在任何地方运行：从台式机到云和IoT设备，还可以以任何编程语言嵌入。
+https://github.com/wasmerio/wasmer
+https://github.com/wasmerio
+https://docs.wasmer.io/
+https://wasmer.io/
+
+https://www.jianshu.com/p/0935f004c01f
+"
+上一篇文章分享了基于wasm的openssl实践，讲述了openssl的MD5算法如何在浏览器中执行。在探索过程中发现了openssl是可以通过wasm编译后直接run，并且有自己的runtime，这是因为openssl.wasm是通过wasmer编译运行的，这一篇文章分享制作具有运行时的openssl.wasm
+"
+
+Docker的创始人Solomon Hykes曾说过，如果WebAssembly和WASI出现在2008年，那我们可能并不需要创建Docker了
+
+"
+typescript编译到wasm的项目AssemblyScript也非常火. 
+"
+
+29.
+WAPM
+WAPM是WebAssembly Package Manager的缩写，为可以独立使用的Wasmer Runtime做的软件包管理器。可以理解为通过Wasmer软件包编译出来的.wasm文件是可以独立运行的，WAPM就是为了管理这些能独立运行的runtime而存在的。
+
+https://www.jianshu.com/p/0935f004c01f
+
+https://wapm.io/
+
+30.
+https://zhuanlan.zhihu.com/p/432454443
+Skia 是 Flutter、Chromium 以及 Android 项目中都使用了的 2d 图形库。为了能够让 Flutter 在浏览器中运行，Google 的工程师将 skia 编译成了能够在浏览器中运行的 WebAssembly 版本。
+在看到 flutter 能够在 web 中运行的那一刻，我第一个想到的是，能不能直接在浏览器中直接进行设计并生成代码呢？
+Figma 是一个能够在浏览器中运行的类似 Sketch 的扁平化 UI 设计工具，它使用了 C++ 和 WebGL，这一套技术栈看着就比较复杂，要做类似的产品似乎很困难。
+但有了 canvaskit，在浏览器中要实现类似功能，就很有希望。因为我们可以确认的是，chrome、flutter 有的渲染能力，我们通过使用 canvaskit 都能够实现。
+
+于是，第一步我想尝试开始做一个在浏览器中渲染 sketch 设计稿文件的项目。
+Demo 地址：https://skeditor.github.io/
+仓库地址：https://github.com/skeditor/skeditor
+
+31.
+通过研究 https://wapm.io/ 可以知道这些 webasm 编译后的各个程序是可以直接在 windows 下运行的。基本上就是另外一个虚拟机。
+
+下载地址为
+https://github.com/wasmerio/wasmer/releases/
+
+来源为 https://wapm.io/ 中的 "get start" 按钮点击后的对话框页面：
+“
+Install the Wasmer Standalone runtime
+If you haven't done so already, install the Wasmer Command Line Interface (CLI) for Windows or macOS/Linux:
+iwr https://win.wasmer.io -useb | iex
+”
+这个地址中就是一个脚本，脚本中写明了下载的地址。
+
+32.
+搜索 “java WebAssembly”
+
+33.
+lazarus/freepascal 似乎支持 WebAssembly 编译
+https://wiki.lazarus.freepascal.org/WebAssembly/Compiler
+
+make clean all OS_TARGET=embedded CPU_TARGET=wasm32 BINUTILSPREFIX= OPT="-O-" PP=fpc
+
+
+34.
+一些 svg 转换成 png 的库
+----
+Node.js 和Sharp npm 
+http://www.ioohu.com/News/1/84585.html
+https://sharp.pixelplumbing.com/
+
+----
+phantomjs:一个基于WebKit的服务器端JavaScript API，它基于 BSD开源协议发布。PhantomJS无需浏览器的支持即可实现对Web的支持，且原生支持各种Web标准，如DOM 处理、JavaScript、CSS选择器、JSON、Canvas和可缩放矢量图形SVG，由于在linux下的二进制库还在准备中，所以需要单独下载源码编译。
+https://blog.csdn.net/cangkukuaimanle/article/details/46778041/
+
+----
+java 版本的
+https://xmlgraphics.apache.org/batik/tools/rasterizer.html
+https://blog.csdn.net/zp357252539/article/details/125000449
+
+----
+有一个 golang 版本的，不过它似乎是用浏览器的。
+https://github.com/ajstarks/svgo/issues/23
+
+----
+这里有个搞来搞去还是调用了 cairo 的 golang 库 ... 虽然搞笑，不过也可以当做一个示例。
+https://github.com/rogpeppe/misc/blob/master/svg/render.go
+from https://github.com/jilieryuyi/wing-svg/blob/master/3/main.go
+这其中用到的 librsvg-2.35 还是 c 语言代码，而 librsvg-2.55 却是 rust 代码了。
+https://download.gnome.org/sources/librsvg/?C=M&O=A
+
+----
+svg 官方教程
+https://developer.mozilla.org/zh-CN/docs/Web/SVG/Tutorial
+https://developer.mozilla.org/zh-CN/docs/Web/SVG/Tutorial/Basic_Shapes
+https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+https://developer.mozilla.org/zh-CN/docs/Web/SVG/Tutorial/Paths
+
+35.
+https://github.com/Automattic/node-canvas
+这是一个 9k 星的项目!!!
+应该是可以服务器上来使用 js 的 Canvas 
+
+About
+Node canvas is a Cairo backed Canvas implementation for NodeJS.
+
+
+36.
+evanw/esbuild
+golang 写的一个非常多星的“另外一个 js 打包器”。它一样能将 ts 转换为 js
+
+https://esbuild.github.io/api/#build-api
+https://github.com/evanw/esbuild
+https://cloud.tencent.com/developer/news/591916
+
+package main
+
+import "io/ioutil"
+import "github.com/evanw/esbuild/pkg/api"
+import "os"
+
+func main() {
+  ioutil.WriteFile("in.ts", []byte("let x: number = 1"), 0644)
+
+  result := api.Build(api.BuildOptions{
+    EntryPoints: []string{"in.ts"},
+    Outfile:     "out.js",
+    Write:       true,
+  })
+
+  if len(result.Errors) > 0 {
+    os.Exit(1)
+  }
+}
+------------------------------
+echo 'let x: number = 1' > in.ts
+esbuild in.ts --outfile=out.js
+cat out.js
+let x = 1;
+
+
+37.
+java 转换为 ts/js 的库。从页面上看相当可用
+A transpiler from Java to TypeScript/JavaScript
+
+https://github.com/cincheo/jsweet
+https://www.jsweet.org/
+
+37.2
+Java Parser
+一个可将 java 生成 ast 然后再格式化的库。
+
+https://www.sohu.com/a/212579385_100063030
+(下面的是一篇非常好的文章)
+https://cloud.tencent.com/developer/news/740798
+http://newbt.net/ms/vdisk/show_bbs.php?id=21FA0D2AD618822DE820D780C5862CB3&pid=160
+
+38.
+https://zhuanlan.zhihu.com/p/63530994
+https://github.com/searchfe/ts2php
+ts2php, 将你的 TypeScript 代码转换为 PHP
+
+
+
