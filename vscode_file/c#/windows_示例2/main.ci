@@ -1,0 +1,15 @@
+
+
+//https://github.com/pfusik/cito
+//https://github.com/pfusik/cito/blob/master/doc/getting-started.md
+
+public static class HelloCi
+{
+    /// Returns a greeting message.
+    public static string GetMessage()
+    {
+        return "Hello, world!";
+    }
+
+}//
+

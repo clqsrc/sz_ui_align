@@ -1,0 +1,24 @@
+{
+    "csharp.format.enable": false,
+    // "omnisharp.useModernNet": false,  //如果是安装了 dotnet-sdk-7.0.101-win-x64.exe 的话，用这个是无效的
+    "omnisharp.useModernNet": true,  //ok
+    // "omnisharp.sdkPath": "/home/username/dotnet/sdks/6.0.300.",
+    // "omnisharp.sdkVersion": "6.0.300.",
+    //"omnisharp.sdkPath": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319",
+    //"omnisharp.sdkVersion": "6.0.300.",
+
+    //--------------------------------------------------------
+    //奇怪，在目前的 windows 版本的 vscode 下，设置这两个反而是错误的。只有系统中安装了 dotnet-sdk-7.0.101-win-x64.exe
+    //这样的程序后它去找默认的目录才是正确的。微软文档说的把 "C:\\Program Files\\dotnet" 这样的 where.exe dotnet 结果写入到系统目录中去也是没有必要的
+    //https://github.com/OmniSharp/omnisharp-vscode/wiki/Troubleshooting:-'The-.NET-Core-SDK-cannot-be-located.'-errors
+    //安装成功的文件来自 https://download.visualstudio.microsoft.com/download/pr/35660869-0942-4c5d-8692-6e0d4040137a/4921a36b578d8358dac4c27598519832/dotnet-sdk-7.0.101-win-x64.exe
+    //安装完毕后一定要重启电脑才能成功，重启 vscode 是无效的
+    
+    //"omnisharp.sdkPath": "C:/Program Files/dotnet/sdk/7.0.101/",
+    //"omnisharp.sdkVersion": "7.0.101",
+
+    //
+    "omnisharp.dotnetPath": "C:\\Program Files\\dotnet",
+    //"csharp.omde": false
+
+}
