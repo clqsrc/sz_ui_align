@@ -2,6 +2,8 @@
 
 -- //lua 语言自身源码写成的通用支持函数
 
+c2l_self_require("ui_lib/lua_functions_event_new.lua");
+
 
 -- //------------------------------------------------
 -- //try 的实现。参考 https://www.cnblogs.com/tboox/p/12014656.html
@@ -32,6 +34,78 @@ function UiEvent:new()
 
     return obj
 end
+
+---------------------------------------------------
+-- //简化参数的设置 //2022.12 方便 Set_UI_OnEvent_Func 或者其他类似函数调用
+function MakeEventObj(func, param)
+
+    local eobj = UiEvent:new(); 
+
+    eobj.obj = param;
+    eobj.func = func;
+
+    return eobj;
+
+end;
+
+-- //ts 是不支持返回返回值的（严格来说是无法正确转换成 lua 的）
+function GetEventObj_func(eobj)
+
+    --//return eobj.obj;  //这个是简单写法，其实可以判断
+
+    local func = eobj;
+
+    local theType = type(func);
+
+    local obj = eobj;
+
+    --ShowMessage(tostring(eobj));
+    --ShowMessage(theType);
+    
+    if theType == "table" then
+        -- 是Lua表. 也就是对象
+        --obj.onSize(obj, obj);
+        if "UiEvent" == obj.class_name then
+            local event = UiEvent:new();
+            event = obj;
+
+            return event.func;
+
+        end;
+
+    end;
+        
+    return func;
+
+end;
+
+function GetEventObj_param(eobj)
+
+    --//return eobj.obj; //这个是简单写法，其实可以判断
+
+    local func = eobj;
+
+    local theType = type(func)
+
+    local obj = eobj;
+    
+    if theType == "table" then
+        -- 是Lua表. 也就是对象
+        --obj.onSize(obj, obj);
+        if "UiEvent" == obj.class_name then
+            local event = UiEvent:new();
+            event = obj;
+
+            --//return event.func;
+            return event.obj;
+
+        end;
+
+    end;
+        
+    return nil;
+
+end;
 
 -- ------------------------------------------------
 
@@ -164,19 +238,22 @@ end;
 --//这是给 C 语言接口调用的函数
 --//通用的响应函数，比如 http
 --//s_key 是 lua 调用时传入的，event_key 和 event_value 是对应的 c 语言事件中传递过来的
+--//官方文档 http://newbt.net/ms/vdisk/show_bbs.php?id=DA71D3887B11AAA56B6C4FCCC8795DDB&pid=161
 function UI_OnEvent(s_key, event_key, event_value)
 
     local func = GetFunc(s_key);  --//用来取出对象是可以的，用来取函数还是不行
 
     local obj = func;
 
-    --ShowMessage("UI_OnClick:" .. type(obj));  --//没有用，这个是 "table"
+    --ShowMessage("UI_OnEvent:" .. type(obj));  --//没有用，这个是 "table"
 
     local theType = type(func)
     if theType == "number" then
         -- 是数字
+        ShowMessage("UI_OnEvent()" .. "是数字不是函数。");
     elseif theType == "string" then
         -- 是字符串
+        ShowMessage("UI_OnEvent()" .. "是数字不是函数。");
     elseif theType == "table" then
         -- 是Lua表. 也就是对象
         --obj.onSize(obj, obj);
@@ -188,7 +265,70 @@ function UI_OnEvent(s_key, event_key, event_value)
     elseif theType == "function" then
         -- 是Lua函数
         func(event_key, event_value);
-    end
+    else
+
+        --//特殊的处理
+        if "AppOnSize" == event_key then
+            AppOnSize();  --//全局的大小变化事件
+            return;
+        end; --//if 2
+
+        --------------------------------------------------------
+        --//简化的鼠标按下事件 //这时的 s_key 并没有从 lua 中通过事件设置转递过去，而是在 qt 中直接将
+        --//QWidget * view 的指针转换为 string.对于无法直接使用指针的情况双方定一个指针转换成数字的统一方法就可以了(比如 java 中)
+        if "mouse_down" == event_key then
+            --ShowMessage("UI_OnEvent()" .. "鼠标按下事件"..event_value);
+
+            --//这时的 s_key 直接是 c 语言里的 view 对象指针，对于 java 有可能是代替指针的虚拟指针的整数值。不管是哪个都可以当做 view
+            --//直接用相关函数操作。因为 creatview 和 getview 时也要返回这个值
+            --//View_Hide(s_key);  --//可以隐藏它看看是不是这么回事 //ok 确实成功了，即使没有在 lua 中先设置事件
+
+            return;
+        end; --//if 2
+
+        if "mouse_down_left" == event_key then
+            ShowMessage("UI_OnEvent() mouse_down_left" .. "鼠标左键按下事件"..event_value);
+
+            local view = s_key;
+
+            --//local func2 = Get_UI_OnEvent_Func(view, "mouse_down_left");
+            --//func2();
+
+            local eobj = Get_UI_OnEvent_Func(view, "mouse_down_left");
+
+            local func2 = GetEventObj_func(eobj);
+            local obj2 = GetEventObj_param(eobj);
+
+            func2(nil, obj2);  --//将取出的参数放到第 2 个参数的位置，因为 ts 转换的 lua 函数第一个参数可能是默认带有的 self,为了最大兼容性最好忽略掉第一个参数
+
+            return;
+        end; --//if 2
+
+        if "mouse_down_right" == event_key then
+
+            ShowMessage("UI_OnEvent() mouse_down_right" .. "鼠标右键按下事件"..event_value);
+
+            local view = s_key;
+
+            --//local func2 = Get_UI_OnEvent_Func(view, "mouse_down_right");
+            --//func2();
+
+            local eobj = Get_UI_OnEvent_Func(view, "mouse_down_right");
+
+            local func2 = GetEventObj_func(eobj);
+            local obj2 = GetEventObj_param(eobj);
+
+            func2(nil, obj2);  --//将取出的参数放到第 2 个参数的位置，因为 ts 转换的 lua 函数第一个参数可能是默认带有的 self,为了最大兼容性最好忽略掉第一个参数
+
+            return;
+        end; --//if 2
+
+        
+
+        --------------------------------------------------------
+
+        ShowMessage("UI_OnEvent()" .. "什么都不是，不是函数。func:" .. tostring(func) .. " s_key:" .. tostring(s_key) .. " event_key:" .. tostring(event_key));
+    end;
 
 
 end;
