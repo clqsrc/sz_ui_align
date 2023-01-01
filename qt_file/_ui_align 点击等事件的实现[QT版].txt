@@ -1,9 +1,11 @@
-
-
 ui_align 点击等事件的实现[QT版]
 
-http://newbt.net/ms/vdisk/show_bbs.php?id=7636D666A696E40B18FF01A027646163&pid=164
+----------------------------------------------------------------
 http://newbt.net/ms/vdisk/show_bbs.php?id=DA71D3887B11AAA56B6C4FCCC8795DDB&pid=161
+https://github.com/clqsrc/sz_ui_align/tree/main/qt_file
+_ui_align 点击等事件的实现[QT版].txt
+本文官方地址： http://newbt.net/ms/vdisk/show_bbs.php?id=7636D666A696E40B18FF01A027646163&pid=164
+----------------------------------------------------------------
 
 原有的实现太过复杂，打算简化，用一个接口函数通道实现全部事件。
 
@@ -14,7 +16,7 @@ http://newbt.net/ms/vdisk/show_bbs.php?id=DA71D3887B11AAA56B6C4FCCC8795DDB&pid=1
 2.
 事件触发时首先根据自己的指针取得对应的事件函数指针（所以触发前要设置事件才会向下走）。
 //通过句柄取得一个 windows 结构体
-window_info * win = handle_to_window((QWidget *)view);
+    window_info * win = handle_to_window((QWidget *)view);
 
 3.
 qt 的事件只要重载相应的函数就可以，比较简单。
@@ -25,7 +27,7 @@ qt 的事件只要重载相应的函数就可以，比较简单。
 具体实现可以参考原来的 win->func_onclick 。
 
 5.
-事件触发后通常操作某个对象，比如一个列表中的 item ，这是通过 win->func_onclick_param 来传递的，这个参数是在
+事件触发后通常操作某个对象，比如一个列表中的 item ，这是通过 win->func_onclick_param 来传递的，这个参数是在 
 void View_SetOnClick(chandle view, c_func_on_event func_c, chandle param)
 
 这样的调用中进行关联的。//是否可以简化？
@@ -44,29 +46,29 @@ window_info * win = create_window_for_handle(view);
 lua 版本的事件就是传递给一个全局函数的
 static int c2l_UI_SetOnClick(lua_State * lua)
 {
-//ShowMessage_c("c2l_UI_SetOnClick", 0);
-//lua 默认不支持 int64 ，所以我们全部当做字符串好了
-//const char * _view = luaL_checkstring(l, 1);//获取参数，字符串类型
-//chandle view = (chandle)Functions_lua_StrToInt64(_view);
+    //ShowMessage_c("c2l_UI_SetOnClick", 0);
+    //lua 默认不支持 int64 ，所以我们全部当做字符串好了
+    //const char * _view = luaL_checkstring(l, 1);//获取参数，字符串类型
+    //chandle view = (chandle)Functions_lua_StrToInt64(_view);
+    
+    //const char * func = luaL_checkstring(l, 2);//获取参数，字符串类型
+    //cint64 i_func = Functions_lua_StrToInt64(func);
+    chandle view = _lua_param_chandle_(lua, 1);
+    chandle func = _lua_param_chandle_(lua, 2);
 
-//const char * func = luaL_checkstring(l, 2);//获取参数，字符串类型
-//cint64 i_func = Functions_lua_StrToInt64(func);
-chandle view = _lua_param_chandle_(lua, 1);
-chandle func = _lua_param_chandle_(lua, 2);
+    //----
+    
+    //hashmap_put(lua_OnSize_Param2lua_State, i_func, (cint64)l); //保存运行环境
+    //View_SetOnClick(view, Functions_lua_ui_json_onClick, (chandle)i_func);
 
-//----
+    hashmap_put(lua_OnSize_Param2lua_State, (cint64)func, (cint64)lua); //保存运行环境
+    View_SetOnClick(view, Functions_lua_ui_json_onClick, func);
 
-//hashmap_put(lua_OnSize_Param2lua_State, i_func, (cint64)l); //保存运行环境
-//View_SetOnClick(view, Functions_lua_ui_json_onClick, (chandle)i_func);
-
-hashmap_put(lua_OnSize_Param2lua_State, (cint64)func, (cint64)lua); //保存运行环境
-View_SetOnClick(view, Functions_lua_ui_json_onClick, func);
-
-return 1;
+    return 1;
 }//
 
 9.
-目前的一个实现是直接调用
+目前的一个实现是直接调用 
 Functions_lua_onEvent 函数。
 
 10.
@@ -77,20 +79,62 @@ lua 事件代码的核心是新的 UI_OnEvent 全局处理函数，目前 http �
 这是因为在 qt 中直接调用了 lua 的 UI_OnEvent 函数。转递的参数只是这个控件的指针，其他都不用传，而这个指针可以直接在 lua 中使用。例如：
 
 --------------------------------------------------------
---//简化的鼠标按下事件
-if "mouse_down" == event_key then
-ShowMessage("UI_OnEvent()" .. "鼠标按下事件");
+        --//简化的鼠标按下事件
+        if "mouse_down" == event_key then
+            ShowMessage("UI_OnEvent()" .. "鼠标按下事件");
 
---//这时的 s_key 直接是 c 语言里的 view 对象指针，对于 java 有可能是代替指针的虚拟指针的整数值。不管是哪个都可以当做 view
---//直接用相关函数操作。因为 creatview 和 getview 时也要返回这个值
-View_Hide(s_key); --//可以隐藏它看看是不是这么回事 //ok 确实成功了，即使没有在 lua 中先设置事件
+            --//这时的 s_key 直接是 c 语言里的 view 对象指针，对于 java 有可能是代替指针的虚拟指针的整数值。不管是哪个都可以当做 view
+            --//直接用相关函数操作。因为 creatview 和 getview 时也要返回这个值
+            View_Hide(s_key);  --//可以隐藏它看看是不是这么回事 //ok 确实成功了，即使没有在 lua 中先设置事件
 
---return;
-end; --//if 2
+            --return;
+        end; --//if 2
 
 这样就大大简化了 qt 端的实现。qt 端只需要在事件发生时把控件的指针传递过去就可以了，不用先在 lua 中做什么动作。不过，象 mouse_move 这样的太多了，可能会影响性能，所以可以考虑先
 调用一个新函数 SetOnEvent 专门针对太频繁的事件，普通事件还是不需要。然后调用时设置 win->func_onclick_param 为一个特殊值就可以了，算了这样会混淆，给一个新字段
 do_on_event_all 。当它为 1 是才传递那些会频繁触发的事件。
+
+12.
+为了传递函数参数的方便，还是使用了第1个版本的事件对象类，可以用 MakeEventObj 来生成。
+例如 
+    //Set_UI_OnEvent_Func(panel, "mouse_down_left", MakeEventObj(LClick_Desktop_disk, panel)); //ok
+    Set_UI_OnEvent_Func(panel, "mouse_down_left", MakeEventObj(LClick_Desktop_disk, {path:path,view:panel})); //ok
+    
+
+//从 ts 生成 lua 时会自带一个 self ，所以直接忽略掉第一个参数为好
+function RClick_Desktop_disk(p1, p2)
+{
+    ShowMessage("RClick_Desktop_file()");
+}//
+
+function LClick_Desktop_disk(p1, p2)
+{
+    ShowMessage("RClick_Desktop_file() 点击了盘符" + p2); //ok
+    ShowMessage("RClick_Desktop_file() 点击了盘符" + p2.path);  //ok 约定好了的话可以用动态的字段名
+}//
+
+这并不会增加 lua 端的处理难度，c 语言端更是根本不用改。处理过程如下
+
+        if "mouse_down_left" == event_key then
+            ShowMessage("UI_OnEvent() mouse_down_left" .. "鼠标左键按下事件"..event_value);
+
+            local view = s_key;
+
+            --//local func2 = Get_UI_OnEvent_Func(view, "mouse_down_left");
+            --//func2();
+
+            local eobj = Get_UI_OnEvent_Func(view, "mouse_down_left");
+
+            local func2 = GetEventObj_func(eobj);
+            local obj2 = GetEventObj_param(eobj);
+
+            func2(nil, obj2);  --//将取出的参数放到第 2 个参数的位置，因为 ts 转换的 lua 函数第一个参数可能是默认带有的 self,为了最大兼容性最好忽略掉第一个参数
+
+            return;
+        end; --//if 2
+
+原理也比较简单，根据 view, "mouse_down_left" 这两个作为关键字，去找 Set_UI_OnEvent_Func 存入的对象就可以了。此类在 lua 中为 UiEvent ，其实这有点过于面向对象话了，象示例中的 Set_UI_OnEvent_Func  那样
+传入一个动态的 {} 动态对象其实也是可以的。不过当时设计如此，也不用改了。重写的话直接用动态对象就可以这个所谓动态对象在 c++ 这样的严格语言中实现也不难，因为本质上就是个 hashmap 。
 
 ================================================================
 ----------------------------------------------------------------
@@ -151,4 +195,5 @@ Set_UI_OnEvent_Func(file1, "mouse_down_right", RClick_Desktop_file);
 这里要注意的是 ts 转换成 lua 函数时会在成员函数中带一个 self 参数，所以我们为了最大兼容性通通忽略掉事件响应函数中的第一个参数。
 同时因为 c 语言/qt 里在事件触发时，除了知道是什么事件外，还会有自己的参数，所以在 lua 的事件函数中还得有一个参数来接收它。所以 lua 的事件函数最好是有三个参数：
 第一个交给 ts 不使用，第二个是自己传入的参数，第三个是 c语言/qt 传入的参数。
+
 
