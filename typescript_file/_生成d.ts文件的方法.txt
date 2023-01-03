@@ -1,0 +1,12 @@
+
+
+我们可以使用tsc --declaration --emitDeclarationOnly --outFile index.d.ts生成声明文件。
+
+--------------------------------------------------------
+//不修改的话应该用 d.ts 文件
+// tsc ui_json.ts --declaration --emitDeclarationOnly --outFile index.d.ts
+//或者这样生成多个文件的形式
+//tsc ui_json.ts --declaration --emitDeclarationOnly
+//tsc ui_json_view.ts --declaration --emitDeclarationOnly
+//tsc ui_design_prop_class.ts --declaration --emitDeclarationOnly
+
