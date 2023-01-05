@@ -20,6 +20,8 @@
         },
         //--------------------------------------------------------
         //这个能运行，不能调试 //更新: 不能调试 zig 但是能调试加了 "-g" 编译标志的 c 代码 //注意是 CodeLLDB 插件，不是 Native Debug
+        //CodeLLDB 可能由于网络问题安装不成功，可手动下载(我在vscode中安装了2次都没有成功)
+        //打开Github：https://github.com/vadimcn/vscode-lldb/releases，打开之后根据你的电脑芯片下载对应的版本 //参考 https://www.modb.pro/db/534715
         {
             "type": "lldb",
             "request": "launch",
