@@ -7,4 +7,7 @@ pacman -S mingw-w64-x86_64-gtk3
 安装后的物理目录大概为
 D:\new\msys64\mingw64\include\gtk-3.0\gtk
 
+export PATH="/d/no_install/zig-x86_64-0.10:$PATH"
+后就可以在 msys2 中使用 zig 了.
+
 
