@@ -1,0 +1,53 @@
+
+
+https://blog.csdn.net/weixin_43476776/article/details/127453208
+
+Git如何使用代理
+
+
+一、两种方式
+
+    --golbal:对所有仓库设置代理（设置全局代理）。
+    不加--golbal：对指定仓库目录设置代理（设置局部代理）。
+
+二、实现方式
+2.1.设置全局代理
+
+    注意http://127.0.0.1:7890为VPN的Static host:Port。
+    有http://和https://两种代理模式（根据所访问的网站是httporhttps确定选用哪中方式）。
+
+# git config --global http.proxy http://proxyUsername:proxyPassword@proxy.server.com:port
+# git config --global https.proxy http://proxyUsername:proxyPassword@proxy.server.com:port
+# git config --global 协议.proxy 协议://ip地址:端口号
+git config --global http.proxy http://127.0.0.1:7890
+git config --global https.proxy http://127.0.0.1:7890
+
+# 取消代理
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+
+
+2.2.设置仅针对某个网站的代理：比如Github
+
+    在http.和proxy之间插入需要代理的网站网址
+
+#只对github.com
+git config --global http.https://github.com.proxy http://127.0.0.1:7890
+git config --global http.https://github.com.proxy socks5://127.0.0.1:7891
+
+#取消代理
+git config --global --unset http.https://github.com.proxy
+
+
+2.3.设置指定存储库上使用代理
+
+# $ git clone https://仓库地址 --config "https.proxy=proxyHost:proxyPort"
+git clone https://github.com/skywind3000/asyncrun.vim.git --config https.proxy=https://127.0.0.1:7890
+
+
+2.4.查看是否成功代理
+
+git config --global --get http.proxy
+git config --global --get https.proxy
+
+
