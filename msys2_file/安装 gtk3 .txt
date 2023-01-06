@@ -4,3 +4,7 @@ pacman -S mingw-w64-x86_64-gtk3
 
 这能让 zig 的 exe.linkSystemLibrary("gtk+-3.0"); 编译通过。
 
+安装后的物理目录大概为
+D:\new\msys64\mingw64\include\gtk-3.0\gtk
+
+
