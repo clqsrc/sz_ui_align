@@ -1,0 +1,10 @@
+
+
+pub fn main()是zig的入口函数，相当与c语言的main函数，用pub声明公共性质的函数。fn是函数声明的关键字。 anyerror!void是main函数的返回类型定义，后面在相关文章里再做详细介绍。
+
+http://log.info（）打印字符串到终端。
+
+在windows下输出中文可能会出现乱码，这时在cmd终端中键入如下命令：
+
+CHCP 65001
+
