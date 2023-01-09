@@ -1,0 +1,108 @@
+
+
+
+rem //参考 https://tieba.baidu.com/p/5774380678
+
+
+rem gcc hello.c -o hello `i686-w64-mingw32-pkg-config --cflags --libs gtk+-3.0 `
+
+
+cd /D/test1/zig1/zig_t2_gtk/src
+
+gcc main.c -o hello `i686-w64-mingw32-pkg-config --cflags --libs gtk+-3.0 `
+
+
+gcc main.c -o hello `mingw-w64-x86_64-pkg-config --cflags --libs gtk+-3.0 `
+
+
+--------------------------------------------------------
+不过，我的成功版本是
+gcc main.c -o hello `pkg-config --cflags --libs gtk+-3.0`
+
+然后在 msys2 环境下执行
+./hello
+
+就可以看到 gtk 窗口了。
+
+--------------------------------------------------------
+export PATH="/d/no_install/zig-x86_64-0.10:$PATH"
+后就可以在 msys2 中使用 zig 了.
+
+export PATH="/d/no_install/zig-x86_64-0.11:$PATH"
+
+--------------------------------------------------------
+pacman -S mingw-w64-x86_64-gtk3
+pacman -R mingw-w64-x86_64-gtk3
+
+和下面这个包有什么区别？
+pacman -S mingw-w64-i686-gtk3
+pacman -R mingw-w64-i686-gtk3
+
+据说 i686 表示是 32 位的，安装上后在  MINGW64 环境下是找不到
+安装配置的
+
+pkg-config --list-all | grep gtk
+
+查找安装包的命令
+pacman -Ss gtk3
+
+golang 环境是有的
+pacman -Ss mingw-w64-x86_64-go
+
+
+但默认并没有
+pacman -S mingw-w64-x86_64-zig
+
+https://github.com/ziglang/zig/wiki/Install-Zig-from-a-Package-Manager
+
+========================================================
+//以下是编译安装 msys2 自身版本的 zig ，因为 windows 原生的 zig 编译还是过不去的。[参考，最后没成功]
+--------------------------------------------------------
+从源码安装
+
+要先安装编译环境
+https://github.com/ziglang/zig/wiki/Building-Zig-From-Source
+
+    cmake >= 2.8.12
+    gcc >= 7.0.0 or clang >= 6.0.0
+    LLVM, Clang, LLD development libraries == 15.x, compiled with the same gcc or clang version above
+        Use the system package manager, or build from source.
+
+
+CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles"
+
+原因：未安装make
+
+pacman -S make
+
+不要这个
+pacman -S mingw-w64-i686-clang
+也不能是这个
+pacman -S clang
+如果是这个的话输入 clang 回车后没有任何反映。而且在 cmake .. 时会报有两个 clang 而且版本都不对。
+估计是编译相关的都要带上 "mingw-w64-x86_64-" 前缀，如果是配置工具就不用。
+
+安装完这两个后可以 cmake 正常
+pacman -S mingw-w64-x86_64-clang
+pacman -S mingw-w64-x86_64-lld
+
+以下步骤不知是否必须，能不用尽量不用
+D:\new\msys64\mingw64\bin
+/d/new/msys64/mingw64/bin
+export PATH="/d/new/msys64/mingw64/bin:$PATH"
+
+应该是只安装 make clang lld 就可以了。llvm 应该是装 clang 带上的，不过反安装时要手工清理为好。
+最后就可以
+cmake ..
+make
+
+成功了。
+
+--------------------------------------------------------
+where gcc
+where clang
+
+
+
+
+
