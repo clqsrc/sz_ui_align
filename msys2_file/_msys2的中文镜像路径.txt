@@ -1,3 +1,7 @@
 
 _msys2的中文镜像路径
 
+
+https://mirror.tuna.tsinghua.edu.cn/help/msys2/
+https://mirrors.tuna.tsinghua.edu.cn/msys2/msys/x86_64/
+
