@@ -5,3 +5,8 @@
 
 似乎 msys2 下的 gtk 和 gimp 这样的 windows 版本样式还是不一样的，有可能还要加上样式的文件，以及最小化的用户目录等。
 
+https://github.com/hugmedev/howto-zig-msys2
+
+https://github.com/Swoogan/ziggtk
+
+
