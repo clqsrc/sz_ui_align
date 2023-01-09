@@ -1,0 +1,126 @@
+
+msys2安装与使用_mingw使用教程
+发布于2022-09-20 20:55:54阅读 2550
+
+大家好，又见面了，我是你们的朋友全栈君。
+
+一、安装
+
+官方下载地址
+
+http://www.msys2.org/
+
+指定好安装路径（一般D根目录即可），一路下一步就好。
+
+二、配置国内镜像、设置窗体修改颜色
+
+使用[清华大学开源软件镜像站]中的地址，修改\etc\pacman.d目录下的三个文件。
+
+配置教程 https://mirrors.tuna.tsinghua.edu.cn/help/msys2/
+
+1、mirrorlist.msys 文件
+
+##
+## MSYS2 repository mirrorlist
+##
+
+## Primary
+## msys2.org
+## Server = http://repo.msys2.org/msys/$arch
+## Server = http://downloads.sourceforge.net/project/msys2/REPOS/MSYS2/$arch
+## Server = http://www2.futureware.at/~nickoe/msys2-mirror/msys/$arch/
+
+Server = https://mirrors.tuna.tsinghua.edu.cn/msys2/msys/$arch
+
+2、mirrorlist.mingw32 文件
+
+##
+## 32-bit Mingw-w64 repository mirrorlist
+##
+
+## Primary
+## msys2.org
+## Server = http://repo.msys2.org/mingw/i686
+## Server = http://downloads.sourceforge.net/project/msys2/REPOS/MINGW/i686
+## Server = http://www2.futureware.at/~nickoe/msys2-mirror/i686/
+
+Server = https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/i686
+
+3、mirrorlist.mingw64 文件
+
+##
+## 64-bit Mingw-w64 repository mirrorlist
+##
+
+## Primary
+## msys2.org
+## Server = http://repo.msys2.org/mingw/x86_64
+## Server = http://downloads.sourceforge.net/project/msys2/REPOS/MINGW/x86_64
+## Server = http://www2.futureware.at/~nickoe/msys2-mirror/x86_64/
+
+Server = https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/x86_64
+
+设置窗体修改颜色
+
+目录下D:\msys64\etc 文件 pacman.conf
+
+将其中的 #Color 注释去掉。
+
+更新Msys2系统环境
+
+pacman -Sy
+#更新源
+pacman -Syu
+pacman -Su
+
+安装MinGW-w64 和 MinGW-x86版本
+
+pacman -S  mingw-w64-i686-toolchain
+pacman -S  mingw-w64-x86_64-toolchain
+
+三、安装常用工具
+
+pacman -S  base-devel git wget perl ruby python2
+
+安装GTK
+
+pacman -S  mingw-w64-i686-gtk3
+pacman -S  mingw-w64-x86_64-gtk3
+
+安装Glade
+
+pacman -S  mingw-w64-i686-glade
+pacman -S  mingw-w64-x86_64-glade
+
+四、设置系统环境变量
+
+在Path值中加入参数
+
+32位
+
+D:\msys64\mingw32\bin
+
+64位
+
+D:\msys64\mingw64\bin
+
+ 五、设置mingw的环境变量
+
+变量MINGW_HOME
+
+D:\msys64\mingw32
+
+变量C_INCLUDE_PATH
+
+%MINGW_HOME%\include
+
+变量LIBRARY_PATH
+
+%MINGW_HOME%\lib
+
+变量Path中添加如下值
+
+%MINGW_HOME%\bin;
+
+发布者：全栈程序员栈长，转载请注明出处：https://javaforall.cn/166408.html原文链接：https://javaforall.cn
+
