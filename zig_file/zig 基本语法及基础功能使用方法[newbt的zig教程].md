@@ -1,6 +1,8 @@
 zig 基本语法及基础功能使用方法[newbt的zig教程]
 
-这其实是一个 md 文档，在 github 中同步更新。
+这其实是一个 md 文档，在 github 中同步更新。地址为
+
+https://github.com/clqsrc/sz_ui_align/blob/main/zig_file/zig%20%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95%E5%8F%8A%E5%9F%BA%E7%A1%80%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%5Bnewbt%E7%9A%84zig%E6%95%99%E7%A8%8B%5D.md
 
 本文章原始地址为
 http://newbt.net/ms/vdisk/show_bbs.php?id=9573656170788494499256AB77F15A09&pid=164
