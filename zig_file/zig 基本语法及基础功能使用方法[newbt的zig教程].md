@@ -18,7 +18,7 @@ zig 很小众。主要是语法变化目前还比较大（其实感觉上是标�
 平替 c 语言编译器的方法
 
 很简单，将编译脚本中的 gcc 替换成 zig cc 即可。同理 g++ 替换成 zig c++ 即可。
-这一知道的获取方法是 zig 的命令行帮助，命令好像是 zig -h 不太记得了。
+这一知识的获取方法是 zig 的命令行帮助，命令好像是 zig -h 不太记得了。
 
 1.1
 推荐的其他中文 zig 教程：
@@ -88,6 +88,85 @@ Builtin functions are provided by the compiler and are prefixed with @. The comp
 内置函数由编译器提供，前缀为@。参数上的comptime关键字表示该参数必须在编译时已知。 
 ```
 
+2.1.2
+怎样转换出 c 语言常见的指针的指针。或者说是字符串数组。
+
+```
+void function(const char **pNames) {
+    *pNames = NULL;
+}
+
+```
+
+官方文档也是没有的，感觉 zig 既然是以兼容 c 为最大卖点，接口的写法却着实难过。
+
+最后的的解决办法直接来自于它的创始人作者。
+https://github.com/ziglang/zig/issues/9479
+
+```
+test "example" {
+    var c_ptr: [*c][*c]const u8 = undefined;
+    var zig_ptr: [*][*]const u8 = undefined;
+
+    c_ptr = zig_ptr;
+}
+```
+
+另外构建这样的字符串数组，还要借助 zig 中的数组类。
+
+```
+
+    const allocator2 = std.heap.c_allocator;
+    var extensions = std.ArrayList([*]const u8).init(allocator2);
+    errdefer extensions.deinit();
+
+    for (args) |arg, n| {
+        //warn("arg{}: {}\n", n, arg);
+        //std.log.info("arg{}: {}\n", n);
+        //std.log.info("arg{}: {}\n", arg);
+
+        std.log.info("numAddTen:{d}\n",.{n});
+        std.log.info("numAddTen:{s}\n",.{arg});
+
+        //var c_arg :[*]const u8 = arg;
+
+        //try extensions.append(arg);  //expected type '[*]const u8', found '[:0]u8'
+        //try extensions.append(c_arg);
+
+        //这个强制转换也很关键
+        try extensions.append(@ptrCast([*]const u8, &arg[0]));
+
+        //extensions.appendSlice(arg);
+        
+    }//
+
+
+    var c_argv = extensions.items.ptr;
+
+    c_ptr = @ptrCast([*c][*c]u8, c_argv); 
+
+    //最后这个 c_ptr 才是对应到的 char ** argv 参数类型
+    _ = c._lua_main(c_argc, c_ptr);
+
+
+```
+
+2.1.3
+
+根据上面的例子就有会经常用到的  '[:0]u8' 转换为 '[*]const u8' 的方法
+
+```
+@ptrCast([*]const u8, &arg[0]));
+
+```
+
+不知道正宗的 zig 写法是什么，我这里是直接用了 delphi 中常用的取一个字符串原始地址的方法。
+即取出一个字符串中第一个字符的地址就是整个内存块的起始地址。  注意并不是直接取字符串的地址。
+
+这个方法成功后我也松了一口气，这样看来 zig 的内存低级操作还是有迹可循的，并没有太过份的语法糖魔术。
+
+
+
 3.
 zig 自己的特性
 
@@ -97,6 +176,39 @@ zig 自己的特性
 defer
 
 很好用的特性，和 golang 中的一模一样。就是在函数结束后要执行的清理工作代码。
+
+
+3.2
+与 c 语言字符串的接口。
+
+3.2.1
+导出函数给 c 语言用时。
+
+直接看官方文档中的如下示例。这也是 zig 中访问 c 语言风格字符串的方法(c 语言字符串转换为 zig 的缓存片段类型)。
+
+
+```
+混合对象文件
+您可以将 Zig 对象文件与遵循 C ABI 的任何其他对象文件混合使用。例：
+
+base64.zig
+const base64 = @import("std").base64;
+
+export fn decode_base_64(
+ dest_ptr: [*]u8,
+ dest_len: usize,
+ source_ptr: [*]const u8,
+ source_len: usize,
+) usize {
+ const src = source_ptr[0..source_len];
+ const dest = dest_ptr[0..dest_len];
+ const base64_decoder = base64.standard.Decoder;
+ const decoded_size = base64_decoder.calcSizeForSlice(src) catch unreachable;
+ base64_decoder.decode(dest[0..decoded_size], src) catch unreachable;
+ return decoded_size;
+}
+
+```
 
 
 999. 
