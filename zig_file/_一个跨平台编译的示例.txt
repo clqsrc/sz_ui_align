@@ -1,0 +1,13 @@
+
+https://github.com/ziglang/zig/issues/9372
+
+--------
+
+Cross-compiles just fine for me now:
+
+$ zig c++ -o main.exe main.c -lglu32 -target x86_64-windows
+$ file main.exe 
+main.exe: PE32+ executable (console) x86-64, for MS Windows
+
+
+
