@@ -33,6 +33,12 @@ pkg-config --list-all|grep gtk
 
 gcc main.c -o hello `pkg-config --cflags --libs gtk+-3.0`
 
+不同版本下的 msys2 和 zig 的组合有可能要自己加上库的搜索路径，如（不过我并没有编译成功）
+zig cc main.c -o hello `pkg-config --cflags --libs gtk+-3.0` -LD:/new/msys64/mingw64/lib
+
+
+
+
 
 
 
