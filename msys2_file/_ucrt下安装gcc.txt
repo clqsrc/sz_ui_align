@@ -1,0 +1,21 @@
+
+
+参考
+https://zhuanlan.zhihu.com/p/401188789
+
+从文章看， MINGW64 仍然是要使用 msvcrt 的。所以最新的操作系统上可能是要升级为 ucrt 。
+
+这里有个误区以为 ucrt 会安装什么奇怪的编译器，其实 ucrt 用的还是 mingw-w64 只是对应的 c 语言库是从 msvcrt 换成了 ucrt 而已。
+
+
+----------------------------------------------------------------
+
+
+使用pacman安装编译器
+
+打开MSYS2命令行，输入pacman -Syu同步更新所有工具，然后输入pacman -S mingw-w64-ucrt-x86_64-toolchain安装mingw-w64工具链。中间出现询问之类的一路回车就好，等待一段时间后应该就安装完毕了。
+
+
+pacman -S mingw-w64-ucrt-x86_64-toolchain
+
+

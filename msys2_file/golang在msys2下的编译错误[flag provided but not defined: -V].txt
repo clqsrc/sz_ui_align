@@ -1,0 +1,63 @@
+
+golang在msys2下的编译错误[flag provided but not defined: -V]
+
+flag provided but not defined: -V
+
+----------------------------------------------------------------
+在 msys2 中安装完 golang 后可以用 go version 查看版本。
+但用最简单的示例编译都失败。 
+
+go build
+或者指定具体文件 
+go build demo.go
+
+都提示失败。感觉很奇怪，msys2 不是 linux 吗？ 我在 linux 下就是这样用的啊。
+
+关键就在于 msys2 它不是 linux 。其实安装好后的 golang 还没有配置路径。所以改写成类似跨平台编译式的命令就可以了，例如
+
+```
+cd /F/test1/msys2go1/src/t2
+
+
+export GOPATH=/F/test1/msys2go1
+
+#export PATH=/F/new/msys64/mingw64/lib/go/bin
+export PATH=/F/new/msys64/mingw64/lib/go/bin:$PATH
+
+export GOROOT=/F/new/msys64/mingw64/lib/go
+
+# rem go build -buildmode=c-shared -o libgolang.dll http_dll.go
+
+
+```
+
+然后就可以用
+
+go build -buildmode=c-shared -o libgolang.dll
+
+或者
+
+go build -buildmode=c-shared -o libgolang.dll
+
+go build -buildmode=c-shared -o libgolang.dll
+
+正确编出文件了。
+
+这里要特别注意的是 
+
+export PATH=/F/new/msys64/mingw64/lib/go/bin:$PATH
+
+不能写成 
+export PATH=/F/new/msys64/mingw64/lib/go/bin
+
+即还是要包括、保留 msys2 的路径的，回为目前的版本在 msys2 中不知为何还需要 gcc 来编译一部分东西。
+
+我目录的版本为
+go version go1.19.3 windows/amd64
+
+
+
+
+
+
+
