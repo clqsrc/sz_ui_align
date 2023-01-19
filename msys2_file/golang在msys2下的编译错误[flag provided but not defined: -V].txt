@@ -28,6 +28,9 @@ export GOROOT=/F/new/msys64/mingw64/lib/go
 
 # rem go build -buildmode=c-shared -o libgolang.dll http_dll.go
 
+export GO111MODULE=off
+export GO111MODULE=on
+
 
 ```
 
