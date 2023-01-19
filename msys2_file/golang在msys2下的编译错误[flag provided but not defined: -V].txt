@@ -28,6 +28,7 @@ export GOROOT=/F/new/msys64/mingw64/lib/go
 
 # rem go build -buildmode=c-shared -o libgolang.dll http_dll.go
 
+# 一般还会关闭 GO111MODULE 。另外据说关闭的情况下 只有在 $GOPATH/src 下的包，才能使用vendor目录存放依赖包。
 export GO111MODULE=off
 export GO111MODULE=on
 
