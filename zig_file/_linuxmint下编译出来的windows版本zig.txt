@@ -1,0 +1,25 @@
+
+
+_linuxmint下编译出来的windows版本zig
+
+
+编译命令
+ccc@ccc-virtual-machine:~/1/zig-bootstrap-master$ ./build x86_64-windows-gnu x86_64
+
+生成的 exe 目录在
+/home/ccc/1/zig-bootstrap-master/out/zig-x86_64-windows-gnu-x86_64/bin
+
+
+----
+问题：
+并不能只用 zig 来编译 zig 本身，目前还是要用 c 语言环境和 clang 等于很多相关的库。
+比较令人失望，不知道它声称的初步自举是什么样的。
+
+
+
+编译了一整天，是在虚拟机中。
+
+
+编译命令来源似乎是官方文档加 github 上的一些提问中截取来的。
+
+
