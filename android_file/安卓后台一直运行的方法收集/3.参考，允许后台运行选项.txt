@@ -1,0 +1,14 @@
+
+
+3.参考，允许后台运行选项
+
+
+之前在某 app 中用过，不过，如果已经是“完全后台行为”了就不需要了。
+
+似乎对 android 4 不行。android 10 可以。
+
+
+    <application
+        android:allowBackup="true"
+
+
