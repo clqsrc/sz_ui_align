@@ -1,0 +1,76 @@
+
+如果是用后台定时器服务实现的话。
+
+
+package com.java.gpssend;
+
+//https://www.yisu.com/zixun/204828.html
+//用两个类来互相启动
+
+//--------------------------------------------------------
+//通知栏会随着程序退出而退出，除非有权限。在我的 realme 上除非是开启了 "后台自启动" 权限（"设置"->"应用管理"-"自启动管理"）。
+
+//还有一个 "关联启动" 权限，不知道和什么有关
+
+//在模拟器上工作得很好。但在我的 realme 上还要开启耗电管理的一个选项才行。
+//进入的菜单很深 "应用信息"->"耗电管理"->"耗电行为控制"->"允许完全后台行为"
+//而默认只是"允许唤醒前台"
+
+//--------------------------------------------------------
+
+//public class AlarmReceive {
+//}
+
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
+
+public class AlarmReceive extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+
+        //https://www.coder.work/article/3694691
+        //https://www.vogella.com/tutorials/AndroidBroadcastReceiver/article.html
+
+        Toast.makeText(context, "Don't panik but your time is up!!!!.",
+                Toast.LENGTH_LONG).show();
+
+        //循环启动Service
+        Intent i = new Intent(context, AlarmService.class);
+        context.startService(i);
+
+        //----
+        //在通知栏显示，以便判断是否在运行
+        notify.Setup(context);
+
+        //----
+
+    }//
+}//
+
+//--------------------------------------------------------
+/*
+
+3 启动Service
+
+public void startService(View view){
+    Intent intent=new Intent(this, AlarmService.class);
+    startService(intent);
+  }
+
+别忘了AndroidMainfest中注册广播和服务：
+
+<service
+  android:name=".service.AlarmService"
+  android:enabled="true"
+  android:exported="true"/>
+<receiver android:name=".receive.AlarmReceive"/>
+
+
+
+*/
+
+
+
