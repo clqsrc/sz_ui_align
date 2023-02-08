@@ -1,0 +1,362 @@
+
+
+<html>
+    <meta name="viewport" content="width=device-width, 
+    initial-scale=1.0, 
+    maximum-scale=1.0, 
+    user-scalable=no">
+<head>
+
+    <meta charset="utf-8">
+
+    <!--
+    <script src="mod.js" type="text/javascript"></script>
+    <script src="fis3-hook-commonjs-master/index.js" type="text/javascript"></script>
+    -->
+    
+    <!-- 
+    <script src="colony-compiler-master/src/acorn_mod.js" type="text/javascript"></script>
+
+    <script src="config.js" type="text/javascript"></script>
+    <script src="functions.js" type="text/javascript"></script>
+    <script src="dom1.js" type="text/javascript"></script>
+    -->
+
+    <script src="class1.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+    
+    <!-- 
+        <script src="colony-compiler-master/src/worker.js" type="text/javascript"></script>
+    
+    <script src="colony-compiler-master/src/colonize.js" type="text/javascript"></script>
+    -->
+    <!-- <script  type="module" src="colony-compiler-master/src/colonize.js" type="text/javascript"></script> //这个要有服务器访问才支持 -->
+    <!-- <script type="module" src="fengari-web.js"></script> -->
+
+<body>
+
+    <div style="height: 600px; width: 800px; overflow: hidden; line-height: 32px;">
+
+        <canvas id="ca1" width="800" height="600" >
+
+
+
+        </canvas>
+
+
+    </div>
+
+    <button id="btnUpload">上传文件</button>
+
+
+<script>
+	
+
+    c.disp();
+    
+
+//https://github.com/tessel/colony-compiler/blob/master/bin/colony-compiler.js
+
+
+//只用 mod.js 是解决不了 colony-compiler 转换为 web 版本的问题的。因为用到了 (Buffer('\ud800')[0] === 0xED) 这样的 nodejs 的专有函数
+//最终还是重写了了事。对于 colony-compiler 这样简单的只有几个文件的库，其实主要是 name space 化了而已，可以用定义变量的方法来取代
+
+
+var source = `var s = 'aaa'; 
+
+function getCtrlPoint_v1(ps, i, a, b){
+	if(!a||!b){
+		a=0.25;
+		b=0.25;
+	}
+
+
+    var pAx = ps[i].x + (ps[i+1].x-ps[i-1].x)*a;
+    var pAy = ps[i].y + (ps[i+1].y-ps[i-1].y)*a;
+    var pBx = ps[i+1].x - (ps[i+2].x-ps[i].x)*b;
+    var pBy = ps[i+1].y - (ps[i+2].y-ps[i].y)*b;
+    return {
+    	pA:{x:pAx,y:pAy},
+    	pB:{x:pBx,y:pBy}
+    }
+
+
+	if(ips.length-3){
+		var last=ps.length-1
+		var pBx = ps[last].x - (ps[last].x-ps[last-1].x)*b;
+		var pBy = ps[last].y - (ps[last].y-ps[last-1].y)*b;
+	}else{
+		var pBx = ps[i+1].x - (ps[i+2].x-ps[i].x)*b;
+		var pBy = ps[i+1].y - (ps[i+2].y-ps[i].y)*b;
+	}
+	return {
+		pA:{x:pAx,y:pAy},
+		pB:{x:pBx,y:pBy}
+	}
+}//
+
+
+`;
+
+// var luacode = colony.colonize(source, {
+//     //embedLineNumbers: argv.lines
+//   });
+//   console.log(luacode.source);
+
+//上面是 lua 接口
+//--------------------------------------------------------
+
+//根据多个点使用canvas贝赛尔曲线画一条平滑的曲线
+//https://www.cnblogs.com/wpbars/p/6279419.html
+//https://www.jianshu.com/p/0f0ede267882
+
+
+        
+
+/*
+*根据已知点获取第i个控制点的坐标
+*param ps	已知曲线将经过的坐标点
+*param i	第i个坐标点
+*param a,b	可以自定义的正数
+*/
+//clq 这个应该是复制时出错了
+function getCtrlPoint_v1(ps, i, a, b){
+	if(!a||!b){
+		a=0.25;
+		b=0.25;
+	}
+
+
+    var pAx = ps[i].x + (ps[i+1].x-ps[i-1].x)*a;
+    var pAy = ps[i].y + (ps[i+1].y-ps[i-1].y)*a;
+    var pBx = ps[i+1].x - (ps[i+2].x-ps[i].x)*b;
+    var pBy = ps[i+1].y - (ps[i+2].y-ps[i].y)*b;
+    return {
+    	pA:{x:pAx,y:pAy},
+    	pB:{x:pBx,y:pBy}
+    }
+
+
+	//处理两种极端情形
+	if(ips.length-3){
+		var last=ps.length-1
+		var pBx = ps[last].x - (ps[last].x-ps[last-1].x)*b;
+		var pBy = ps[last].y - (ps[last].y-ps[last-1].y)*b;
+	}else{
+		var pBx = ps[i+1].x - (ps[i+2].x-ps[i].x)*b;
+		var pBy = ps[i+1].y - (ps[i+2].y-ps[i].y)*b;
+	}
+	return {
+		pA:{x:pAx,y:pAy},
+		pB:{x:pBx,y:pBy}
+	}
+}//
+
+function getCtrlPoint_v2(ps, i, a, b){
+	if(!a||!b){
+		a=0.25;
+		b=0.25;
+	}
+
+    //clq 算出 i , i+1, i+2 三个点的位置
+    var p0 = ps[i];
+    var p1 = ps[i];
+    var p2 = ps[i];
+    var p3 = ps[i];
+
+    //----
+    if (i > 0) p0 = ps[i-1];
+    if (ps.length > i+1) { p1 = ps[i+1];  p2 = ps[i+1]; }
+    if (ps.length > i+2) p2 = ps[i+2];
+
+    // var pAx = ps[i].x + (ps[i+1].x-ps[i-1].x)*a;
+    // var pAy = ps[i].y + (ps[i+1].y-ps[i-1].y)*a;
+    // var pBx = ps[i+1].x - (ps[i+2].x-ps[i].x)*b;
+    // var pBy = ps[i+1].y - (ps[i+2].y-ps[i].y)*b;
+
+    var pAx = p1.x + (p2.x-p0.x)*a;
+    var pAy = p1.y + (p2.y-p0.y)*a;
+    var pBx = p2.x - (p3.x-p1.x)*b;
+    var pBy = p2.y - (p3.y-p1.y)*b;
+
+    return {
+    	pA:{x:pAx,y:pAy},
+    	pB:{x:pBx,y:pBy}
+    }
+
+
+	//处理两种极端情形
+	// if(ips.length-3){
+	// 	var last=ps.length-1
+	// 	var pBx = ps[last].x - (ps[last].x-ps[last-1].x)*b;
+	// 	var pBy = ps[last].y - (ps[last].y-ps[last-1].y)*b;
+	// }else{
+	// 	var pBx = ps[i+1].x - (ps[i+2].x-ps[i].x)*b;
+	// 	var pBy = ps[i+1].y - (ps[i+2].y-ps[i].y)*b;
+	// }
+	// return {
+	// 	pA:{x:pAx,y:pAy},
+	// 	pB:{x:pBx,y:pBy}
+	// }
+}//
+
+//除了最后一个点不对的版本
+function getCtrlPoint(ps, i, a, b){
+	if(!a||!b){
+		a=0.25;//默认
+		b=0.25;
+
+		a=0.525;//不行
+		b=0.525;
+
+		a=0.125;//还可以，转角太尖
+		b=0.125;
+
+		a=0.025;//不行，太尖
+		b=0.025;
+
+		a=0.325;//还行
+		b=0.325;
+
+		a=0.425;//还行
+		b=0.425;
+
+        a=0.25;//默认
+		b=0.25;
+	}
+
+    //clq 算出 i , i+1, i+2 三个点的位置
+    // var p0 = ps[i];
+    // var p1 = ps[i];
+    // var p2 = ps[i];
+    // var p3 = ps[i];
+
+    var p0 = ps[0];
+    var p1 = ps[0];
+    var p2 = ps[0];
+    var p3 = ps[0];
+
+    //----
+    if (i > 0) p0 = ps[i-1];
+    if (ps.length > i+0) { p1 = ps[i];  p2 = ps[i]; }
+    if (ps.length > i+1) p2 = ps[i+1];
+    if (ps.length > i+2) p3 = ps[i+2];
+
+    // var pAx = ps[i].x + (ps[i+1].x-ps[i-1].x)*a;
+    // var pAy = ps[i].y + (ps[i+1].y-ps[i-1].y)*a;
+    // var pBx = ps[i+1].x - (ps[i+2].x-ps[i].x)*b;
+    // var pBy = ps[i+1].y - (ps[i+2].y-ps[i].y)*b;
+
+    var pAx = p1.x + (p2.x-p0.x)*a;
+    var pAy = p1.y + (p2.y-p0.y)*a;
+    var pBx = p2.x - (p3.x-p1.x)*b;
+    var pBy = p2.y - (p3.y-p1.y)*b;
+
+    return {
+    	pA:{x:pAx,y:pAy},
+    	pB:{x:pBx,y:pBy}
+    }
+
+
+}//
+
+
+
+// nice！接下来开始我们的canvas画图工作吧。
+// 一、首先顶一个点数组，将我们即将描绘的坐标点模拟出来。
+
+// var point=[{x:0,y:380},{x:100,y:430},{x:200,y:280},{x:300,y:160},
+//     {x:400,y:340},{x:500,y:100},{x:600,y:300},{x:700,y:240}]
+
+// var point=[{x:0,y:380},{x:100,y:430},{x:200,y:280},{x:300,y:160},
+//     {x:400,y:340},{x:500,y:100},{x:600,y:300},{x:700,y:240},
+//     {x:600,y:380},{x:300,y:360},{x:300,y:360},
+// ]
+
+var point=[{x:100,y:100},{x:200,y:100},{x:200,y:200},
+{x:100,y:200},{x:100,y:100},{x:100,y:100},{x:100,y:100},{x:100,y:100},{x:100,y:100},{x:100,y:100},{x:100,y:100},
+]
+
+
+// 二、开始遍历我们的坐标数组这里为了方便描述point简称p，下标point[n]简称pn。
+// 1）创建一个画布，将画笔的移动到p0点，这是我们的起始点。
+// 2）循环点数组，在循环体中使用我们定义的getCtrlPoint函数计算出第i个点A、B两个控制点的点坐标。
+
+
+
+var can = document.getElementById("ca1");
+var cans = can.getContext('2d');
+
+var ctx = cans;
+
+ctx.fillStyle="#FF0000";
+//ctx.fillRect(0,0,150,75);
+
+//ctx.moveTo(0, 0);
+ctx.moveTo(point[0].x,point[0].y);
+
+//for (var i=0; i<point.length; i++)
+for (var i=1; i<point.length; i++)  //至少要两个点，所以从 1 开始
+//for (var i=0; i<point.length; i++)  //至少要两个点，所以从 1 开始
+{
+    //var ctrlP=getCtrlPoint(point,i-1);
+    var ctrlP=getCtrlPoint(point,i-1);
+    //var ctrlP=getCtrlPoint(point,i);
+    ctx.bezierCurveTo(ctrlP.pA.x,ctrlP.pA.y,ctrlP.pB.x,ctrlP.pB.y,point[i].x,point[i].y);
+
+}//
+
+ctx.lineWidth=3;
+ctx.strokeStyle = 'red';
+ctx.stroke();
+
+
+//----
+//画一下直线
+ctx.moveTo(0, 0);
+ctx.moveTo(point[0].x,point[0].y);
+for (var i=1; i<point.length-1; i++)  //至少要两个点，所以从 1 开始
+{
+    var ctrlP=getCtrlPoint(point,i-1);
+    //ctx.bezierCurveTo(ctrlP.pA.x,ctrlP.pA.y,ctrlP.pB.x,ctrlP.pB.y,point[i].x,point[i].y);
+
+    ctx.lineTo(point[i].x,point[i].y);
+
+}//
+
+ctx.lineWidth = 2;
+ctx.strokeStyle = 'blue';
+ctx.stroke();
+
+//----
+//画一下控制点
+// ctx.moveTo(0, 0);
+// ctx.moveTo(point[0].x,point[0].y);
+// for (var i=1; i<point.length-1; i++)  //至少要两个点，所以从 1 开始
+// {
+//     var ctrlP=getCtrlPoint(point,i-1);
+//     //ctx.bezierCurveTo(ctrlP.pA.x,ctrlP.pA.y,ctrlP.pB.x,ctrlP.pB.y,point[i].x,point[i].y);
+
+//     //ctx.lineTo(point[i].x,point[i].y);
+//     ctx.lineTo(ctrlP.pA.x,ctrlP.pA.y);
+//     ctx.lineTo(ctrlP.pB.x,ctrlP.pB.y);
+
+// }//
+
+// ctx.lineWidth = 1;
+// ctx.strokeStyle = 'green';
+// ctx.stroke();
+
+
+
+
+        
+</script>
+
+</body>
+
+
+
+
+</html>
+        

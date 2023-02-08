@@ -1,0 +1,84 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "launch",
+            "type": "node",
+            "request": "launch",
+            //"program": "${workspaceRoot}/dist/main.js",
+            //2023 修改为下面这个
+            "program": "${workspaceRoot}/main.js",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+
+            //"preLaunchTask": "echo",
+            //"preLaunchTask": "tsc2",
+            //"preLaunchTask": "tsc4",
+            ////"preLaunchTask": "tsc3",
+            //2023 修改为下面这个  //可能要安装 npm install ts-node -g  //可以直接调试 main.ts
+            "preLaunchTask": "tsc_main.ts",
+
+            "env": {
+                "path":"D:/no_install/node-v16.15.1-win-x64;D:/no_install/node-v16.15.1-win-x64/node_modules/.bin"
+            }
+        },
+
+        //--------------------------------------------------------
+        
+        {
+            "name": "ts-node",
+            "type": "node",
+            "request": "launch",
+
+            "env": {
+                "PATH": "D:\\no_install\\node-v16.15.1-win-x64\\" 
+              },
+
+            "args": [
+                "${relativeFile}"
+            ],
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ],
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+
+        //--------------------------------------------------------
+        {
+            "name": "Launch index.html",    //调试选项的名称，我们在vscode的调试选项中选择这个 名字，用户可以自行修改，
+            "type": "chrome",    // 系统设定，用户不能随意修改
+            "request": "launch",  // 系统设定，用户不能随意修改
+            "file": "${workspaceFolder}/index.html",   // 此配置中workspaceFolder为当前调试js的index.html所在的目录，index.html自己可以随意更改，其他的配置暂时不需要管
+            //"file": "${workspaceFolder}/dom1.js"   // 此配置中workspaceFolder为当前调试js的index.html所在的目录，index.html自己可以随意更改，其他的配置暂时不需要管
+        
+            //---- 应该也可以加上 tsc 的编译脚本过程
+            "preLaunchTask": "tsc3",
+            // "preLaunchTask": {
+            //     "task": "tsc3",
+            //     "type": ""
+            // }
+            
+        },
+        //--------------------------------------------------------
+        {
+            "name": "Launch index.html main.ts",    //调试选项的名称，我们在vscode的调试选项中选择这个 名字，用户可以自行修改，
+            "type": "chrome",    // 系统设定，用户不能随意修改
+            "request": "launch",  // 系统设定，用户不能随意修改
+            "file": "${workspaceFolder}/index.html",   // 此配置中workspaceFolder为当前调试js的index.html所在的目录，index.html自己可以随意更改，其他的配置暂时不需要管
+            //"file": "${workspaceFolder}/dom1.js"   // 此配置中workspaceFolder为当前调试js的index.html所在的目录，index.html自己可以随意更改，其他的配置暂时不需要管
+        
+            //---- 应该也可以加上 tsc 的编译脚本过程
+            "preLaunchTask": "tsc_main.ts",
+            // "preLaunchTask": {
+            //     "task": "tsc3",
+            //     "type": ""
+            // }
+            
+        },
+        //--------------------------------------------------------
+    ]
+}
