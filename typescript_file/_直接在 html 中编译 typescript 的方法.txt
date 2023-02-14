@@ -1,0 +1,73 @@
+
+_直接在 html 中编译 typescript 的方法.txt
+
+http://newbt.net/ms/vdisk/show_bbs.php?id=FF40B8E23E9DDABD21B4142CFAC3FCB3&pid=164
+
+
+如何在浏览器中编译 TypeScript 代码
+
+我用的方法和它的不太一样，主要是得到 typescript 的浏览器版本的方法不同。
+
+
+        <!-- //第三方转换好的浏览器可用版本 npm 包 -->
+        <!-- <script src="https://unpkg.com/typescript@4.9.5/lib/typescript.js"></script> -->
+        <!-- //下面这个和上面的是一样的 -->
+        <script src="index_tsc_typescript.js"></script>
+
+        <script>
+            //使用方法来自 https://www.likecs.com/ask-8906941.html#sc=1144
+            //这里有另外一种方法，也是比较简单的，似乎更官方 https://github.com/basarat/typescript-script
+            //const tsCode = 'let num: number = 123;';
+            const tsCode = 'class crect{ left:string="aaa"; }; let num: number = 123;';
+            //const jsCode = window.ts.transpile(tsCode);
+            const jsCode = ts.transpile(tsCode);
+            document.write(jsCode);
+        </script>
+        
+        <script>
+
+            //--------------------------------------------------------
+            //浏览器中使用 tsc/typescript //原理是 typescript 本身源码是可以编译成纯 js 的
+            /*
+            https://www.6hu.cc/archives/45816.html
+            baidu "浏览器安装 npm 包"
+            https://mp.weixin.qq.com/s?__biz=MzI2MzEwNTY3OQ==&mid=2648985262&idx=1&sn=2362bcc87a1027e80a49a6d6e3fc2fe4&chksm=f250134ec5279a58ba63da8f5ab335013e578374585d81eee3e87ad0c236bea389909b67217b&scene=27
+            
+            根据以下文章其实可以有已经编译好的
+            https://blog.csdn.net/LuckyWinty/article/details/121759716
+            例如
+            https://unpkg.com/
+            https://unpkg.com/tsc
+            https://unpkg.com/typescript@4.9.5/lib/typescript.js
+
+            //index_tsc_typescript.js 即来自于此
+
+            //使用方法可参考
+            https://www.likecs.com/ask-8906941.html#sc=1144
+
+            */
+
+            //--------------------------------------------------------
+
+            function AddLog(s)
+            {
+                    document.getElementById("log").innerHTML = document.getElementById("log").innerHTML + "<br />" + s;
+            }//
+            
+            function ClearLog(s)
+            {
+                    document.getElementById("log").innerHTML = "";
+            }//        
+            
+        </script>
+
+
+//--------------------------------------------------------
+https://www.likecs.com/ask-8906941.html
+原始地址应该是
+
+https://stackoverflow.com/questions/23075748/how-to-compile-typescript-code-in-the-browser
+
+【问题标题】：How to compile TypeScript code in the browser?如何在浏览器中编译 TypeScript 代码？
+
+
