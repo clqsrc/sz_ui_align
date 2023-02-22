@@ -24,7 +24,7 @@ https://docs.gtk.org/gtk3/class.Widget.html
 
 
 https://blog.csdn.net/taiyang1987912/article/details/48468131
-自由移动
+自由移动    gtk_fixed_move
 
 https://docs.gtk.org/gtk3/method.Widget.reparent.html
 
