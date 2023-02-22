@@ -509,6 +509,8 @@ func File_ListAllFile_ext(path string, ext string) ([]string) {
 //从 govcl 的注释来看 syscall.NewCallbackCDecl 的个数是有限制的，所以回调函数在程序中应该尽量共用
 //不过参数的类型又要和原型是一致的，所以不同类型的还是得至少定义一个。所以就不可能程序中只有一个回调函数，
 //至少也得是每种类型一个。所以就接口的设计也就是有要求，要尽量统一，并且能区分发起者。
+//参考 https://github.com/golang/go/blob/master/src/runtime/syscall_windows.go 
+//中的 func compileCallback(fn eface, cdecl bool) (code uintptr) 函数实现前的注释。
 func gtk_on_app_activate (app uintptr, user_data uintptr) (uintptr) {
 
 //   GtkWidget *window;
