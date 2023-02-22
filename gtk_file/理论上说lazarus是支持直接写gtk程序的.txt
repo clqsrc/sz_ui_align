@@ -12,3 +12,11 @@ https://github.com/sechshelme/Lazarus-GTK2-Examples/blob/main/proggen.org/40-Sig
       </Unit>
       <Unit>
         <Filename Value="/home/tux/fpcupdeluxe_stable/fpcsrc/packages/gtk2/src/gtk+/gtk/gtkmain.inc"/>
+
+
+
+--------------------------------------------------------
+http://www.360doc.com/content/19/0813/23/541242_854706348.shtml
+
+默认的 lazarus 是用的 gtk 可以照这篇文章改为 gtk2 。这个应该是 LCL 库的功能。
+
