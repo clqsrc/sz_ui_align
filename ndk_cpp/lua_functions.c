@@ -210,6 +210,7 @@ void Functions_lua_onEvent(chandle param, const char * key, const char * value)
 //ui 定时器事件分发给 lua 的代码
 void Functions_lua_UI_OnTime()
 {
+    //if (1 == error_at_Functions_lua_run) return;  //2023 如果脚本本身有错误，这个运行也无用
 
     Functions_lua_RunFunc(GUI_LUA_EVN, 0, "UI_OnTime",
                           NULL, //s_handle.str,
@@ -1658,6 +1659,37 @@ static int c2l_RunJson(lua_State * lua)
 
     return 1; // 这个应该是返回值的个数
 }//
+
+
+//2023 //允许带一个 bin 参数，里面是原始的二进制内容,不过 java 端目前也是用不上
+static int c2l_RunJsonBin(lua_State * lua)
+{
+    mempool * mem = newmempool();
+
+    //chandle view = _lua_param_chandle_(lua, 1);
+    //cui_json uijson = _lua_param_uijson_(lua, 1);
+    const char * str_json = luaL_checkstring(lua, 1);
+    const char * str_bin = luaL_checkstring(lua, 12);
+    //cint64 angle_360 = luaL_checkinteger(lua, 2);
+    //cint64 millisecond = luaL_checkinteger(lua, 3);
+
+    //----
+    //View_RotateAni(view, (int)angle_360, (int)millisecond);
+
+    lstring * value = Functions_RunJsonBin(str_json, str_bin, mem);
+
+    //----
+    //lua 默认不支持 int64 ，所以我们全部当做字符串好了
+    //lua_str_param s_r = Functions_lua_Int64ToStr((cint64)r);
+
+    //lua_pushinteger(lua, is_notify);
+    lua_pushstring(lua, value->str);
+
+    freemempool(mem);
+
+    return 1; // 这个应该是返回值的个数
+}//
+
 
 static int c2l_SetSaveValue(lua_State * lua)
 {
