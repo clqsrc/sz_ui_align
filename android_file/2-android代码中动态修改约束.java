@@ -40,4 +40,15 @@
 
         constraintSet.applyTo(idConstraintLayout);
 
+/*
+未证实的
 
+注意：
+ConstraintLayout 不支持match_parent属性，但支持wrap_content属性。如果你需要用match_parent，将宽度/高度指定为0dp，然后设置left_toleft,right_toRight为parent即可实现横向充满，同理设置竖向的
+
+作者：枫叶1234
+链接：https://www.jianshu.com/p/9b8bc08521e9
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+*/
