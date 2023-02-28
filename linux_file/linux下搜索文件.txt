@@ -11,4 +11,9 @@ msys2 下
 find /d -name "strings.xml"
 
 如果要指定内容呢
+加上 
+ | xargs grep "关键字"
+即
+find /d -name "strings.xml" | xargs grep "关键字"
+
 
