@@ -52,3 +52,12 @@ ConstraintLayout 不支持match_parent属性，但支持wrap_content属性。如
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 */
+
+        //清除左边后右边就完全对齐了，否则是居中。因为左右都有约束，在两者共同作用下居中
+        //constraintSet.connect(R.id.txt1, ConstraintSet.RIGHT, R.id.p1, ConstraintSet.RIGHT);
+        constraintSet.connect(R.id.txt1, ConstraintSet.RIGHT, R.id.p1, ConstraintSet.RIGHT, 170);  //确实可以用间距
+        constraintSet.connect(R.id.txt1, ConstraintSet.LEFT, R.id.p1, ConstraintSet.LEFT, 170);  //确实可以用间距
+        
+        //ConstraintLayout 情况下 constraintSet 的 MATCH_PARENT 是无效的，不过可以用以上两个属性来模拟。估计设计器也是这样用的。
+
+        
