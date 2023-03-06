@@ -1,0 +1,79 @@
+
+<html>
+<body>
+	
+
+
+	
+	<script type="text/babel">
+		
+		alert("123");
+		
+    </script>
+
+	
+	<script type="text/babel">
+		
+		alert("456");
+		
+    </script>
+    
+	
+	<script type="text/javascript">
+
+        //--------------------------------------------------------
+        /*
+        //模板引擎原理 //"JavaScript 模板引擎" 在 html 中运行 ts/lua 等也是这样实现的。
+        //其实原理就是读取 "文本节点" 中的内容，然后将 TypeScript 或者 lua 代码转换成 js ，然后再添加 js 的 script 节点。
+        //这里的关键是 script 中的节点假如 type 不识别的话，浏览器是当成文本节点不执行的。
+
+        //https://www.cnblogs.com/ziyoublog/p/9361297.html
+        script标签如果不写type属性，浏览器会默认为text/javascript，如果写了不同的类型，浏览器就不会再按照解析JS的规则去解析了，发现是不识别的类型可能就会忽略它。
+        比如说有一个叫做foo-template-engineer的模板引擎，它约定了凡是type为text/foo-template的script标签中存放的都是模板文件，浏览器在加载网页的时候检查到了<script type=”text/foo-template”>发现自己不能识别，于是就忽略掉它和其中的内容，等到浏览器渲染到模板引擎的JS代码的时候，JS模板引擎获取到这个标签中的内容，然后使用数据对其进行渲染输出到页面上。
+
+        总结：
+        1. script不写type默认是text/javascript，如果写了不被识别的type将被浏览器忽略。
+        2. script的type为各种template的时候，可能就是使用了模板引擎。
+
+        //--------------------------------------------------------
+
+        childNodes获取的是所有的子节点。注意，这个子节点是包括元素节点以及文本节点的。（不常用）
+        而children获取的是所有的元素节点，不包括文本节点。
+        */
+
+        //--------------------------------------------------------
+		
+		//alert("aaaa");
+		
+		var root = document.getRootNode();
+		var body = document.body;
+
+        var list = body.childNodes;
+
+        for (let i = 0; i < list.length; i++) {
+            const element = list[i];
+
+            alert(element.innerHTML);
+            
+        }
+        //list.length
+
+        // var node = root.firstChild;
+        // while (node){
+
+        //     alert(node.innerHTML);
+            
+        //     node = node.nextNode;
+
+        // }
+		
+    </script>    
+
+	
+	
+</body>
+	
+	
+	
+</html>
+	
