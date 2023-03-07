@@ -11,6 +11,8 @@
 //npx typescript-to-lua class1.ts
 //tsc dom1.ts --allowJs
 //npx typescript-to-lua dom1.ts --allowJs
+//2023 用 npx 前缀的话是要更新的，所以最好是直接用包的命令行工具 tstl 。因为一来有兼容性问题，二来有些环境下会卡，因为要先访问网络
+//tstl index_frame.ts --allowJs
 
 //或者是发布是只复制 local function __TS__Class(self) 这样的函数过去就可以了
 
