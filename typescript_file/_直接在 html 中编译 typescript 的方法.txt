@@ -70,4 +70,7 @@ https://stackoverflow.com/questions/23075748/how-to-compile-typescript-code-in-t
 
 【问题标题】：How to compile TypeScript code in the browser?如何在浏览器中编译 TypeScript 代码？
 
+//--------------------------------------------------------
+typescript.d.ts 则来自于
+https://raw.githubusercontent.com/microsoft/TypeScript/main/lib/typescript.d.ts
 
