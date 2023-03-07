@@ -122,6 +122,15 @@ declare class ui_json {
 
 }//
 
+declare class crect{
+    //成员变量不给初始值的话，tsc 生成 js 的时候就会忽略
+    left:number;// = 0;    //其实现在的系统一般是支持 float 的宽高的，以后再考虑这种兼容性吧
+    top:number;// = 0;     //ts 用 number 来表示 int 和 float
+    width:number;// = 0;
+    height:number;// = 0;
+
+}//
+
 
 declare function View_Hide(div:any):any;
 declare function View_Edit_GetText(div:any):any;
