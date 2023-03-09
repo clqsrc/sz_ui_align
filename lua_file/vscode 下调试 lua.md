@@ -7,6 +7,7 @@ vscode 下调试 lua
 https://www.jianshu.com/p/61152eeee4cc/
 
 这里有个比较复杂的，其实这是在 xlua slua 中调试内置 lua 的方法。
+
 如果只是本机的 lua 其实直接装一个插件就可以了，它自带了 lua 的 exe 。
 
 “
@@ -17,9 +18,11 @@ actboy168
 (9)
 VSCode debugger extension for Lua
 ”
+
 不过叫 "Lua Debug" 比较多，要看清楚了。另外一个插件 emmylua 安装后就可以有语法高亮这些了，不过似乎没那么方便调试。
 
 原始地址为
+
 https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug
 
 它调试时产生的命令行，类似如下：
