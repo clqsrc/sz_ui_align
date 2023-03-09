@@ -1,0 +1,7 @@
+{
+    "terminal.integrated.env.windows": {
+
+        //没用，还是得回到系统变量中 teal 类型的源码才有代码提示
+        "PATH":"F:/test1/lua1/3rd/tl-0.15.1-windows-x86_64;${env:PATH};",
+    }
+}
