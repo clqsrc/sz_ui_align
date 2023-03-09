@@ -10,6 +10,7 @@ https://www.jianshu.com/p/61152eeee4cc/
 
 如果只是本机的 lua 其实直接装一个插件就可以了，它自带了 lua 的 exe 。
 
+```
 “
 Lua Debug
 v1.61.0
@@ -18,6 +19,7 @@ actboy168
 (9)
 VSCode debugger extension for Lua
 ”
+```
 
 不过叫 "Lua Debug" 比较多，要看清楚了。另外一个插件 emmylua 安装后就可以有语法高亮这些了，不过似乎没那么方便调试。
 
