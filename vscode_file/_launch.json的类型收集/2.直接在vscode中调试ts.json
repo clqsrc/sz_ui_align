@@ -1,0 +1,25 @@
+
+// 2.直接在vscode中调试ts.json
+
+{
+    //直接在 vscode 中运行 ts //而且是可调试的，要先加入 npm i ts-node -D
+    "name": "ts-node",
+    "type": "node",
+    "request": "launch",
+
+    "env": {
+        "PATH": "D:\\no_install\\node-v16.15.1-win-x64\\" 
+      },
+
+    "args": [
+        "${relativeFile}"
+    ],
+    "runtimeArgs": [
+        "-r",
+        "ts-node/register"
+    ],
+    "cwd": "${workspaceRoot}",
+    "protocol": "inspector",
+    "internalConsoleOptions": "openOnSessionStart"
+},
+//--------------------------------------------------------
