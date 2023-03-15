@@ -666,6 +666,20 @@ function StrToBool(v)
 	return "true" == v;
 }//
 
+//子字符串是否存在//不区分大小写
+function FindStr(s, substr)
+{
+    if (!s) return false;
+
+    let pos = s.toLowerCase().indexOf(substr.toLowerCase());
+
+    //-1 就是没找到
+    if (pos >= 0) return true;
+
+    return false;
+
+}//
+
 //同 golang 版本
 var _g_id_Now_id = 0; //Now_id 用的全局变量，千万不要混用
 function Now_id() 
