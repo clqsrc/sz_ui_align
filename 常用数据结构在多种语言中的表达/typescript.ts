@@ -9,4 +9,8 @@ var t = {
 
     uijson:null,  //这样在赋值时会报错的
 
-}
+    popup_mini_uijson: null as unknown as ui_json,  //这样就不会报错了
+
+}//
+
+
