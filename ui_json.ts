@@ -5,12 +5,15 @@
 /// <reference path="ui_json_interface.ts" />
 /// <reference path="std_div.ts" />
 /// <reference path="std_edit.ts" />
+/// <reference path="ui_json_vdiv.ts" />
 
 declare function print_error(e:any); //print_error.js 中
 declare function ToString(value);    //ui_design.js 中
 declare function string2json(s);     //ui_design.js 中
 declare function _JsonToUIControl(dom_parent, json_obj, uijson);  //ui_design.js 中
 declare function GetFileJsonSrc(fn);    //ui_json_2_form.js 中
+
+// declare function MakeVDiv(view:any, uijson:ui_json):VDIV;
 
 //js 版本的 json 生成 form
 
@@ -47,6 +50,26 @@ class ui_json {
         return UI_GetView(this.uijson_handle, id);
 
     }//func
+
+    //js 版本的虚拟 div
+    GetDiv(id:string):VDIV {
+
+        let view = this.GetView(id);
+
+        return MakeVDiv(view, this);
+
+    }
+
+    public CreateView(parentView:any):any   //2022.10
+    {
+        return UI_CreateView(parentView);
+    }
+
+    //设置圆角
+    public SetRadius(view:any, radius:any):void
+    {
+        UI_Div_SetRadius_forObj(this.uijson_handle, view, radius);
+    }
 
     //内部实现
     _GetView(id:string) {
@@ -121,7 +144,7 @@ function AsUiJson(obj:any):ui_json
 
 //2022.9 从 ui_json_2_form.js 移动过来的，在 java 版本中本来就在这个文件里
 //与 app 同接口，从文件名创建
-function CreateFromJson(parent, fn:string) {
+function CreateFromJson(parent:any, fn:string):ui_json {
 
     let json_src = GetFileJsonSrc(fn); //gJson[fn];
 
@@ -270,6 +293,18 @@ function UI_Div_SetTxtColor_forObj(uijson:any, view:any, text_color:any)
 
 }//
 
+//ui_json_interface.ts 中已经有了
+//设置图片
+// function UI_Div_SetImage_forObj(uijson:any, view:any, fn:string)
+//加一个全屏的
+function UI_Div_SetImage_Full(uijson:any, view:any, fn:string)
+{
+    //var img = AsStdDiv(document.getElementById("map_imgShowFile"));
+    //img.innerHTML = "<img src='map_image/loading.gif' style='width:100%' />";
+    var img = AsStdDiv(view)
+    img.innerHTML = "<img src='" + fn + "' style='width:100%' />";
+}//
+
 //似乎原始没有这个函数，得去看 ios 版本
 function UI_Div_SetTxtFontSize_forObj(uijson:any, view:any, font_size:any)
 {
@@ -282,3 +317,9 @@ function UI_Div_SetRadius_forObj(uijson:any, view:any, radius:any)
     $(view).css({"border-radius":radius});
     
 }//
+
+//--------------------------------------------------------
+//root_view_form 暂时作为脚本的根 view ，它不一定是 view ，可能是原生 ui 控件
+let root_view_form = null;
+
+//--------------------------------------------------------
