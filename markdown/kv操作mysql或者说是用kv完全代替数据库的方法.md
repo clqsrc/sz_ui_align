@@ -52,10 +52,15 @@ function DBGetList(key:string):list<kv>;
 
 ```
 
-function DBSetListValue(table_name:string, key_name:string, key_value:string);
+function DBSetListValue(table_name:string, list_key_name:string, list_key_value:string, key_name:string, key_value:string, value_name:string, value:string);
 
-//调用的实例为
-DBSetListValue
+//另外一种风格的伪码
+function DBSetListValue(table_name:string, {list_key_name:string, list_key_value:string}, {key_name:string, key_value:string}, {value_name:string, value:string});
+
+//调用的实例为 
+DBSetListValue("user_file", "user_name", "ccc", "ID", "2", "file_create_time", "1970-01-01");
+
+//设置一条记录的 "file_create_time" 为 "1970-01-01"
 
 
 ```
@@ -65,6 +70,21 @@ DBSetListValue
 这个函数用来设置一个数组中的某一个 kv 中的字段的值，显然得有一个参数表明这个字段的名称，比如 "file_name" 或者是  "file_create_time"。
 
 而为了在数组中定位到这条记录就要再有一个关键字，可以是 "ID", "ID_GUID" 中的任意一个。当然了，假如文件名是唯一的，也可以用 "file_name" 不过很多时候文件名是允许重复的。
+
+#### 参数说明
+
+函数参数包括了一张表名及 3 对 kv 形式的字符串。
+
+其中，{list_key_name:string, list_key_value:string} 用于定位要操作的数组（或者说是筛选） 
+
+{key_name:string, key_value:string} 用于定位这个数组中的哪一条记录（可以是 id 其实也可以是行号等等之类的）
+
+{value_name:string, value:string} 用于说明更新哪个字段，更新为什么内容。
+
+
+#### 使用时机
+
+实际上我们并不推荐使用以上的函数，因为它的性能并不好，除非是在精心设计的索引上。假如系统是以数据库实现的，实际上，给 "ID_GUID" 加上唯一不重复索引后，直接设置对应的 kv 值就可以了，不过这对于用文件实现的后端来说就做不到了。
 
 
 ## SQL 直接操作的问题
