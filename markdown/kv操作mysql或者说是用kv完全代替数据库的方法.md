@@ -8,7 +8,7 @@
 
 这样一思考实际上和 json 只有 kv 和 array 类型就足够了是一样的。
 
-以以下的一张用户数据表为例进行讲解:
+以以下的一张用户数据表为例进行讲解: 假设表名为 "user_file"
 
 ```
 
@@ -47,6 +47,24 @@ function DBGetList(key:string):list<kv>;
 
 以上使用类似于 typescript/java/c++ 的伪码。类型表示为 ts/delphi/pascal 风格，而数据类型的模板语法为 c++/java/c# 风格。因为目前比较流行而且简单，大家都看得懂 :)
 
+
+### 重要的设置数组中某个记录的某个字段值的函数
+
+```
+
+function DBSetListValue(table_name:string, key_name:string, key_value:string);
+
+//调用的实例为
+DBSetListValue
+
+
+```
+
+这个函数看上去不太一目了然，我自己也得仔细写上注释才不至于以后用错 :)
+
+这个函数用来设置一个数组中的某一个 kv 中的字段的值，显然得有一个参数表明这个字段的名称，比如 "file_name" 或者是  "file_create_time"。
+
+而为了在数组中定位到这条记录就要再有一个关键字，可以是 "ID", "ID_GUID" 中的任意一个。当然了，假如文件名是唯一的，也可以用 "file_name" 不过很多时候文件名是允许重复的。
 
 
 ## SQL 直接操作的问题
