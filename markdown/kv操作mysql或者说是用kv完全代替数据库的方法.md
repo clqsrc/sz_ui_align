@@ -47,6 +47,18 @@ function DBGetList(key:string):list<kv>;
 
 以上使用类似于 typescript/java/c++ 的伪码。类型表示为 ts/delphi/pascal 风格，而数据类型的模板语法为 c++/java/c# 风格。因为目前比较流行而且简单，大家都看得懂 :)
 
+以上类似于一个 hashmap 的实现函数，对于数据库的实现。加上表名和字段名即可:
+
+```
+
+//类似于 ts 的伪码
+function DBGetList(table_name:string, key_name:string, key:string):list<kv>;
+
+//调用示例为
+DBGetList("user_file", "user_name", "ccc");
+
+```
+
 
 ### 重要的设置数组中某个记录的某个字段值的函数
 
