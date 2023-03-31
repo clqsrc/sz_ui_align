@@ -131,14 +131,15 @@ function check_import(func)
 
         //--------------------------------------------------------
 		
-		_loadScript(fn,  function(url) {
+		_loadScript(key, fn,  function(key_fn, url) {
 			AddLog("_loadScript() 加载 " + url + "  成功。");
 			
 			//if (fn != url) _alert("确实有问题。" + fn + " != " + url); //可以看到 fn 已经改变了，所以后面不能再用 fn
 			//就是说 fn 在函数过程中是会发生改变的
 			
 			//_js_file_list_.put(fn, "1"); //注意，只是标记完成
-			_js_file_list_.put(url, "1"); //注意，只是标记完成 //注意，不能用 fn
+			//_js_file_list_.put(url, "1"); //注意，只是标记完成 //注意，不能用 fn
+			_js_file_list_.put(key_fn, "1"); //注意，只是标记完成 //注意，不能用 fn
 			//_js_file_list_ok_.put(fn, "1");  //这个才是标记成功，要在 js 文件最后手工调用 function import_ok(fn)  
 			
 			//是否全部成功了
@@ -156,7 +157,7 @@ function check_import(func)
 
 //动态加载 js , 手机兼容性未知
 //https://jingyan.baidu.com/article/af9f5a2d774f6c43140a45e5.html
-function _loadScript(url, callback) 
+function _loadScript(key_fn, url, callback) 
 {
     //try{  //2023 add 文件可能不存在  //HTMLScriptElement
 	var script = document.createElement("script");
@@ -166,12 +167,12 @@ function _loadScript(url, callback)
 			script.onreadystatechange = function() {
 				if (script.readyState == "loaded" || script.readyState == "complete") {
 					script.onreadystatechange = null;
-					callback(url);
+					callback(key_fn, url);
 				}
 			};
 		} else {
 			script.onload = function() {
-				callback(url);
+				callback(key_fn, url);
 			};
 		}
 
@@ -181,7 +182,7 @@ function _loadScript(url, callback)
 
         //这个实测没反应
         script.onabort = function() {
-            callback(url);
+            callback(key_fn, url);
         };
 
         //pc chrome 实测在文件不存在时会触发，但未测试手机浏览器的兼容情况
@@ -190,7 +191,7 @@ function _loadScript(url, callback)
 
             AddLog("Error! at [script.onerror] The script " + url + " is not accessible.")
 
-            callback(url);
+            callback(key_fn, url);
 
             //throw new URIError("The script " + oError.target.src + " is not accessible."); //msdn 的示例处理方式
         };
