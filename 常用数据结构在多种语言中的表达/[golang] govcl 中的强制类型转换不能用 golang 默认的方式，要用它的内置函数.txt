@@ -1,0 +1,6 @@
+
+
+govcl 中的强制类型转换不能用 golang 默认的方式，要用它的内置函数
+
+
+http://newbt.net/ms/vdisk/show_bbs.php?id=0E7C2525DA991270725561A222415078&pid=164
