@@ -56,3 +56,14 @@ func ObjToJson(data interface{}) string {
     return string(b);
 	
 }//
+
+
+//----------------------------------------------------------------
+//动态数组
+
+//其实 golang 术语叫切片
+var JSVM_List = make([]string, 0);
+
+JSVM_List = append(JSVM_List, "");
+
+
