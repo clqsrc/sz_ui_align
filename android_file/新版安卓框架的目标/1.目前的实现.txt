@@ -1,0 +1,9 @@
+
+//新版本安卓框架的目标 //目前的实现
+
+24.3
+dell2 F:\test1\asd_ndk2_ble_car_jar_newui
+新的 ui ，有两个目标，解决标题对齐的问题，换了 base.. 的实现类。将原有的 ndk 接口全部改为 json 接口。
+另外 tcp 接口还要和 ios 那边重新对。时间充裕的话可以考虑对 websocket 。
+
+
