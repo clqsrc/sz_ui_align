@@ -285,6 +285,87 @@ void Functions_lua_RunFunc(lua_State *L, int pcount, const char * func_name,
     //return sum;
 }//
 
+//2023 有字符串返回值的版本
+//执行一个 lua 函数 //带 6 个参数[有返回值]，应该很够用了,参数都是字符串
+lstring * Functions_lua_RunFunc_andResult(lua_State *L, int pcount, const char * func_name,
+                           const char * p1,
+                           const char * p2,
+                           const char * p3,
+                           const char * p4,
+                           const char * p5,
+                           const char * p6,
+                           mempool * mem
+)
+{
+
+    if (1 == error_at_Functions_lua_run) return NewString("", mem);  //2023 如果脚本本身有错误，这个运行也无用
+
+    //函数名
+    //lua_getglobal(L,"ShowCarMainForm");
+    lua_getglobal(L, func_name);
+
+    //参数入栈
+    //lua_pushnumber(L, x);
+    //参数入栈
+    //lua_pushnumber(L, y);
+
+    if (pcount >= 1) lua_pushstring(L, p1);
+    if (pcount >= 2) lua_pushstring(L, p2);
+    if (pcount >= 3) lua_pushstring(L, p3);
+    if (pcount >= 4) lua_pushstring(L, p4);
+    if (pcount >= 5) lua_pushstring(L, p5);
+    if (pcount >= 6) lua_pushstring(L, p6);
+
+    //开始调用函数，有2个参数，1个返回值
+    //lua_call(L, 2, 1);
+
+    //开始调用函数，有1个参数，0个返回值
+    //lua_call(L, 1, 0);
+    //safe_lua_call(L, 1, 0, __FUNCTION__);
+    //开始调用函数，有 6 个参数，0个返回值
+    //safe_lua_call(L, 6, 0, __FUNCTION__);
+    char tag[256] = {};
+    sprintf(tag, "[%s()] func_name:[%s]", __FUNCTION__, func_name);
+    //safe_lua_call(L, pcount, 0, tag); //调用无返回值的 lua 函数
+    safe_lua_call(L, pcount, 1, tag);  //有返回值的 //调用无返回值的 lua 函数 //第 2 个参数不能搞错，否则后面的 lua_pop 会异常
+    //safe_lua_call(L, pcount, 3, tag);  //有返回值的 //调用无返回值的 lua 函数 //第 2 个参数不能搞错，否则后面的 lua_pop 会异常
+    //safe_lua_call(L, pcount, 2, tag);  //有返回值的 //调用无返回值的 lua 函数 //第 2 个参数不能搞错，否则后面的 lua_pop 会异常
+
+    int result_count = lua_gettop( L );  //本意是想取返回值的个数，但它实际上等于 safe_lua_call 的第二个参数
+    printf( "调用函数后栈大小:%d\n", lua_gettop( L ) );
+
+    //lua_pcall会调用函数并自动清除上面和函数有关的栈
+
+    //取出返回值
+    //int sum = (int)lua_tonumber(L, -1);
+    //清除返回值的栈
+    //lua_pop(L,1);
+
+    //取出返回值
+    //const char * s = lua_tostring(L, -1);
+    //lstring * r = NewString(s, mem);  //有一个问题，怎么知道 s 的具体长度呢 //要用 lua_tolstring
+
+    size_t len = 0;
+    const char * s = lua_tolstring(L, -1, &len); //-1 就是栈顶值，也是 ok 的
+    //const char * s = lua_tolstring(L, 1, &len); //ok //指定取第几个返回值，因为 lua 是允许多返回值的，不过//成功调用后会将返回值从右到左入栈
+    //lstring * r = NewString(s, mem);  //有一个问题，怎么知道 s 的具体长度呢 //要用 lua_tolstring
+
+    lstring * r = NewString("", mem);
+    r->AppendCString(r, s, len);
+
+    //清除返回值的栈
+    ////lua_pop(L,1); //奇怪，这个会崩溃
+    //lua_pop(L,1); //奇怪，这个会崩溃 //safe_lua_call 中指明有参数返回就不会
+
+    //手动清空所有栈 //比指定个数安全很多，就算参数指定不正确也不至于崩溃
+    lua_pop( L, -1);
+
+
+    //return sum;
+    return r;
+}//
+
+
 
 //一个测试
 void Function_load_lua_test(lua_State *L,char *filename)
