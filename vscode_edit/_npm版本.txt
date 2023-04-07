@@ -1,0 +1,42 @@
+
+
+npm 版本
+
+直接来自
+
+https://github.com/microsoft/monaco-editor
+
+
+
+1.
+npm install monaco-editor
+
+
+2.
+nmp 安装后的并没有示例。而根据说明 amd 模式应该是可以直接从浏览器上运行的。
+
+https://github.com/microsoft/monaco-editor/blob/main/samples/browser-amd-editor/index.html
+
+根据以上源码看是可以直接用的。
+
+3.
+在 github 上下载源码。
+
+
+4.
+将 samples/browser-amd-editor/index.html 复制到根目录，双击在浏览器本地运行发现 js 路径不对。
+
+
+5.
+建立一个子目录后
+将上述 index.html 复制后发现可以直接使用，并且有代码提示！
+
+6.
+将 index.html 中的 "javascript" 尝试修改为 "typescript" 发现直接成功！
+从 github 上的项目说明上看，基本上 js 能解析的语言都是可以这样做的。
+
+
+
+
+
+
