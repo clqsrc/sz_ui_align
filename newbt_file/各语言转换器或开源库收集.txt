@@ -1,6 +1,3 @@
-
-各语言转换器或开源库收集
-
 各语言转换器或开源库收集
 
 最近在做这样的工作，发现现在有些工具/库的转换非常成熟，是相当可用的。因此收集一下。
@@ -14,6 +11,12 @@ https://github.com/andrei-markeev/ts2c
 https://andrei-markeev.github.io/ts2c/
 
 在查找 ts2 c# 工具时意外找到的，非常有意思。可用度未知。
+
+2023.2 更新
+意外发现它还有一个扩展版本，那说明它的可用性还是可以的。
+https://github.com/andrei-markeev/ts2c-target-esp-idf
+应该是支持 esp 环境的开发，也算是一个扩展 tsc 的示例了。
+
 
 3.TypeLite 套件
 应该也是一个冷门工具，不过记录一下。
@@ -42,6 +45,9 @@ https://aws.amazon.com/cn/blogs/china/generate-python-java-dotnet-software-libra
 7.
 golang 运行 javascript
 https://github.com/robertkrimen/otto
+
+otto err
+https://github.com/dlclark/regexp2
 
 7.2
 golang 运行 javascript
@@ -390,6 +396,10 @@ https://blog.csdn.net/weixin_34187862/article/details/89444038
 Vala 实现了一些常用的泛型容器，例如单向列表、双向列表、并发式列表、队列、哈希表、红黑树等。这些容器是以库的形式实现的，这个库叫 Gee，其 API 文档见 http://valadoc.org/#!wiki=gee-0.8/index
 "
 
+27.1
+https://gitlab.gnome.org/esodan/gvls
+vala 的另一个语言服务器，支持 vscode 。代码很值得一看。
+
 28.
 Wasmer支持基于WebAssembly的超轻量级容器，该容器可以在任何地方运行：从台式机到云和IoT设备，还可以以任何编程语言嵌入。
 https://github.com/wasmerio/wasmer
@@ -548,6 +558,285 @@ http://newbt.net/ms/vdisk/show_bbs.php?id=21FA0D2AD618822DE820D780C5862CB3&pid=1
 https://zhuanlan.zhihu.com/p/63530994
 https://github.com/searchfe/ts2php
 ts2php, 将你的 TypeScript 代码转换为 PHP
+
+
+39.
+rust gui 搜索引出的一些库。
+
+https://www.zhihu.com/question/512935621
+"2022 年了，Rust 有哪些成熟的 GUI 库，要求跨平台、非 web ？"
+
+sciter    https://sciter.com/
+看上去它是一个基于web技术的GUI框架，但它做了超级多的精简工作，编译后的程序也就6M左右，占用的内存也小很多。
+大部分CSS的特性都支持，少量不支持的特性，它也提供了自己内置的实现方式。
+它现在已经内置了QuickJS解析引擎，所以绝大多数ES6的特性都支持。
+
+对大数据列表渲染也有原生内置的支持。
+
+它分免费版和付费版，免费版是动态连接的，也就多出一个sciter.dll，付费版也不贵，可以静态连接。
+这个库是Andrew Fedoniouk维护了十几年的库了，虽然还是有一些小问题，但总体还是稳定的。
+360、搜狐、teamviewer都是他的客户
+
+fltk
+简单、易用，但还不全功能。
+
+flutter_rust_bridge
+这个似乎是比较现实的选择。
+https://github.com/fzyzcjy/flutter_rust_bridge
+
+39.2
+https://www.cnblogs.com/amboke/p/16648876.html
+不需要 xcode 直接用 rust 加 Bevy 开发 ios 应用。
+
+
+40.
+这是一个我想要的终极语言。
+https://github.com/pfusik/cito
+就专门是用来写多语言库的，它本身用 c# 写成。
+
+&#262; is not a general-purpose programming language. Instead, it is meant for implementing portable reusable libraries.
+
+它是有 vscode 扩展的。 https://github.com/pfusik/cito/issues/64
+打算用来写下 zig 的 c 代码。
+
+41.&#11088;
+重磅。lua 中的 typescript
+https://github.com/teal-language/tl
+
+带类型的 lua 其实有好多种，但见过的几种实现环境都有局限。而这一版本是直接编译为 lua 的，并且自身是用 lua 写成！
+这就完美的解决了其他版本的问题。为什么有了 ts 向 lua 的转换器还要推荐这项呢？
+因为 typescript 的语法演变下去其实挺令人担心，有了这个就不用担心哪天 ts 自己作死。而且 js 系列语言对运行库的要求还是太高了，我觉得 lua 在相当长的时间里都还会是 c 语言的最佳搭档。
+
+介绍自
+https://zhuanlan.zhihu.com/p/40300705
+作者本人也扩展有一个版本
+https://github.com/TiancJester/TypeLua
+文中介绍的其实主要是一个早期的版本
+https://github.com/andremm/typedlua
+
+http://newbt.net/ms/vdisk/show_bbs.php?id=1C8AB1D62C7D5A1C694DC8AF78B94F6A&pid=164
+
+另外，他们都提到了
+https://luarocks.org/
+这应该是一个 lua 的包管理器。
+
+更新：目前 tl 的说明上说它在 web 上运行的环境为 js 的 lua 虚拟机
+https://github.com/fengari-lua/fengari
+
+42.
+b站上看到有人用得很酷的 gnome-builder 
+在最新的 linux mint 21 下可以直接安装
+sudo apt-get install gnome-builder 
+
+42.2
+https://github.com/GNOME/gnome-sound-recorder/blob/master/meson.build
+使用了一个叫 gjs 的东西，使得可以用 ts 来开发 gtk 程序。
+这个是 gnome-builder 自带的示例。
+http://garfileo.is-programmer.com/2011/9/22/gjs-basic.29644.html
+ gjs 提供了 imports.gi 对象，使用它可以导入被 GObject Introspection（GI）认可的 typelib 二进制文件所关联的 GNOME 模块对应的 JavaScript 对象，然后 gjs 便可以访问底层基于 GObject 库实现的 C 程序库。看下面的示例：
+
+const GLib = imports.gi.GLib;
+ 
+print (GLib.get_home_dir ());
+
+当使用 gjs 执行这个脚本程序时，便会在终端中输出 $HOME 的值。
+
+42.3
+https://developer.gnome.org/documentation/tutorials/beginners/components/window.html
+https://rmnvgr.gitlab.io/gtk4-gjs-book/introduction/basics/
+
+
+43.
+“
+Dart官方工具 analyzer
+对AST有了一些了解和认知后，接下来就要思考，如何将Dart代码转换为AST。好在Dart官方很贴心的提供了一个工具包analyzer，通过这个工具包提供的方法，我们可以将一份Dart源代码生成AST对象。当然，这个工具包除了可以生成AST对象外，还可以做一些代码分析，找出一些语法错误或潜在风险警告等。在官方文档里有介绍，比如代码格式化工具dartfmt、代码文档生成工具dartdoc、代码语法预分析服务Dart Analysis Server等都使用了此工具包。
+”
+https://juejin.cn/post/6844904121300959246
+下面是一个双平台的蓝牙示例
+https://www.jianshu.com/p/1b21895e3674
+“flutter 完美处理iOS Android两端蓝牙权限，解决Android12蓝牙扫描崩溃”
+
+44.
+ios 和 android 中实现 js 调用的官方方法。
+https://github.com/facebook/hermes
+
+https://www.jianshu.com/p/d653d34ebd79/
+iOS7之后，JavaScriptCore的引入，使得Objective-C与JavaScript的交互更为容易
+
+https://blog.csdn.net/idaretobe/article/details/128279887
+JavaScriptCore，V8，Hermes 和 QuickJS 这 4 个 JSVM
+
+45.
+https://zhuanlan.zhihu.com/p/436090437
+这篇文章总结了一些 rust 转换成 js/ts 相关的库和当前发展现状。
+
+46.
+https://github.com/google/gvisor
+这其实是一个虚拟机
+
+https://developer.moduyun.com/column/detail/37317.html
+文章 “安卓实现安卓-光速虚拟机技术内幕”
+
+47.
+javaparser
+java 的 ast 操作库。很显然也有 c# 的 ast 库。
+https://github.com/javaparser/javaparser
+https://blog.csdn.net/kaishizhangcheng/article/details/121712003
+为什么需要Javaparser
+相对于antlr4,Javaparser提供了更多的API,专门操作Java文件,使用起来更简单.
+使用
+.解析多个Java文件
+.修改Java文件
+.生成Java代码
+
+48.
+https://github.com/webview/webview
+https://pkg.go.dev/github.com/webview/webview
+其实是绑定本机的浏览器。
+
+49.
+https://zhuanlan.zhihu.com/p/472805041
+c++20 中的 import 和模块机制。
+
+50.
+https://github.com/yuroyoro/goast-viewer/blob/master/ast.go
+golang 的 ast 示例。
+
+51.
+https://github.com/dart-archive/ts2dart
+typescript 转换为 dart 的，不过已经不更新。据说是已有更好的方法 https://www.thinbug.com/q/38921004
+
+这里有个两者语法的简要对比，基本上做脚本也够用了。
+https://github.com/jeroenouw/dart-compared-to-typescript
+
+https://developer.aliyun.com/ask/319744
+“
+通过 TypeScript 提供的能力，我们可以直接把一份 TS 的代码从源码解析到AST，而后通过遍历 AST 生成对应的 Dart 代码。同时其中通过 getTypeChecker.getTypeAtLocation 等 API 获取到 AST 对应的 TS 类型。然后通过把 TS 类型转换成对应的 Dart 类型。对于不支持的类型降级到 dynamic ，把原有的完整类型信息输出到对应的注释里。
+”
+
+另外 
+Dart提供了将Dart编译为JavaScript的工具——dart2js。 格式: dart2js dart文件名 --out=js文件名 例如: //例1 dart2js D:\contra\app.dart --out=D:\contra\app.dart.js //例2 D:\dart\dart-sdk\bin\dart2js.bat D:\contra\app.dart --out=D:\contra\app.dart.js
+
+https://zhuanlan.zhihu.com/p/127075348
+“
+比如同样是「编译成 javascript」，在开发时 dartdevc 会把每个 dart 文件单独翻译成 javascript，这样代码体积很大，且不够优化；而运行时 dart2js 会把当前项目的所有依赖一起编译，做 tree shaking，并且根据调用树优化生成的代码。最终，发布给用户的代码体积非常精简，代码的执行效率也是最好的。
+”
+https://qastack.cn/programming/7716004/will-dart-support-the-use-of-existing-javascript-libraries
+
+https://www.saoniuhuo.com/question/detail-2252339.html
+https://pub.dev/packages/flutter_js
+https://github.com/abner/flutter_js
+https://stackoverflow.com/questions/66145501/how-to-use-a-js-library-and-a-js-function-in-a-flutter-mobile-app
+“
+d4so4syb1#
+
+你可以使用https://pub.dev/packages/flutter_js包。它允许在移动和桌面flutter应用中评估纯javascript代码。所谓纯，我的意思是包不是一个浏览器引擎，所以没有web API，本地存储或其他浏览器API可用。但你可以捆绑一些javascript代码包含javascript库，如moment，如果只依赖于javascript的话，可能是你在问题中提到的那个. flutter_js注入到javascript引擎中，比如console.log，xhr和fetch。但这就是全部。有一个发送消息通道，你可以使用它来将对象注入引擎，你可以提供对象，这些对象将被实现和dart，但将被共享到javascript全局空间。
+在Flutter web中，javascript集成可以使用另一个答案中提到的包：js。
+免责声明：我是flutter_js包的作者
+”
+flutter/dart 中集成 ffi/c/c++/opencv 的方法，这是官方支持的，上面的那个可能也是，因为作者自述使用的是 quickjs
+https://zhuanlan.zhihu.com/p/458327499
+https://zhuanlan.zhihu.com/p/458488070
+https://github.com/westracer/flutter_native_opencv
+
+52.
+https://github.com/exaloop/codon
+将 python 编译为本机的编译器。https://csdnnews.blog.csdn.net/article/details/129512127
+
+另外字节跳动有一个类似的
+https://bytedance.github.io/matxscript/zh-CN/index.html
+https://github.com/bytedance/matxscript
+
+52.2
+https://www.bookstack.cn/read/godot-3.5-zh/f9c328f5c1cf8c98.md
+免费引擎 godot 自带的脚本也是 python 风格的。不过据说它通过扩展模块可支持其他语言。
+
+例如 typescript 的示例
+https://zhuanlan.zhihu.com/p/257408208
+https://github.com/Geequlim/ECMAScript
+
+https://csdnnews.blog.csdn.net/article/details/129373700
+
+53.
+生成 java 语言 ast 的另一种方法
+https://blog.csdn.net/qq_42714262/article/details/119414462
+相关jar包下载
+
+用ASTParser时，需要引入的包如下：
+
+    org.eclipse.core.contenttype.jar
+    org.eclipse.core.jobs.jar
+    org.eclipse.core.resources.jar
+    org.eclipse.core.runtime.jar
+    org.eclipse.equinox.common.jar
+    org.eclipse.equinox.preferences.jar
+    org.eclipse.jdt.core.jar
+    org.eclipse.osgi.jar
+
+jar包下载
+打开网址：https://mvnrepository.com/
+
+另
+https://blog.csdn.net/lovelion/article/details/19050155/
+
+54.
+两个 java 的语言服务器
+https://github.com/eclipse/eclipse.jdt.ls
+https://github.com/redhat-developer/vscode-java
+
+后面那个好像就是现在 vscode 中使用的。
+
+55.
+https://zhuanlan.zhihu.com/p/51174224
+提到的两个语言转换库
+https://github.com/facebook/jscodeshift
+https://github.com/reactjs/react-codemod
+
+原作者是 js2flowchart 的作者
+https://github.com/Bogdan-Lyashenko/js-code-to-svg-flowchart
+
+
+56.
+https://github.com/sveltejs/svelte
+svelte
+
+这是一个编译为普通 js /css 的 web 框架，居然流行度极高。和 vue 这些完全不同。
+"
+Svelte 在 构建/编译阶段 将你的应用程序转换为理想的 JavaScript 应用，而不是在 运行阶段 解释应用程序的代码。这意味着你不需要为框架所消耗的性能付出成本，并且在应用程序首次加载时没有额外损失。
+"
+以下是两篇介绍，特别是第二篇非常好。
+https://zhuanlan.zhihu.com/p/448469958
+https://mp.weixin.qq.com/s?__biz=MzUzMjM1MzE2MA==&mid=2247498571&idx=1&sn=0abe6a15856272a4293dd58ecc9833e1&chksm=fab622accdc1abba1d3a40b0aa4917102a16b5521706738396ec4cf44330d01789076edbc658&scene=27
+“前端新宠 Svelte 带来哪些新思想?赶紧学起来!”
+
+https://github.com/topics/compiler
+
+57.
+https://coder.com/docs/code-server/latest/npm
+https://github.com/coder/code-server
+
+code-server 就是在线版本的 vscode。在 windows 下要用 npm 安装。另外感觉资源消耗太大了。
+感觉还是用 vscode 的编辑器 Monaco Editor 为好。
+https://github.com/microsoft/monaco-editor
+
+58.
+https://github.com/justinmeiners/lc3-vm
+一个据说只有几百行的虚拟机
+
+https://www.jianshu.com/p/29c008e404ef
+中文翻译
+https://blog.csdn.net/LxXlc468hW35lZn5/article/details/128125398
+原文地址：https://justinmeiners.github.io/lc3-vm/ 这是个水平挺低的翻译版
+作者：Justin Meiners and Ryan Pendleton
+文中的最终代码和其他一些资源在这里可以找到：GitHub repo
+
+58.2
+https://github.com/hadialqattan/lc3-vm-golang
+lc-3 机器的 golang 实现
+
+它还介绍了一个 web 版本
+https://wchargin.com/lc3web/
+
 
 
 
