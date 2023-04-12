@@ -1,0 +1,162 @@
+// +build go1.18
+
+// 在源码文件顶部添加注释，来决定文件是否参与编译
+//golang版本号： 比如Go Version 1.1为go1.1,Go Version 1.12版本为go1.12，以此类推。
+
+package main
+
+import (
+	
+	// 如果你使用自定义的syso文件则不要引用此包
+	//_ "github.com/ying32/govcl/pkgs/winappres"
+
+	//clq 说明。上面的文件参考 https://gitee.com/ying32/govcl/wikis/pages?doc_id=102420&sort_id=410058
+	//应该只是用来加入 syso 资源文件的，参考 ..\vendor\github.com\ying32\govcl\pkgs\winappres 下的文件
+	//如果对 ui 要求不高，不要其实也是可以的。
+	//syso 文件是 google 的标准，其实只是原来修改 windows 下的程序的资源的。所以作者在注释中说明了只对 windows 程序生效。
+	//----
+	//应该也可以使用 ".manifest" 文件。
+	//--------------------------------------------------------
+	//高分屏的官方设置方法看两个地址
+	//https://learn.microsoft.com/zh-cn/windows/win32/hidpi/setting-the-default-dpi-awareness-for-a-process
+	//https://learn.microsoft.com/zh-cn/windows/win32/hidpi/high-dpi-desktop-application-development-on-windows?source=recommendations
+
+	// "unsafe"
+
+	// "github.com/ying32/govcl/vcl"
+	// "github.com/ying32/govcl/vcl/types"
+	"github.com/dop251/goja"
+	"github.com/robertkrimen/otto"
+
+	// "encoding/json"
+	// "fmt"
+	// "io/ioutil"
+	// "os"
+	// "os/exec"
+	// "path/filepath"
+)
+
+//因为 goja 不能在 go 1.10 下使用，而 otto 因为不支持完整 js 正则表达式的原因不能使用 tsc 的 js 源码，因此有必要抽象出一个统一的接口
+//以便在两者间切换，并且应该做成条件编译。
+
+//或者做成象数据库那样，操作 api 是一样的，内部实现不同
+
+
+type JS_VM struct {
+	
+	
+	vm_otto * otto.Otto;
+	
+	vm_goja * goja.Runtime;
+	
+	is_goja int;  //如果为 1 ，表示为 goja 引擎
+	is_otto int;  //如果为 1 ，表示为 otto 引擎
+	
+	//按道理说两者应该只存在一个，不过如果是单元测试可以两个引擎同时运行
+	
+	
+}//
+
+
+// type JS_VM_ *JS_VM;
+
+
+//方便性函数
+func CreateJsVM(use_goja int) (* JS_VM) {
+	_vm := (&JS_VM{}).CreateVM(0);
+	
+	return _vm;
+}
+
+
+
+//相当于 vm := otto.New(); //golang 似乎没有静态函数的说法
+//func (vm *JS_VM) CreateVM(use_goja int) (* JS_VM) {
+//如果声明为结构体的指针的话会很神奇 //可以直接调用 
+//可以写出这样的代码 _vm := JS_VM.CreateVM(JS_VM{}, 0); //很像 lua ，还要把自己再传递一次的参数形式
+//golang 的术语称之为 “值方法和指针方法（Value Methods vs Pointer Methods）”
+func (vm JS_VM) CreateVM(use_goja int) (* JS_VM) {
+
+	_vm := &JS_VM{};
+
+	_vm.is_goja = 0;
+	_vm.is_otto = 1;
+	
+	_vm.is_goja = use_goja;
+	if (1 == use_goja) { _vm.is_otto = 0; }
+	
+	if (2 == use_goja) { _vm.is_otto = 1; _vm.is_goja = 1; }  //测试的情况下可以两个引擎同时启动
+	
+	if (1 == _vm.is_otto) {
+		_vm.vm_otto = otto.New();
+	}
+	
+	if (1 == _vm.is_goja) {
+		_vm.vm_goja = goja.New();
+	}
+
+
+	return _vm;
+
+}//
+
+//测试函数，不要用
+// func (vm *JS_VM) CreateVM_(use_goja int) (* JS_VM) {
+
+// 	_vm := &JS_VM{};
+
+// 	_vm.is_goja = 0;
+// 	_vm.is_goja = use_goja;
+	
+// 	_vm.vm_otto = otto.New();
+	
+// 	_vm.vm_goja = goja.New();
+
+
+// 	return _vm;
+
+// }//
+
+
+//运行一个脚本（字符串，不是文件名，可多次重复调用）
+//原意中本来有一个返回值，比较啰嗦，暂时不要了，以后可以统一为一个字符串，因为返回一个对象的话还要涉及到各种拆箱
+func (vm *JS_VM) RunString(str string)(error) {
+	
+	
+	var err error = nil;
+	
+	if (1 == vm.is_otto) {
+		_, err = vm.vm_otto.Run(str);
+	}//
+	
+	if (1 == vm.is_goja) {
+		_, err = vm.vm_goja.RunString(str);
+	}//
+	
+	
+	return err;
+	
+}//
+
+
+//设置一个 js 变量(其实也可以是函数)
+func (vm *JS_VM) SetValue(name string, value interface{})(error) {
+	
+	
+	var err error = nil;
+	
+	if (1 == vm.is_otto) {
+		err = vm.vm_otto.Set(name, value);
+	}//
+	
+	if (1 == vm.is_goja) {
+		err = vm.vm_goja.Set(name, value);
+	}//
+	
+	
+	return err;
+	
+}//
+
+
+
