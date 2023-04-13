@@ -1,0 +1,12 @@
+
+
+
+如何让编译器将所有代码合并到一个 JS 中?
+推荐答案
+
+你必须使用编译器的命令行参数
+
+--outFile FILE 连接输出到单个文件
+
+ tsc --outFile modules.js main.ts app.ts
+
