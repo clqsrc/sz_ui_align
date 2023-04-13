@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,
+		                                     initial-scale=1.0,
+		                                     maximum-scale=1.0,
+		                                     user-scalable=no">
+
+											 
+		<script src="jquery1.11.3.js"></script>
+		<script src="hash_map.js"></script>
+		<script src="list.js"></script>
+		<script src="functions.js"></script>
+		<script src="app_save.js"></script>
+
+		<!-- //这两个文件更新后加上文件版本号还是很重要的，减少灵异事件 //2023 -->
+		<script src="import.js?version=2023.04.13.3"></script>
+		<!-- <script src="std_div.js"></script> -->
+		<!-- <script src="ui_json_2_form.js"></script> -->
+        <!-- //这个文件很重要，还是应该放到最前面来 //2022 -->
+        <script src="ui_json_2_form.js?version=2023.04.13.3"></script>
+		
+		<script src="ui_design_toolbar.js"></script>
+		<!-- //如果要在手机中详细检查错误，可以用后面的动态加载模式 -->
+		<!-- <script src="ui_design_prop.js"></script> -->
+		<script src="app_functions.js"></script>
+		<script src="ui_design_main.js"></script>
+		<script src="ui_json_view.js"></script>
+		<script src="ui_json_interface.js"></script>
+		<script src="ui_json.js"></script>
+		
+
+
+
+		<title>中文</title>
+	</head>
+	<body>
+
+		<div id="log" style="border:  #ccc solid  1px; height: 90px; overflow-y: auto;">
+			debug:
+		</div>
+		
+		<script>
+
+			function AddLog(s)
+			{
+					document.getElementById("log").innerHTML = document.getElementById("log").innerHTML + "<br />" + s;
+			}//
+			
+			function ClearLog(s)
+			{
+					document.getElementById("log").innerHTML = "";
+			}//		
+			
+		</script>
+
+		<div id="t1" style="border-radius:5px; ">
+			aaa
+		</div>
+
+		<!-- //设计器的总面板，可拉伸 -->
+		<div id="pnlDesign" style="border-radius:5px; 
+			overflow: scroll; 
+			height: 800px;
+			position: relative;
+			background-color: black; 
+			border: #ccc 4px solid; ">
+			
+		</div>
+
+		<!-- //用到 AddLog 的都应该移动到这里来 -->
+		<script src="print_error.js"></script>
+		<!--
+		<script src="std_div.js"></script>
+		<script src="control_edit.js"></script>
+		<script src="control_memo.js"></script>
+		<script src="ui_design_src.js"></script>
+		-->
+		
+		<script>
+
+
+
+			function AddLog(s)
+			{
+					document.getElementById("log").innerHTML = document.getElementById("log").innerHTML + "<br />" + s;
+			}//
+			
+			function ClearLog(s)
+			{
+					document.getElementById("log").innerHTML = "";
+			}//
+			
+			//想捕获异常，没有起作用
+			var lastLog;
+			console.oldLog = console.log;
+			console.log = function(str) {
+				alert(str);
+				console.oldLog(str);
+				lastLog = str;
+			} 
+			//---------------------------------------------------------------
+			import_("_alert.js", true);
+			import_("config_color.js", true);  //2021.8 add
+			import_("std_div_align.js", true);
+			import_("std_div.js", true);
+			import_("std_edit.js", true);
+			import_("control_edit.js", true);
+			import_("control_memo.js", true);
+			//import_("ui_design_prop.js", true);  //test 
+			import_("ui_design_src.js", true);
+			import_("ui_design_prop.js", true); 
+			import_("ui_design_prop_class.js", true); //2022
+			import_("std_div_align.js", true); 
+			import_("ui_json_t1.js", true); 
+
+			//import_("ui_json_2_form.js", true);  //2022
+			import_("ui_json_form_toolbar.js", true);
+			import_("ui_json_form_class.js");
+
+			//import_ok("ui_design_prop.js"); 
+			//import_("aaa"); 
+
+			check_import(function(){  //_alert("aaaaaa");
+			//---------------------------------------------------------------
+			//这里有个非常严重的问题，当 js 中语法本身有问题时， try 也是不知道具体错误位置的。
+			//甚至 hbuilderx 的内置浏览器都不会正确提示。除非使用完整版本浏览器。
+			//目前的做法似乎只能是加日志。
+			try{
+			// loadScript("ui_design_prop.js", function() {
+			//       alert('动态引入 ui_design_prop.js 成功');
+			// });
+			
+			//loadScript("ui_design_prop.js");
+			//loadScript("ui_design_prop.js",  function() { ui_design_prop_create(); } );
+			
+			//测试一下各个类的实现
+			CreateHashMap().test();
+
+			CreateDesignFormsAndStart(); return; //
+
+			let pnlDesign = document.getElementById("pnlDesign");
+			let form_toolbar = CreateFromJson(pnlDesign, "form_toolbar.json").root_view;
+
+			//form_toolbar.SetPos("30px", "0px");
+			ui_design_toolbar_create_v2(form_toolbar);
+
+			ui_design_prop_create(); //显示设计界面//属性窗口
+			ui_design_src_create();
+
+			//--------------------------------------------------------
+			//解码 json 并放到设计面板上
+			
+			var ui_design_root_form_parent = CreateStdDiv(pnlDesign) ; //还是给 ui_design_root_form 一个固定的父窗体，要不不好转换
+			var o =ui_design_root_form_parent;
+			o.SetId("ui_design_root_form_parent");
+			o.Width("1920");
+			o.Height("1080");
+
+			o.SetPos("30px", "250px");
+			o.backgroundColor("#222222");
+			
+			var save_src = GetSaveKey("src");
+			
+			//如果上次存有代码
+			if (save_src != undefined && save_src != null && save_src.length>0)
+			{
+				//ui_design_root_form = JsonToUIControl(null,  save_src);
+				ui_design_root_form = JsonToUIControl(ui_design_root_form_parent,  save_src);
+			}
+			else
+			{
+				//ui_design_root_form = JsonToUIControl(null, ui_json_t1); //没有就加载程序内嵌的
+				ui_design_root_form = JsonToUIControl(ui_design_root_form_parent, ui_json_t1); //没有就加载程序内嵌的
+			}
+
+
+			ui_last_click_div = ui_design_root_form;  //最后点击控件也很重要
+
+			return;
+			//--------------------------------------------------------
+
+			//if (false == all_import_ok()) alert("");
+
+			//---------------------------------------------------------------
+			ui_design_toolbar_create(); //显示设计界面
+			ui_design_prop_create(); //显示设计界面//属性窗口
+			ui_design_src_create();
+
+			//document.writeln("aaa3");
+			document.getElementById("t1").innerHTML = "test1";
+			var t1 = document.getElementById("t1");
+
+			//$(t1).css({"background-color": "#ff0000"});
+
+
+			t1 = MakeStdDiv(t1);
+
+
+
+			t1.backgroundColor("");
+			//t1.backgroundColor("#ff0000");
+
+
+			//f1();
+
+			var line = CreateStdDiv();
+			line.innerHTML = "ccc";
+			SetLineDiv(line);
+			//line.backgroundColor("#ff0000");
+			//line.Height("100px");
+			line.Height("120px");
+
+			//SetLineDiv(t1);
+			t1.SetLineDiv();
+
+			line.border_radius("8px")
+			//line.SetBorderWidth(true, false, true, false, "#cccccc", "1px");
+			line.SetBorderWidth(true, true, true, true, "#eeeeee", "1px");
+
+			var btn = CreateStdDiv(line);
+			btn.backgroundColor("#ff0000");
+			btn.SetPos("100px", "28px", true);
+			btn.SetPos_Center();
+			btn.innerHTML = "这是标题";
+			btn.SetPos_Center(); //修改宽度后要再次调整
+
+			line.SetCaption("aaa");
+			line.SetId("panel1");
+
+			var line2 = CreateStdDiv(); 
+			line2.Width("100px");
+			//line2.left("10px");
+			line2.SetPos("30px", "0px");
+			//alert($(line2).css("position") == "absolute".toLowerCase()); 
+			line2.SetCaption("line2");
+			line2.alignRight = line2.GetParent(); //右对齐父控件
+			line2.alignTop = line;
+			line2.SetPos_forAlignObject();
+			line2.backgroundColor("#9999ff");
+			
+			//----
+			//解码 json
+			//JsonToUIControl(document.body, ui_json_t1);
+			//JsonToUIControl(null, ui_json_t1);
+			
+			var ui_design_root_form_parent = CreateStdDiv() ; //还是给 ui_design_root_form 一个固定的父窗体，要不不好转换
+			var o =ui_design_root_form_parent;
+			o.SetId("ui_design_root_form_parent");
+			o.Width("400");
+			o.Height("600");
+			
+			var save_src = GetSaveKey("src");
+			
+			//如果上次存有代码
+			if (save_src != undefined && save_src != null && save_src.length>0)
+			{
+				//ui_design_root_form = JsonToUIControl(null,  save_src);
+				ui_design_root_form = JsonToUIControl(ui_design_root_form_parent,  save_src);
+			}
+			else
+			{
+				//ui_design_root_form = JsonToUIControl(null, ui_json_t1); //没有就加载程序内嵌的
+				ui_design_root_form = JsonToUIControl(ui_design_root_form_parent, ui_json_t1); //没有就加载程序内嵌的
+			}
+
+			//var list = CreateHashMap();
+			//list.put("count", 100);
+			//AddLog(list.get("count"));
+			//CreateHashMap().test();
+
+
+			}catch(e){
+				AddLog("---------------------------------------------------------------");
+				AddLog("error." + e);
+				AddLog("[e.stack]错误堆栈.：");
+				AddLog(e.stack);
+				AddLog("---------------------------------------------------------------");
+				
+				var error_str = "---------------------------------------------------------------" + "<br />";
+				error_str += "error." + e + "<br />";
+				error_str += "----------------" + "<br />";
+				error_str += e.stack + "<br />";
+				_alert(error_str);
+				throw e;
+				
+			}//fry
+
+		}//check_import
+		);
+		//根  html 中也会有语法错误，所以一定要检查。这在手机下是很难检查的
+		AddLog("index.htm (js) 加载成功。如果日志窗口中没有这句就是语法错误。");
+
+		</script>
+
+	</body>
+</html>

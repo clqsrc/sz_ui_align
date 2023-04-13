@@ -145,6 +145,7 @@ function check_import(func)
 			//是否全部成功了
 			if (true == all_import_ok() )
 			{
+                //alert(key_fn);
 				func();
 			}
 			
