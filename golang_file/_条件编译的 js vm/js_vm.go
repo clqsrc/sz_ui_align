@@ -2,10 +2,17 @@
 
 // 在源码文件顶部添加注释，来决定文件是否参与编译
 //golang版本号： 比如Go Version 1.1为go1.1,Go Version 1.12版本为go1.12，以此类推。
+//注意：// +build的下一行必须是空行。
+// 以空格分开表示AND
+// 以逗号分开表示OR
+// !表示NOT
+
+//本文件的条件编译表示低于 go1.18 版本下使用本文件 //因为只能用 Otto 不能用 goja
 
 package main
 
 import (
+	
 	
 	// 如果你使用自定义的syso文件则不要引用此包
 	//_ "github.com/ying32/govcl/pkgs/winappres"
@@ -29,7 +36,7 @@ import (
 	"github.com/robertkrimen/otto"
 
 	// "encoding/json"
-	// "fmt"
+	"fmt"
 	// "io/ioutil"
 	// "os"
 	// "os/exec"
@@ -62,8 +69,10 @@ type JS_VM struct {
 
 
 //方便性函数
+//如果 use_goja 是 -1 表示在高版本中使用 goja ，低版本使用 otto
 func CreateJsVM(use_goja int) (* JS_VM) {
-	_vm := (&JS_VM{}).CreateVM(0);
+	//_vm := (&JS_VM{}).CreateVM(0);
+	_vm := (&JS_VM{}).CreateVM(use_goja);
 	
 	return _vm;
 }
@@ -83,16 +92,28 @@ func (vm JS_VM) CreateVM(use_goja int) (* JS_VM) {
 	_vm.is_otto = 1;
 	
 	_vm.is_goja = use_goja;
-	if (1 == use_goja) { _vm.is_otto = 0; }
+	if (1 == use_goja)  { _vm.is_otto = 0; }
 	
-	if (2 == use_goja) { _vm.is_otto = 1; _vm.is_goja = 1; }  //测试的情况下可以两个引擎同时启动
+	if (2 == use_goja)  { _vm.is_otto = 1; _vm.is_goja = 1; }  //测试的情况下可以两个引擎同时启动
+	
+	if (-1 == use_goja) { _vm.is_otto = 0; _vm.is_goja = 1; }  //自动选择
 	
 	if (1 == _vm.is_otto) {
 		_vm.vm_otto = otto.New();
 	}
 	
+
 	if (1 == _vm.is_goja) {
 		_vm.vm_goja = goja.New();
+		
+		// goja 默认没有 console 所以要给它一个
+		v, err := _vm.vm_goja.RunString("var console={}; console.log = function (s){}; "); //没有这个函数的话，脚本会异常退出
+		
+		err = _vm.vm_goja.Set("js_ShowMessage", js_ShowMessage);
+		v, err = _vm.vm_goja.RunString("var console={}; console.log = js_ShowMessage; "); //没有这个函数的话，脚本会异常退出
+		
+		fmt.Println(v, err);
+		
 	}
 
 
@@ -138,6 +159,12 @@ func (vm *JS_VM) RunString(str string)(error) {
 	
 }//
 
+//兼容 otto 的接口别名而已
+func (vm *JS_VM) Run(str string)(error) {
+
+	return vm.RunString(str);
+	
+}//
 
 //设置一个 js 变量(其实也可以是函数)
 func (vm *JS_VM) SetValue(name string, value interface{})(error) {
@@ -155,6 +182,181 @@ func (vm *JS_VM) SetValue(name string, value interface{})(error) {
 	
 	
 	return err;
+	
+}//
+
+//兼容 otto 的接口别名而已
+func (vm *JS_VM) Set(name string, value interface{})(error) {
+
+	
+	return vm.SetValue(name, value);
+	
+}//
+
+//返回值难以兼容，尽量只在 require 中使用
+func (vm *JS_VM) RunString_AndGetResult(str string)(interface{}, error) {
+	
+	
+	var err error = nil;
+	
+	var result interface{} = nil;
+	
+	if (1 == vm.is_otto) {
+		result, err = vm.vm_otto.Run(str);
+	}//
+	
+	if (1 == vm.is_goja) {
+		result, err = vm.vm_goja.RunString(str);
+	}//
+	
+	
+	return result, err;
+	
+}//
+
+//nodejs 中的 require 函数实现
+func (vm *JS_VM)SetNodejsFunc_require() {
+	
+	if (1 == vm.is_otto) {
+		
+		//vcl.ShowMessage("vm.is_otto");
+		fmt.Println("vm.is_otto");
+	
+		vm.vm_otto.Set( "require" , func(call otto.FunctionCall) otto.Value {  
+		    
+			//fmt.Printf( "Hello, %s.\n" , call.Argument( 0 ). String ())  
+			//return js_require(vm, call.Argument(0).String());
+			return js_nodejs_require_OTTO(vm.vm_otto, call.Argument(0).String());
+			
+			    
+			return otto.Value{}; 
+		});
+		
+	}//
+	
+	if (1 == vm.is_goja) {
+		
+		//vcl.ShowMessage("vm.is_goja");
+		fmt.Println("vm.is_goja");
+	
+		vm.vm_goja.Set( "require" , func(call goja.FunctionCall) goja.Value {  
+		    
+			//fmt.Printf( "Hello, %s.\n" , call.Argument( 0 ). String ())  
+			//return js_require(vm, call.Argument(0).String());
+			return js_nodejs_require_GOJA(vm.vm_goja, call.Argument(0).String());
+			    
+			// return struct{};
+			//return goja.Value{}; //不行，因为 goja.Value 是 interface
+			return goja.Undefined();
+		});
+		
+	}//
+	
+}//
+
+//js 中 require 的简化实现 //目前只是运行，不返回 export //ok 已经可以返回值
+//otto 版本
+func js_nodejs_require_OTTO(vm * otto.Otto, fn string) (otto.Value) {
+	
+	fn = fn + ".js";
+	
+	r := otto.Value{};
+	
+	//--------------------------------------------------------
+	//otto 居然是可以支持 module.exports 的，不过要先执行一次 module 初始化
+	//var module={};
+	//module.exports = { mail_error: mail_error, MailMime_errorMail_forTest: MailMime_errorMail_forTest }; //{hello,hello2}
+	
+	v, err := vm.Run("var module={};"); 
+	
+	if (nil != err) {
+		fmt.Println("js_nodejs_require_OTTO()", err);
+	}else{
+		fmt.Println("js_nodejs_require_OTTO()", v);
+	}//
+	
+	//--------------------------------------------------------
+	
+	//----
+	//var src2 = LoadFromFile_String("t2.js");
+	var src2 = LoadFromFile_String(fn);
+	v, err = vm.Run(src2); 
+	
+	if (nil != err) {
+		fmt.Println("js_nodejs_require_OTTO()", err);
+	}else{
+		fmt.Println("js_nodejs_require_OTTO()", v);
+		
+		return v;
+	}//
+	
+	//----
+	
+	return r;
+	
+}//
+
+
+//goja 版本
+func js_nodejs_require_GOJA(vm * goja.Runtime, fn string) (goja.Value) {
+	
+	fn = fn + ".js";
+	
+	//r := goja.Value{};//不行，因为 goja.Value 是 interface
+	r := goja.Undefined();
+	
+	//--------------------------------------------------------
+	//otto 居然是可以支持 module.exports 的，不过要先执行一次 module 初始化
+	//var module={};
+	//module.exports = { mail_error: mail_error, MailMime_errorMail_forTest: MailMime_errorMail_forTest }; //{hello,hello2}
+	
+	v, err := vm.RunString("var module={};"); 
+	
+	if (nil != err) {
+		fmt.Println("js_nodejs_require_GOJA()", err);
+	}else{
+		fmt.Println("js_nodejs_require_GOJA()", v);
+	}//
+	
+	//--------------------------------------------------------
+	
+	//----
+	//var src2 = LoadFromFile_String("t2.js");
+	var src2 = LoadFromFile_String(fn);
+	v, err = vm.RunString(src2); 
+	
+	if (nil != err) {
+		fmt.Println("js_nodejs_require_GOJA()", err);
+	}else{
+		fmt.Println("js_nodejs_require_GOJA()", v);
+		
+		return v;
+	}//
+	
+	//----
+	
+	return r;
+	
+}//
+
+func js_nodejs_require(vm * JS_VM, fn string) (interface{}) {
+	
+	//var err error = nil;
+	
+	var result interface{} = nil;
+	
+	if (1 == vm.is_otto) {
+		// result, err = vm.vm_otto.Run(str);
+		result = js_nodejs_require_OTTO(vm.vm_otto, fn);
+	}//
+	
+	if (1 == vm.is_goja) {
+		// result, err = vm.vm_goja.RunString(str);
+		result = js_nodejs_require_GOJA(vm.vm_goja, fn);
+	}//
+	
+	
+	return result;	
 	
 }//
 
