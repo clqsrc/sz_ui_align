@@ -895,6 +895,24 @@ func DirectoryExists(fn string) bool {
 	
 }//
 
+//目录是否存在 //2023 是文件还是目录
+func IsDirectory(fn string) bool {
+	//_, err := os.Stat(path)
+	info, err := os.Stat(fn)
+	if err == nil {
+
+		return info.IsDir();
+
+		//return true;
+	}
+	if os.IsNotExist(err) {
+		fmt.Println("DirectoryExists:", err)
+		return false
+	}
+	return false;	
+	
+}//
+
 //复制文件
 func CopyFile(src,dst string) (w int64, err error){
 	srcFile,err := os.Open(src);
