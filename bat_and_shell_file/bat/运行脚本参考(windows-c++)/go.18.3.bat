@@ -24,7 +24,7 @@ set CGO_ENABLED=1
 
 rem #PATH=c:\mingw64\bin;%GOROOT%\bin;%PATH%
 rem #PATH=D:\new\tdm-gcc-64-5.1.0-2\gdb64\bin;%GOROOT%\bin;%PATH% # gdb64 不行 
-set PATH=D:\new\mingw64-8.1.0-sjlj\mingw64\bin;%GOROOT%\bin;%PATH%
+set PATH=D:\gopath1.18.3\bin;D:\new\mingw64-8.1.0-sjlj\mingw64\bin;%GOROOT%\bin;%PATH%
 
 rem #//GO111MODULE 在 1.18.3 这样的版本中一定要配合正确的 GOPATH 才能正常工作
 rem #go 1.18.3 下也还是可以用的. 有了这个变量定义 1.18.3 或者说 1.10.8 之后的版本才会去找项目自身下的 vendor 目录
@@ -35,6 +35,11 @@ set GO111MODULE=on
 rem 这一句如果有了的话就不要设置了
 echo %GOPROXY%
 rem set GOPROXY=https://proxy.golang.com.cn,direct
+
+rem --------------------------------------------------------
+rem 为了 fyne 的安卓环境还要有以下两个
+set ANDROID_HOME=D:\asd_2019\sdk
+set ANDROID_NDK_HOME=D:\asd_2019\sdk\ndk\23.0.7599858
 
 start
 
