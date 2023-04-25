@@ -8,5 +8,5 @@
 
 --outFile FILE 连接输出到单个文件
 
- tsc --outFile modules.js main.ts app.ts
+tsc --outFile modules.js main.ts app.ts
 
