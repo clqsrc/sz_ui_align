@@ -735,10 +735,26 @@ func SubString_byte(str string, begin, length int) (substr string) {
 	return string(str[begin:end])
 }//
 
+
+//2023
+func strlen_utf8(_str string) (int) {
+    str := []rune(_str); //utf8 字符的切分体
+    lth := len(str);
+
+	return lth;
+}//
+
+//2023
+func SubString(_str string, begin, length int) (string) {
+
+	return SubString_utf8(_str, begin, length);
+}//
+
 //截取字符串
 //clq 专门针对 golang utf8 的
-func SubString(_str string, begin, length int) (string) {
-    str := []rune(_str); //utf8 字符的切分体
+//func SubString(_str string, begin, length int) (string) {
+func SubString_utf8(_str string, begin, length int) (string) {
+	str := []rune(_str); //utf8 字符的切分体
     lth := len(str);
 
 
@@ -758,11 +774,18 @@ func SubString(_str string, begin, length int) (string) {
 	return string(str[begin:end]);
 }//
 
-//太常用了，写一个吧
+//太常用了，写一个吧 //这个实际上是二进制的长度 //可见字符串要用 strlen_utf8
 func strlen(s string) int {
 	
 	return len(s);
 }//
+
+func strlen_bin(s string) int {
+	
+	return len(s);
+}//
+
+
 
 
 //得到站点的顶级域名//即最后一个 . 前的
