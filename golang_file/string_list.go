@@ -115,6 +115,45 @@ func LoadFromFile_StringList(fn string) ([]string, error){
 		
 }//
 
+//2023 不要 trim 的版本
+func LoadFromFile_StringList_noTrim(fn string) ([]string, error){
+	
+	defer PrintError("LoadFromFile_StringList_noTrim()");
+	
+    //logger.Infof("get file content as lines: %v", filePath) 
+	fmt.Println("读取文件:", fn);
+	
+	//var result = make([0]string);//map[string]string;
+	//var result = [...]string{};
+	var result = make([]string, 0); //这样居然可以
+	
+    b, err := ioutil.ReadFile(fn)  
+    if err != nil {  
+        //logger.Errorf("read file: %v error: %v", filePath, err)  
+		fmt.Println("读取文件失败:", fn, err);
+        return result, err  
+    }  
+    s := string(b); 
+	lines := strings.Split(s, "\n");  
+    //for _, lineStr := range strings.Split(s, "\n") { 
+	i := 0;
+    for _, lineStr := range lines { 
+	 
+        //lineStr = strings.TrimSpace(lineStr);  //2023 不要 trim
+
+		//假如最后一个字符是 "\r" 则去掉
+		if (len(lineStr)>0)&&('\r' == lineStr[len(lineStr)-1]){
+			lineStr = string(lineStr[0:len(lineStr)-1]);
+		}
+		
+		lines[i] = lineStr;
+		i++;
+	}//for
+	
+	return lines, nil;
+		
+}//
+
 //数组是不能改变大小的，要换成切片//感觉切片就是 delphi 里的动态数组
 //https://www.cnblogs.com/liuzhongchao/p/9159896.html
 func StringList_Add(list []string, line string) ([]string){
