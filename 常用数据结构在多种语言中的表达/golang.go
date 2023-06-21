@@ -58,6 +58,34 @@ func ObjToJson(data interface{}) string {
 }//
 
 
+//2023.6 解码任意类型的 json
+buf := HttpGet_TimeOut(url, 5);
+
+	rjson := DecodeJson_toMapList(buf);
+
+	//line_list := make( [] map[string]interface{}, 0); //这是一个 map 数组
+	//line_list := new (interface{}); //ok//这是一个 map 数组 //不是数组，是单个的对象
+	//line_list := new (map[string]string); //ok  //取不出 Succeed 的 True
+	line_list := new (map[string]interface{}); //ok
+
+	err := json.Unmarshal(buf, &line_list) //居然是可以解码到 map 中的
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+
+	Succeed := (*line_list)["Succeed"];
+
+	if (Succeed == true) {
+		vcl.ShowMessage("成功");
+	}else{
+		vcl.ShowMessage("失败");
+	}
+
+	fmt.Println(rjson);
+	fmt.Println(Succeed);
+
+	vcl.ShowMessage(string(buf));
+
 //----------------------------------------------------------------
 //动态数组
 
