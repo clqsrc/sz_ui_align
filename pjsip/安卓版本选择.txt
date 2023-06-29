@@ -1,0 +1,10 @@
+
+http://www.taodudu.cc/news/show-4815610.html?action=onClick
+
+
+配置编译环境
+
+设定configure的环境变量：
+
+export APP_PLATFORM="android-21" TARGET_ABI=armeabi-v7a
+
