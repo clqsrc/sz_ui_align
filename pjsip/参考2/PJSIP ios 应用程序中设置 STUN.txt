@@ -1,0 +1,65 @@
+
+
+ios - 如何在 PJSIP ios 应用程序中设置 STUN 设置？
+
+
+ios - 如何在 PJSIP ios 应用程序中设置 STUN 设置？
+
+标签 ios nat pjsip stun
+
+我有基于 pjsua 的 voip 应用程序。它工作正常，只是我不知道如何正确设置 STUN 设置。
+
+现在我在 pjsua init 之前连接 STUN -
+
+cfg.stun_host = pj_str(&stunAdr);
+
+之后，如果客户端不在同一个网络中，一切正常。但是当它们在同一个网络中时，它们不使用 NAT，因此它们不需要 STUN，但 STUN 已连接并使用，客户端不会听到对方的声音。
+
+那么如何设置只在需要时才使用STUN呢？取决于客户端之间存在的 NAT 不是吗？ 我正在连接
+
+cfg.cb.on_nat_detect = &on_nat; 
+
+static void on_nat(const pj_stun_nat_detect_result *result) {
+    if (result->status != PJ_SUCCESS) {
+        pjsua_perror(THIS_FILE, "NAT detection failed", result->status);
+
+
+    } else {
+
+        PJ_LOG(3, (THIS_FILE, "NAT detected as %s", result->nat_type_name));
+
+    }
+}
+
+    它的工作也很好，检测 NAT 但如何使用它..
+
+请帮忙!
+
+最佳答案
+
+        // Disable STUN for a new config obtained from the old one, where acc_id is
+        // old config id
+
+        // declare a new account config
+        pjsua_acc_config acc_cfg_new;
+
+        // create a new pj pool used when copying the existing config
+        pj_pool_t *pool = pjsua_pool_create("tmp-pjsua", 1000, 1000);
+
+        // default the new account configuration
+        pjsua_acc_config_default(&acc_cfg_new);
+
+        // now copy the existing account config - if you already have one
+        pjsua_acc_get_config(acc_id, pool, &acc_cfg_new);
+
+        // disable all stun on new account config
+        acc_cfg_new.sip_stun_use = PJSUA_STUN_USE_DISABLED;
+        acc_cfg_new.media_stun_use = PJSUA_STUN_USE_DISABLED; 
+
+
+        // Now apply the new config without STUN to the current config
+        pjsua_acc_modify(acc_id, &acc_cfg_new);
+
+        // and make a call
+
+关于ios - 如何在 PJSIP ios 应用程序中设置 STUN 设置？，我们在Stack Overflow上找到一个类似的问题： https://stackoverflow.com/questions/25525803/
