@@ -1,0 +1,133 @@
+
+
+简单说 stun 是纯 p2p ，而 turn 是加了中转。
+-----------------------------------------------
+
+
+stun和turn
+
+webrtc系列3——对于stun和turn的理解
+ddssingsong
+于 2019-09-03 08:05:51 发布 10740
+收藏 29
+分类专栏： webrtc 文章标签： webrtc stun turn
+版权
+webrtc 专栏收录该内容
+4 篇文章 38 订阅
+订阅专栏
+
+文章目录
+
+        对于stun和turn的理解
+            1. SDP协议
+            2. 地址转换NAT
+            3. candidate
+        stun
+        TURN
+        ICE
+
+对于stun和turn的理解
+
+在介绍turn和stun之前我们先来了解几个概念
+
+    会话描述协议 SDP（Session Description Protocol ）
+    网络地址转换 NAT (Network Address Translation)
+    网络协商 candidate
+
+1. SDP协议
+
+我们来思考，如果两个不同的手机，一个手机支持VP8、VP9的媒体格式，另一个支持VP8、h264的协议，他们如果通信的话会选择什么格式的媒体来进行交流？
+
+[外链图片转存失败(img-uB81o8AW-1567468988824)(SDP协商.png)]
+
+这时候我们就需要用到这个SDP协议了，在WebRTC中，参与视频通讯的双方必须先交换SDP信息，这样双方才能知根知底，而交换SDP的过程，也称为"媒体协商"。
+
+记住一点，SDP不叫媒体协商，交换SDP的过程才叫媒体协商，SDP全名叫会话描述协议
+2. 地址转换NAT
+
+经常有人问我=
+
+    为什么我配置了stun，进行了p2p穿透，可还是有很多情况下不通？
+    为什么ios通，android不通？
+    为什么移动能打通，电信打不通，wifi和4g有的通有的不通
+
+好吧，其实我也不是很清楚
+
+历史告诉我们，当我们无法触及到某个真理的时候，我们只能通过类比或者工具模拟的方式来解释我们所看到的一切。
+
+[外链图片转存失败(img-COwrIGGF-1567468988826)(nat协商.png)]
+
+说起nat，其实就是不知道对方实际地址，然后通过扔一个探测包，然后有回应就拿到对方地址的方式
+
+我们说的nat不通，是因为咱们这个国内网络情况比较复杂，究其历史原因，就要说到移动、联通、电信的历史了，篇幅太长，暂时搁置。
+
+总而言之，不通就不通嘛，总还有别的办法
+3. candidate
+
+我们先来看下Ice candidate类中的属性
+
+  public final String sdpMid;//描述协议的id
+  public final int sdpMLineIndex;//描述协议的行索引
+  public final String sdp;//会话描述协议
+
+    1
+    2
+    3
+
+好了，到这为止，应该已经了解到，这玩意就是个模版
+
+当我们调用setLocalDescription的时候，底层的代码就会帮我们的收集candidate(候选信息)，然后回调到上层，然后我们将其发送到服务器，然后服务器再发送到另一端
+
+一定会好奇这个candidate里有啥是吧，其实就是一些网络信息的候选地址，一个不通换另一种的那种。
+
+我们称交换candidate的过程称为网络协商
+stun
+
+好了，我们的主角登场
+
+STUN（Session Traversal Utilities for NAT，NAT会话穿越应用程序）是一种网络协议，它允许位于NAT（或多重
+NAT）后的客户端找出自己的公网地址，查出自己位于哪种类型的NAT之后以及NAT为某一个本地端口所绑定的
+Internet端端口。这些信息被用来在两个同时处于NAT路由器之后的主机之间创建UDP通信。该协议由RFC 5389定
+义。
+其实有好多人问我，在局域网需不需要stun服务器？
+
+我很认真的告诉你，不需要！
+
+这时候，又会有人问了，你的demo为啥不部署stun，局域网内不通呢？
+
+我也很认真的告诉你，请看官方demo，有个直连的类你可以借鉴，直接填写对方的地址，因为需要知道对方的地址才能进行通信的咧
+
+来张图
+
+[外链图片转存失败(img-myeYWWDt-1567468988842)(D:\github\csdn\webrtc\stun.png)]
+
+STUN并不是每次都能成功的为需要NAT的通话设备分配IP地址的，P2P在传输媒体流时，使用的本
+地带宽，在多人视频通话的过程中，通话质量的好坏往往需要根据使用者本地的带宽确定。
+
+这时候，就需要turn来协调，保证通话质量，用服务器来解压
+TURN
+
+TURN的全称为Traversal Using Relays around NAT，是STUN/RFC5389的一个拓展，主要添加了Relay功能。如果
+终端在NAT之后， 那么在特定的情景下，有可能使得终端无法和其对等端（peer）进行直接的通信，这时就需要公网
+的服务器作为一个中继， 对来往的数据进行转发。这个转发的协议就被定义为TURN。
+
+再来张图
+
+[外链图片转存失败(img-Vo7XkDv6-1567468988844)(D:\github\csdn\webrtc\turn.png)]
+
+在STUN分配公网IP失败后，可以通过TURN服务器请求公网IP地址作为中继地址。这种方式的带宽由服务器端承
+担，在多人视频聊天的时候，本地带宽压力较小，并且，根据Google的说明，TURN协议可以使用在所有的环境中。
+ICE
+
+ICE跟STUN和TURN不一样，ICE不是一种协议，而是一个框架（Framework），它整合了STUN和TURN。
+coturn开源项目集成了STUN和TURN的功能
+
+好了这篇文章到此位置，看看代码消化一下
+
+Android端：https://github.com/ddssingsong/webrtc_android
+
+服务器端：https://github.com/ddssingsong/webrtc_server_node
+————————————————
+https://blog.csdn.net/u011077027/article/details/100496099
+
+
