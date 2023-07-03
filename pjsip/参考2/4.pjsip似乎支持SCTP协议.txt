@@ -1,0 +1,6 @@
+
+4.pjsip似乎支持SCTP协议
+
+SCTP是流控stream control transport，是UDP的上层协议。流控应用，比如拥塞控制
+
+
