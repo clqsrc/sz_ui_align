@@ -749,10 +749,26 @@ https://blog.csdn.net/weixin_40425640/article/details/124341142
 
 -----------------------------------------------
 
+
+https://blog.csdn.net/pan_xi_yi/article/details/103476798
+
 为了获得流数据的 WebRTC实现了以下API
 
     MediaStream 获取数据流,比如从用户的摄像头或者麦克风
     RPCPeerConnection 音频或者视频的调用,具有加密和带宽管理
     RTCDataChannel 点到点的通用数据传输.
+
+
+WebRTC使用RTCPeerConnection在浏览器之间传输流数据.需要一个机制来进行传输的协调和控制消息的发送,这个过程叫做信号处理.信号处理的方法和协议未包含在WebRTC中.
+
+WebRTC应用的开发者可以选择自己喜欢的消息协议,比如 SIP 或者XMPP,任何适合的双向通行信道.appr.tc的示例使用了XHR和Channel API 作为信令机制.Codelab使用 Node运行的Socket.io 库来做.
+
+信号用于交换以下三类信息:
+
+    会话控制消息:用来初始化或者关闭通讯和报告错误
+    网络配置:我面向外部世界的IP地址合端口
+    媒体能力:什么样的解码器合分辨率可以被我的浏览器支持和浏览器想要什么样的数据.
+
+在p2p流开始之前我们必须成功通过信号交换这些信息.
 
 
