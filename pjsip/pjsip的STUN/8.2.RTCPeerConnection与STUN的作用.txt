@@ -747,8 +747,12 @@ https://blog.csdn.net/weixin_40425640/article/details/124341142
 
 
 
+-----------------------------------------------
 
+为了获得流数据的 WebRTC实现了以下API
 
-
+    MediaStream 获取数据流,比如从用户的摄像头或者麦克风
+    RPCPeerConnection 音频或者视频的调用,具有加密和带宽管理
+    RTCDataChannel 点到点的通用数据传输.
 
 
