@@ -1,0 +1,156 @@
+
+
+https://blog.csdn.net/wy5761/article/details/8548059
+
+ICE的使用
+
+
+
+ICE的使用
+行云_
+于 2013-01-28 14:11:51 发布 4331
+收藏 9
+
+原文：http://trac.pjsip.org/repos/wiki/Using_Standalone_ICE#
+在（非sip）应用中使用独立的PJNATH's ICE
+
+本文描述如何在一个独立的、可能没有SIP/SDP的应用中使用ICE流传输。
+
+在阅读本文的时候，推荐同时打开​ICE stream transport reference页面以了解文中所述API的更详细信息。
+简介
+
+PJNATH（PJSIP NAT Traversal Helper）库包含一系列对象，这些对象用来帮助应用程序穿透NAT，它们使用基于标准的协议STUN、TURN和ICE。该库中最“基本”的对象是ICE stream transport（后面简称ice_strans），它把STUN, TURN, ICE这些功能包装在一个对象中，以API的形式提供给应用程序使用，这些API的功能包括收发数据，管理ICE会话。
+
+从库的设计视角来看，PJNATH所有功能被实现于两层，传输独立/会话层和传输层。会话层只包括管理相应会话（例如：STUN, TURN, ICE会话）的逻辑。传输层把会话对象和套接字包装在一起，以使它们可以使用传输对象进行传输。
+术语
+ICE stream transport (ice_strans)
+
+        PJNATH库中用于传输的类名，上面提到的ICE协商就是通过这样的传输实现的。
+ICE session
+
+        ice_trans中在两个ICE终端之间的一个多媒体会话，一个ice_trans可能被重用来帮助多个多媒体会话（但不是同时）。
+ICE endpoint
+
+       实现了ICE的应用程序。它是RFC中ICE代理的同义词。
+在应用程序中装配ICE
+
+为了使用ICE，应用程序需要使用ICE stream transport 对象（后面简称ice_strans）来替换它的收发套接字。ice_strans中的ICE会话创建完成并开始运行后，应用程序使用pj_ice_sentto()来发送数据，通过在pj_ice_strans_cb结构中注册pj_ice_strans_cb来接收到来的数据。
+
+         对于非SIP用法，由应用程序的设计来决定是为多个组件创建一个单独的ice_strans，还是为每一个组件创建一个ice_strans。毫无疑问，前一种方法简单些，因为我们只需要考虑一个会话，不过在后一种方法中，两个ice_strans可以并行协商，因而具有快速协商的优点（每毫秒数十到数百）。
+准备工作
+
+在使用PJNATH之前，需要完成一些准备工作。
+
+PJNATH依赖于下面几个库，需要编译（或者需要的时候移植）并把它们添加进应用程序连接规格中。
+
+    PJLIB（内存访问、定时器、网络I/O、基本的数据结构/框架）
+    PJLIB-UTIL(STUN用到的加密算法)
+
+应用程序需要准备几个PJLIB对象
+
+    对所有基于PJLIB的应用程序，需要至少创建一个memory pool factory实例。The memory pool factory被该库用来管理内存的分配。
+    至少一个timer heap实例用来管理定时器
+    至少一个ioqueue实例用来管理网络I/O事件
+
+通常每个类一个实例就足够了，但应用程序为了协调性能（通过限制每个实例管理的对象数）或者其它原因也可能创建多个实例。
+
+这些对象被创建后，就需要某些东西来轮询the timer heap和the ioqueue。通常应用程序会创建一到多个线程来做轮询。
+
+对于所有基于PJLIB网络的应用程序，以上这些只是很基本的任务，对于具体代码的使用情况可以参考例子。(e.g.​turn-client sample)
+基本生命周期
+
+    如下是ice_strans生命周期的简要概述。每一个步骤都会在后续部分中做进一步的解释：
+    等待初始化完成（亦称候选地址收集过程）
+    开始ICE会话
+             创建ICE会话
+              与远程端交换ICE信息（用户名、密码、候选地址列表）
+              开始ICE协商
+             等待协商完成
+             在两个终端之间交换数据
+             销毁ICE会话
+             重复上述步骤开始新的ICE会话
+    销毁ice_trans
+
+Creating the ICE stream transport
+
+为了创建ice_strans，需要完成如下步骤：
+
+    初始化pj_ice_strans_cfg。除了其它一些东西，这个结构包含支持以及使用STUN和TURN需要的设置，在stun_cfg域中还包含了内存池工厂、定时器堆、输入输出队列（先前提到的）的实例。
+    调用pj_ice_strans_create()
+    等待pj_ice_strans_cb中的on_ice_complete()回调函数被调用，并且on_ice_complete()的op参数被传递值为PJ_ICE_STRANS_OP_INIT以指明当前状态为候选者收集过程。候选者收集完成状态由该回调函数的状态参数指明，PJ_SUCCESS表明操作成功。
+
+ice_strans创建之后，就可以用它来创建ICE会话。一个ICE会话代表一个终端之间的多媒体会话。上一个会话完成之后，同样的ice_strans可以用被用来帮助下一个会话。在同一时刻，一个ice_strans中只能有一个活动会话。
+会话处理
+
+使用会话的步骤通常如下：
+
+通过调用pj_ice_strans_init_ice来创建会话，并指定ICE的初始角色，本地用户名和密码是可选的。
+
+注意：
+
+角色关乎ICE的协商行为，特别是它决定了哪一个终端是控制端。虽然ICE提供了协商过程中的角色冲突解决方案，但最好是一开始就设置正确的初始角色，这样可以避免因为使用角色冲突解决方案而产生的没有必要的来回协商。
+
+与远程对端交换ICE信息
+
+每个ICE终端都知道彼此的ICE信息之后，才能开始ICE协商。
+
+下面这些信息需要被发送给远程对端
+
+    本地ICE会话的用户名和密码
+
+    所有ICE组件的候选地址列表
+
+    函数​pj_ice_strans_enum_cands()用于为每个ICE组件列出候选者。对每一个候选者，都需要交换下面这些信息。
+                 组件ID
+                 候选者类型
+                 fountain ID
+                 优先级
+                 传输类型（现在只支持UDP）
+                 传输地址（地址协议、IP地址、端口）
+                 可选的相关地址。用于故障诊断。
+    每一个ICE组件的默认候选地址。如果远程端不支持ICE，它将发送数据到该地址。在ICE协商过程中，应用程序也可能用该地址来交换数据。应该选择候选地址中成功率最好的作为默认候选地址。例如以这样的顺序来决定，TURN，STUN，本地候选地址中的一个。应用程序可以使用函数pj_ice_strans_get_def_cand()从ice_strans中获得候选地址。
+
+在非SIP应用中，怎么样编码/解码和交换上述信息取决于应用程序/使用场景。
+
+ 开始ICE协商
+
+ ICE终端发送/接收ICE信息到/从远程终端之后，它们可以调用pj_ice_strans_start_ice()函数开始ICE协商。该函数需要上述的ICE信息作为它的参数。每一个终端只有按顺序调用该函数，才能协商成功。
+
+之后，ICE协商将开始。
+
+注意：
+
+终端调用pj_ice_strans_start_ice的时机不必绝对同时，虽然是越同步越能更好的加快协商，而且有个大约7-8秒的ICE协商完成超时限制。 
+
+获取ICE协商结果
+
+pji_ice_strans_cb中的on_ice_complete回调函数将通知应用程序ICE协商的结果，这一次op参数的值被传递为 PJ_ICE_STRANS_OP_NEGOTIATION。这个操作的状态将由回调函数的状态参数指明，PJ_SUCCESS表明协商成功。
+
+发送和接收数据
+
+使用pj_ice_strans_sendto()发送数据到远程终端。进来的数据将在pj_ice_strans_cb结构的on_rx_data()中报告。
+
+结束会话
+
+会话完成后，调用pj_ice_strans_stop_ice()清理为该会话分配的本地资源。
+
+应用程序可以使用同一个的ice_strans实例，重复会话创建部分所述的步骤来开始另一个会话。
+销毁ICE流传输
+
+使用pj_ice_strans_destroy()来销毁流传输本身。这将初始化TURN的释放过程（如果使用了TURN），最终会关掉用到的sockets和释放掉由ice_strans实例分配的资源。      
+
+ 注意如果使用了TURN，ice_strans的销毁不会立即完成（因为TURN需要等待释放过程），因此持续轮询定时器堆和ioqueue是重要的。当ice_strans销毁完成之后，应用程序并不会收到通知，所以需要这样的假设：一旦pj_ice_strans_destroy()被调用，该ice_strans对象就不在可用。
+注意
+
+下面这些信息适用于当前的PJSIP发布版本current PJSIP release (version 1.1 as of 2009/03/16。在将来的发布版本中，它们可能不一样（并且会尽可能的改进）。
+保持活动状态
+
+ice_strans创建之后，TRUN和STUN的“保持活动”将在内部自动完成。默认的STUN保活周期是15秒（PJ_STUN_KEEP_ALIVE_SEC），TURN的也是15秒（PJ_TURN_KEEP_ALIVE_SEC）。
+IP地址变更
+
+STUN映射地址的变更由ice_strans通过STUN保活交换自动处理，目前没有回调函数来通知应用程序这一事件。调用pj_ice_strans_enum_cands()可以获得更新后的地址。
+
+没有检测本地接口的IP地址变更。
+
+如果应用程序关心IP地址的变更，目前我们只能推荐应用程序实现该检测，并且检测到地址变更后重启ICE会话。
+
