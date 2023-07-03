@@ -1,0 +1,16 @@
+
+
+golang 编译不要命令行窗口。
+
+Go Compile Command
+
+    go build -ldflags "-H windowsgui -s -w"
+
+    -ldflags
+
+        -H windowsgui optional: windows hide cmd black window
+
+        -w optional: Removing debugging information can reduce the size of the execution file
+
+        -s optional: Removing Symbol table information can reduce the size of the execution file
+
