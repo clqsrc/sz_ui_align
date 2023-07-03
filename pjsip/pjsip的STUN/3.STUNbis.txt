@@ -1,0 +1,70 @@
+
+
+https://blog.csdn.net/a511244213/article/details/49590379
+
+----
+
+pjsip之PJNATH简介(1)
+daydayup
+于 2015-11-02 18:37:36 发布 3046
+收藏 3
+分类专栏： pjsip
+pjsip 专栏收录该内容
+7 篇文章 0 订阅
+订阅专栏
+在学习pjsip的过程中，发现只是单单的阅读英文官方文档，对于里边概念的理解还是不够透彻，并且苦于pjsip没有发现全一点的中文版本，所以想尽自己所能为建设和谐社会而贡献一份力量，文中定会有所疏漏，希望各位看客能够不吝赐教。
+
+　　1:pjsip教程(一)之PJNATH简介
+
+　　2:pjsip教程(二)之ICE穿越打洞：Interactive Connectivity Establishment简介
+
+　　3:pjsip教程(三)之ICE stream transport的使用
+
+　　4:pjsip文档(四)之ICE Session的使用方法
+
+　　原文地址：http://www.pjsip.org/docs/latest/pjnath/docs/html/index.htm
+
+PJNATH - Open Source ICE, STUN, and TURN Library 
+
+PJNATH (PJSIP NAT Helper)是一个开源的并且是使用标准协议(STUN,TURN,ICE)提供NAT设备穿越功能的库.
+
+Background
+
+在现今的网络中网络地址转换技术/设备(NAT)很常见，这种技术允许多台主机共享同一个公网地址从而接入网络，其主要目的就是为了缓解IPv4地址的枯竭。 这种技术在普通的服务器/客户端模式下并不存在问题，因为请求总是由客户端发起，并且客户端也不需要维持长时间的维持与服务器的连接。但是NAT技术最大的问题就是使得点对点通信不能进行，比如VoIP.
+
+Introduction to PJNATH
+
+PJNATH库包含了NAT穿越的标准实现，它可以独自应用或者与PJSUA-LIB共同使用，PJSUA-LIB库将PJSIP, PJMEDIA, PJNATH很好的集成在一起，使用方便。.
+
+PJNATH 具有以下特征:
+
+    STUNbis实现
+    该实现遵照RFC 5389.它既提供了现成的STUN网络接口，又提供了基于TURN和ICE的实现更高层次STUN的框架。
+
+    NAT 类型探测
+    探测通信两端的NAT设备类型，该实现依据 RFC 3489. 然而为了支持ICE，协助NAT穿越的NAT类型的探测已经不被推荐了，但是在故障排除的时候还是有用的，因此提供了NAT类型探测的功能.
+
+    TURN实现
+    TURN 是使用中转服务器进行中继通信的协议，它联合ICE提供了尽可能的高效的通信路径。它的实现符合 draft-ietf-behave-turn-14 草案.
+
+    ICE实现
+    ICE 是发现待通信两端一条或多条可直接通信的路径的协议。它的实现符合draft-ietf-mmusic-ice-19.txt 草案 
+
+在将来，我们会实现更多的协议(比如UPnP IGD、SOCKS5).
+
+Library Organization
+
+提供的主要组件如下：
+
+    STUN: Session Traversal Utilities for NAT
+    TURN: Traversal Using Relays around NAT
+    ICE: Interactive Connectivity Establishment
+    NAT Classification/Detection Tool
+
+除了 NAT Classification/DetectionTool, 每个组件都进一步划分为两个部分：
+
+    传输对象
+    传输对象是session对象加上指定的  传输/套接字（transport/sockets）  的实现，它给应用程序提供一个直接可以使用的对象。比如，STUN transport, TURN transport以及ICE stream transport
+
+　　传输无关/session 层
+　　　session对象(比如 STUN session, TURNsession, ICE session)是维护通信协议中session的核心对象，它是与传输无关的（意思是说它自己没有专门用于传输数据的socket，它只有发送和接受数据的接口，至于发送和接收数据时用到的具体的协议它是不关心的）。这样，不管传输层使用的什么协议，开发者都可以重用这个对象，比如使用UDP, TCP或者TLS或者是开发者自己实现的其他某种协议。
