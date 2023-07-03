@@ -1,0 +1,119 @@
+
+
+203.183.172.196
+
+
+https://blog.csdn.net/u012498660/article/details/49493335
+
+ICE流传输
+wxsheng5
+于 2015-10-29 16:31:54 发布 1860
+收藏 1
+分类专栏： pjproject 文章标签： ICE pjproject p2p NAT pjsua
+版权
+pjproject 专栏收录该内容
+1 篇文章 0 订阅
+订阅专栏
+
+ICE流传输
+
+1、
+
+使用ICE流传输
+
+ICE会话如下：
+
+步骤一：初始化pj_ice_stans_cfg结构。
+
+步骤二：通过pj_ice_strans_create()函数创建ice实例；该函数主要需要下列参数：
+
+a、pj_ice_strans_cfg参数--配置参数（控制是否收集候选地址）；
+
+b、支持组件数--组件总数（暂时理解为2，一为音频一为视频）；
+
+c、pj_ice_strans_cb结构实例，用于支持函数回调（ice创建完成后，回调该函数）；
+
+ice一旦初始化，就会后台运行收集候选地址；当地址收集完成，回调pj_ice_strans_cb中的on_ice_complete
+
+步骤三：通过pj_ice_strans_init_ice()创建ice会话;
+
+步骤四：程序通过以下方式，将本地ice信息传递给对方主机：
+
+a、pj_ice_strans_get_ufrag_pwd();
+
+b、pj_ice_strans_enum_cands();
+
+c、pj_ice_strans_get_def_cand();
+
+步骤五：对方主机接收到ice信息后，开始ice谈判，通过pj_ice_strans_start_ice()进行谈判；
+
+注意：要先解析sdp包；
+
+步骤六：谈判成功，回调pj_ice_strans_cb中的on_ice_complete()；
+
+1、NAT检查需要有效的stun服务器，在网上找到两个不错的服务器地址，就可以检测成功了；
+
+ip1：203.183.172.196
+
+ip2： 192.98.81.66
+
+ 
+
+2、NAT检测代码流程：
+
+已经检测出来是对称型的；
+
+3、port分配规律
+
+  放在明天研究  
+
+4、SIP_endpoint：
+
+代码流程：(主线)  1、main--->main_func--->app_init(pjsua_app.c )---->pjsua_create(pjsua_core.c--659)-->初始化pjsua 数据、pjlib （为系统与底层打交道提供支持库）初始化pjlib-util（封装的工具库）、初始化pjnath（提供与nat相关支持）
+
+-->sip_endpt_create(sip_endpoint.c--426)初始化endpoint-->
+
+               (主线)  2、main--->main_func--->app_init(pjsua_app.c)---->pjsua_init（初始化pjsua）-->resolver_stun_server(解析stun服务器)-->pjsua_resolver_stun_servers-->resolve_stun_entry(test_stun-on_status)都在pjsua_core.c下面。
+
+                3、resolve_stun_entry-->pj_stun_sock_create(创建stun 传输，用指定的配置)-->sess_on_request_complete(外出事物完成stun会话就会回调该函数)；
+
+               4、resolve_stun_entry-->pj_stun_sock_start-->pj_dns_srv_resolver--->getmapped_addr(stun_sock.c发送stun绑定请求)----》pj_stun_session_create_req(创建绑定请求)  ---》pj_stun_session_send_msg（发送绑定请求）---》
+
+              5、resolve_stun_entry-->test_stun_on_status-->stun_resolve_complete(pj_stun_resolve完成，回调该函数)
+
+=====================================================================================================
+
+梳理下路线：我们的入口是在pjsua中的main.c中，首先调用pj_run_app函数来启动main_fun函数。
+
+main_fun函数主要包含两个一个app_init,另外一个是app_main函数；前者进行程序的初始化，后者在控制台进行监听；
+
+首先，讲解app_init的流程。在这里的主要工作，其实在我们的1/2、3/4/5已经有详细的解释了
+
+第二个函数，才是我们重点要研究的，p2p就是在这里进行下去的。
+
+app_main--->pjsua_start--->console_app_main(控制台在这循环)
+
+======================================================================================================
+
+https://blog.csdn.net/u012498660/article/details/49493335
+
+
+
+-----------------------------------------------
+
+ 实测可用的免费STUN服务器！
+实测可用的免费STUN服务器！
+ 
+ 
+以实际ping延迟排序：
+stun.voipbuster.com 	287ms
+stun.wirlab.net 	320ms
+s1.taraba.net          203.183.172.196:3478
+s2.taraba.net          203.183.172.196:3478 
+s1.voipstation.jp          113.32.111.126:3478
+s2.voipstation.jp          113.32.111.127:3478
+
+
+
+
+
