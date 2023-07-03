@@ -1,0 +1,876 @@
+
+
+使用PJLIB库实现SSL加密的TCP服务器和客户端
+
+使用PJLIB库实现SSL加密的TCP服务器和客户端
+记录知识，记录人生
+于 2020-03-04 16:48:23 发布 287
+收藏
+分类专栏： PJLIB 文章标签： c++ 后端
+版权
+PJLIB 专栏收录该内容
+4 篇文章 0 订阅
+订阅专栏
+
+附一个PJSIP库的基础介绍链接：
+http://www.zhimax.com/article/tcp/pjlib.html
+
+PJLIB的测试源码链接：
+https://trac.pjsip.org/repos/browser/pjproject/tags/2.9/pjlib/src?order=name#pjlib-test
+
+基于测试源码，自己动手写了一个SSL加密的TCP服务器和客户端。开发环境是centos7.
+
+服务端代码：
+
+#include <pjlib.h>
+#include <iostream>
+#include <netinet/in.h>
+#include "PQTEL.pb.h"       
+
+using namespace std;
+using namespace pqtel_msg;
+
+#define CERT_CA_FILE            "./ca.crt"
+#define CERT_FILE               "./server.crt"
+#define CERT_PRIVKEY_FILE       "./server.pem"
+#define CERT_PRIVKEY_PASS       ""
+
+#define SVR_IP                  "127.0.0.1"
+#define SVR_PORT                14789
+
+//全局变量
+pj_caching_pool         cachingPool;
+pj_pool_factory         *mem;
+
+struct send_key {
+    pj_ioqueue_op_key_t op_key;
+};
+
+struct PJ_Data
+{
+    pj_pool_t      *pool;       
+    pj_ioqueue_t   *ioqueue;        
+    pj_bool_t       is_server;     
+    pj_bool_t       is_verbose;          
+    pj_bool_t       is_done;      
+    struct send_key send_key;  
+};
+
+struct pqtel_head
+{
+    short                   type;
+    short                   msglen;
+};
+
+static void dump_ssl_info(const pj_ssl_sock_info *si)
+{
+    const char *tmp_st;
+
+    /* Print cipher name */
+    tmp_st = pj_ssl_cipher_name(si->cipher);
+    if (tmp_st == NULL)
+        tmp_st = "[Unknown]";
+    PJ_LOG(3, ("", ".....Cipher: %s", tmp_st));
+
+    /* Print remote certificate info and verification result */
+    if (si->remote_cert_info && si->remote_cert_info->subject.info.slen) 
+    {
+        char buf[2048];
+        const char *verif_msgs[32];
+        unsigned verif_msg_cnt;
+
+        /* Dump remote TLS certificate info */
+        PJ_LOG(3, ("", ".....Remote certificate info:"));
+        pj_ssl_cert_info_dump(si->remote_cert_info, "  ", buf, sizeof(buf));
+        PJ_LOG(3,("", "\n%s", buf));
+
+        /* Dump remote TLS certificate verification result */
+        verif_msg_cnt = PJ_ARRAY_SIZE(verif_msgs);
+        pj_ssl_cert_get_verify_status_strings(si->verify_status, verif_msgs, &verif_msg_cnt);
+        PJ_LOG(3,("", ".....Remote certificate verification result: %s",(verif_msg_cnt == 1? verif_msgs[0]:"")));
+        if (verif_msg_cnt > 1) {
+            unsigned i;
+            for (i = 0; i < verif_msg_cnt; ++i)
+                PJ_LOG(3,("", "..... - %s", verif_msgs[i]));
+        }
+    }
+} 
+
+const char* SVR_MakeHead(char* output, char *sendbuf, int length)
+{
+    //拼接应用层协议头
+    pqtel_head *head = (pqtel_head *)sendbuf;
+    head->type = htons(0x5051);
+    head->msglen = htons(length + 2);
+    short ncrc = htons(0x2022);
+    memcpy(sendbuf, head, sizeof(pqtel_head));
+    memcpy(sendbuf + sizeof(pqtel_head), output, length);
+    memcpy(sendbuf + sizeof(pqtel_head) + length, (char*)&ncrc, sizeof(short));
+    return sendbuf;
+}
+
+int SVR_SendRep(pj_ssl_sock_t *ssock)
+{
+    pj_status_t status;
+    char output[256] = {0};
+    char sendbuf[512] = {0};
+    int length;
+    bool flag;
+    pj_ssize_t size;
+    
+    PqtelMsg msg;
+    Response *rep = msg.mutable_response();
+    rep->set_result(200);
+    rep->set_error_describe("login   OK ");
+
+    length = msg.ByteSize();
+    flag = msg.SerializeToArray(output,length);
+    if(!flag)
+    {
+        printf("SendRep SerializeToArray is wrong \n");
+        return -1;
+    }
+    SVR_MakeHead(output,sendbuf,length);
+    size = length + 6;
+    struct PJ_Data *st = (struct PJ_Data*) pj_ssl_sock_get_user_data(ssock);
+    status = pj_ssl_sock_send(ssock, (pj_ioqueue_op_key_t*)&st->send_key, sendbuf, &size, 0);
+    if(status == PJ_SUCCESS)
+        printf("Send login rep OK,size---%d \n",(int)size);
+    
+    return 0;
+}
+
+int SVR_RecvData(pj_ssl_sock_t *ssock, char *data, pj_size_t size)
+{
+    short ncrc;
+    int proto_len;
+    char proto_msg[512] = {0};
+    pqtel_head *head = (pqtel_head *)data;
+    if (ntohs(head->type) != 0x5051)
+    {
+        printf("SVR_RecvData  Get type is wrong \n");
+        return -1;
+    }
+    proto_len = ntohs(head->msglen) - 2;
+    memcpy((char*)&ncrc, data + sizeof(pqtel_head) + proto_len, sizeof(short));
+    memcpy(proto_msg, data + sizeof(pqtel_head), proto_len);
+
+    //反序列化protobuf数据
+    PqtelMsg msg;
+    bool flag = msg.ParseFromArray(proto_msg, proto_len);
+    if (!flag)
+    {
+        printf("SVR_RecvData  ParseFromArray is wrong \n");
+        return -2;
+    }
+
+    if (msg.type() == Login_Request)
+    {
+        string uuid = msg.request().login().uuid();
+        printf("SVR_RecvData  Get Login_Req uuid --- [%s] \n", uuid.c_str());
+
+        //发送回应
+        SVR_SendRep(ssock);
+    }    
+
+    return 0;
+}
+
+pj_bool_t SVR_DataRead(pj_ssl_sock_t *ssock, void *data, pj_size_t size, pj_status_t status, pj_size_t *remainder)
+{
+    int ret;
+    void *dataTmp = NULL;
+    PJ_UNUSED_ARG(remainder);
+    PJ_UNUSED_ARG(data);
+
+    if (status != PJ_SUCCESS || size == 0) 
+    {
+        printf("SVR_DataRead  connect Linker Break,size %d \n", (int)size);
+        pj_ssl_sock_close(ssock);
+        return PJ_FALSE;
+    }
+
+    dataTmp = data;
+    while (size > 0)
+    {
+        pqtel_head *head = (pqtel_head *)data;
+        pj_size_t packetLen = ntohs(head->msglen) + sizeof(pqtel_head);
+        if (size < sizeof(pqtel_head)) 
+        {
+            if (dataTmp != data) {
+                pj_memcpy(dataTmp, data, size);
+            }
+            *remainder = size;
+            return PJ_TRUE;
+        }
+        else if (size < packetLen) 
+        {
+            if (dataTmp != data) {
+                pj_memcpy(dataTmp, data, size);
+            }
+            *remainder = size;
+            return PJ_TRUE;
+        }
+
+        printf("SVR_DataRead  recv packet --- [%d]/[%d] \n", (int)size, (int)packetLen);
+        ret = SVR_RecvData(ssock, (char *)data, packetLen);
+        if (ret < 0)
+        {
+            printf("SVR_DataRead  Recv Data error,ret is %d \n", ret);
+            pj_ssl_sock_close(ssock);
+            return PJ_FALSE;
+        }
+        data = (pj_uint8_t*)data + packetLen;
+        size = size - packetLen;
+    }
+
+    return PJ_TRUE;
+}
+
+pj_bool_t SVR_AcceptComplete(pj_ssl_sock_t *ssock, pj_ssl_sock_t *newsock, const pj_sockaddr_t *src_addr, int src_addr_len)
+{
+    char buf[32] = { 0 };
+    pj_ssl_sock_info info;
+    pj_status_t status;
+    struct PJ_Data *st;
+    PJ_UNUSED_ARG(src_addr_len);
+
+    //根据socket获取信息
+    struct PJ_Data *parent_st = (struct PJ_Data*) pj_ssl_sock_get_user_data(ssock);
+    //给新连接分配资源
+    st = (struct PJ_Data*)pj_pool_zalloc(parent_st->pool, sizeof(struct PJ_Data));
+    *st = *parent_st;
+    pj_ssl_sock_set_user_data(newsock, st);
+    status = pj_ssl_sock_get_info(newsock, &info);
+    if (status != PJ_SUCCESS) {
+        printf("...ERROR pj_ssl_sock_get_info() \n");
+        goto on_return;
+    }
+
+    //获取套接字使用的本地地址和端口
+    pj_sockaddr_print(src_addr, buf, sizeof(buf), 1);
+    cout<<" .....Server Accepted connection from ----- "<< buf<<endl;
+
+    //打印SSL信息
+    if (st->is_verbose)
+        dump_ssl_info(&info);
+
+    //开始接收数据
+    status = pj_ssl_sock_start_read(newsock, st->pool, 1024, 0);
+    if (status != PJ_SUCCESS) {
+        printf("...ERROR pj_ssl_sock_start_read() \n");
+        goto on_return;
+    }
+
+on_return:
+    if (status != PJ_SUCCESS) {
+        pj_ssl_sock_close(newsock);
+        return PJ_FALSE;
+    }
+
+    return PJ_TRUE;
+}
+
+int SVR_Business(pj_ssl_sock_proto srv_proto, pj_ssl_sock_proto cli_proto,pj_ssl_cipher srv_cipher, pj_ssl_cipher cli_cipher,
+                                                                            pj_bool_t req_client_cert, pj_bool_t client_provide_cert)
+{
+    pj_ssl_sock_t       *ssock_svr = NULL;
+    pj_ssl_sock_param   param;
+    pj_sockaddr         addr;
+    pj_ioqueue_t        *ioqueue = NULL;
+    pj_ssl_cipher       ciphers[1];
+    pj_ssl_cert_t       *cert = NULL;
+    pj_status_t         status;
+    pj_pool_t           *pool = NULL;
+    struct PJ_Data      svr_data = {0};
+
+    pj_str_t ca_file = pj_str(CERT_CA_FILE);
+    pj_str_t cert_file = pj_str(CERT_FILE);
+    pj_str_t privkey_file = pj_str(CERT_PRIVKEY_FILE);
+    pj_str_t privkey_pass = pj_str(CERT_PRIVKEY_PASS);
+
+    pj_time_val delay = {0, 100};
+
+    //创建内存池
+    pool = pj_pool_create(mem, "SVR_Business", 64*1024, 64*1024, NULL);
+    if (pool == NULL)
+    {
+        printf("SVR_Business create pool error \n");
+        goto on_return;
+    }
+
+    //创建IO队列
+    status  = pj_ioqueue_create(pool, 10, &ioqueue);
+    if (status != PJ_SUCCESS)
+    {
+        printf("SVR_Business create ioqueue error \n");
+        goto on_return;
+    }
+   
+    //socket所需参数，默认初始化
+    pj_ssl_sock_param_default(&param);
+    param.cb.on_accept_complete = &SVR_AcceptComplete;
+    param.cb.on_data_read = &SVR_DataRead;
+    param.ioqueue = ioqueue;
+    param.ciphers = ciphers;
+    //
+    //初始化默认绑定地址
+    pj_str_t tmp_st;
+    pj_sockaddr_init(PJ_AF_INET, &addr, pj_strset2(&tmp_st, (char*)SVR_IP), SVR_PORT);
+
+    param.proto = srv_proto;//协议类型
+    param.user_data = &svr_data;
+    param.ciphers_num = (srv_cipher == -1)? 0 : 1;
+    param.require_client_cert = req_client_cert;//要求客户提供凭证
+    ciphers[0] = srv_cipher;   
+
+    svr_data.pool = pool;
+    svr_data.is_server = PJ_TRUE;
+    svr_data.is_verbose = PJ_FALSE;
+    svr_data.is_done = PJ_FALSE;
+    
+    //创建socket实例
+    status = pj_ssl_sock_create(pool, &param, &ssock_svr);
+    if (status != PJ_SUCCESS) {
+        goto on_return;
+    }
+    cout << "SVR_Business create sock ok" << endl;
+
+
+    // 设置服务器证书
+    status = pj_ssl_cert_load_from_files(pool, &ca_file, &cert_file, &privkey_file, &privkey_pass, &cert);
+    if (status != PJ_SUCCESS) {
+        goto on_return;
+    }
+
+    status = pj_ssl_sock_set_certificate(ssock_svr, pool, cert);
+    if (status != PJ_SUCCESS) {
+        goto on_return;
+    }
+    //启动服务器接收程序，接收成功将进入on_accept_complete()函数处理
+    status = pj_ssl_sock_start_accept(ssock_svr, pool, &addr, pj_sockaddr_get_len(&addr));
+    if (status != PJ_SUCCESS) {
+        cout << "SVR_Business pj_ssl_sock_start_accept ERROR" << endl;
+        goto on_return;
+    }
+    cout << "SVR_Business start  accept  ok" << endl;
+
+    //轮询获取io队列中的事件，0表示超时没事件；<0表示轮询出错；>1表示获取到的事件数
+    while ( !svr_data.is_done) 
+    {
+        pj_ioqueue_poll(ioqueue, &delay);
+    }
+
+    /* Clean up sockets */
+    while (pj_ioqueue_poll(ioqueue, &delay) > 0);
+
+    cout<<"SVR_Business  Done "<<endl;
+
+on_return:
+    if (ssock_svr)
+        pj_ssl_sock_close(ssock_svr);
+    if (ioqueue)
+        pj_ioqueue_destroy(ioqueue);
+    if (pool)
+        pj_pool_release(pool); 
+
+    return status;
+}
+
+int main()
+{
+    //初始化pjlib库返回PJ_SUCCESS表示成功
+    pj_init();
+    //设置日志文件级别
+    pj_log_set_level(5);
+    //内存池工厂的初始化
+    pj_caching_pool_init(&cachingPool, NULL, 64*1024);
+    mem = &cachingPool.factory;
+
+    int ret = SVR_Business(PJ_SSL_SOCK_PROTO_TLS1, PJ_SSL_SOCK_PROTO_TLS1, 
+            PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, 
+            PJ_FALSE, PJ_FALSE);
+    cout << "main  get ret --- "<< ret <<endl;
+
+    //将内存池预分配的内存还给系统
+    pj_caching_pool_destroy(&cachingPool);
+    //停止pjlib
+    pj_shutdown();
+
+    return 0;
+}
+
+
+
+客户端：
+
+#include <pjlib.h>
+#include <iostream>
+#include <unistd.h>
+#include <netinet/in.h>
+#include "PQTEL.pb.h"
+
+#define CERT_CA_FILE            "./ca.crt"
+#define CERT_FILE_CLIENT        ""
+#define CERT_FILE               "./server.crt"
+#define CERT_PRIVKEY_FILE       "./server.pem"
+#define CERT_PRIVKEY_PASS       ""
+
+#define SVR_IP          "127.0.0.1"
+#define SVR_PORT        14789
+
+pj_caching_pool caching_pool;
+pj_pool_factory *mem;
+pj_bool_t       g_is_con = PJ_FALSE;
+
+using namespace std;
+using namespace pqtel_msg;
+
+int CLI_business(pj_ssl_sock_proto srv_proto, pj_ssl_sock_proto cli_proto,pj_ssl_cipher srv_cipher, pj_ssl_cipher cli_cipher,
+                                                                                        pj_bool_t req_client_cert, pj_bool_t client_provide_cert);
+
+struct send_key {
+    pj_ioqueue_op_key_t op_key;
+};
+
+struct PJ_Data
+{
+    pj_pool_t      *pool;       
+    pj_ioqueue_t   *ioqueue;        
+    pj_bool_t       is_server;     
+    pj_bool_t       is_verbose;          
+    pj_bool_t       is_done;      
+    struct send_key send_key;  
+};
+
+struct pqtel_head
+{
+    short                   type;
+    short                   msglen;
+}; 
+
+static void dump_ssl_info(const pj_ssl_sock_info *si)
+{
+    const char *tmp_st;
+
+    /* Print cipher name */
+    tmp_st = pj_ssl_cipher_name(si->cipher);
+    if (tmp_st == NULL)
+        tmp_st = "[Unknown]";
+    PJ_LOG(3, ("", ".....Cipher: %s", tmp_st));
+
+    /* Print remote certificate info and verification result */
+    if (si->remote_cert_info && si->remote_cert_info->subject.info.slen) 
+    {
+        char buf[2048];
+        const char *verif_msgs[32];
+        unsigned verif_msg_cnt;
+
+        /* Dump remote TLS certificate info */
+        PJ_LOG(3, ("", ".....Remote certificate info:"));
+        pj_ssl_cert_info_dump(si->remote_cert_info, "  ", buf, sizeof(buf));
+        PJ_LOG(3,("", "\n%s", buf));
+
+        /* Dump remote TLS certificate verification result */
+        verif_msg_cnt = PJ_ARRAY_SIZE(verif_msgs);
+        pj_ssl_cert_get_verify_status_strings(si->verify_status, verif_msgs, &verif_msg_cnt);
+        PJ_LOG(3,("", ".....Remote certificate verification result: %s",(verif_msg_cnt == 1? verif_msgs[0]:"")));
+        if (verif_msg_cnt > 1) {
+            unsigned i;
+            for (i = 0; i < verif_msg_cnt; ++i)
+                PJ_LOG(3,("", "..... - %s", verif_msgs[i]));
+        }
+    }
+} 
+
+const char* CLI_MakeHead(char* output, char *sendbuf,int length)
+{
+    //拼接应用层协议头
+    pqtel_head *head = (pqtel_head *)sendbuf;
+    head->type = htons(0x5051);
+    head->msglen = htons(length+2);
+    short ncrc = htons(0x2022);
+    memcpy(sendbuf,head,sizeof(pqtel_head));
+    memcpy(sendbuf+sizeof(pqtel_head),output,length);
+    memcpy(sendbuf+sizeof(pqtel_head)+length,(char*)&ncrc,sizeof(short));
+    return sendbuf;
+}
+
+int CLI_SendMsg(pj_ssl_sock_t *ssock)
+{
+    pj_status_t status;
+    char output[256] = {0};
+    char sendbuf[512] = {0};
+
+    int length;
+    bool flag;
+    pj_ssize_t size;
+    
+    PqtelMsg msg;
+    Request *req = msg.mutable_request();
+    msg.set_type(Login_Request);
+    LoginRequest *loginreq = req->mutable_login();
+    loginreq->set_jwt_token("cli_token");
+    loginreq->set_uuid("cli_uuid");
+
+    length = msg.ByteSize();
+    flag = msg.SerializeToArray(output,length);
+    if(!flag)
+    {
+        printf("CLI_SendMsg SerializeToArray is wrong \n");
+        return -1;
+    }
+    CLI_MakeHead(output,sendbuf,length);
+    size = length + 6;
+    struct PJ_Data *st = (struct PJ_Data*) pj_ssl_sock_get_user_data(ssock);
+    status = pj_ssl_sock_send(ssock, (pj_ioqueue_op_key_t*)&st->send_key, sendbuf, &size, 0);
+    if(status == PJ_SUCCESS)
+        printf("CLI_SendMsg  login_req OK,size---%d \n",(int)size);
+    
+    return 0;
+}
+
+
+int CLI_RecvData(pj_ssl_sock_t *ssock, char *data, pj_size_t size)
+{
+    char proto_msg[512] = {0};
+    short ncrc;
+    int proto_len;
+    pqtel_head *head = (pqtel_head *)data;
+    if(ntohs(head->type) != 0x5051 )
+    {
+        printf("CLI_RecvData  Get type is wrong \n");
+        return -1;
+    }
+    proto_len = ntohs(head->msglen) - 2;
+    memcpy((char*)&ncrc,data+sizeof(pqtel_head)+proto_len,sizeof(short));
+    memcpy(proto_msg,data+sizeof(pqtel_head),proto_len);
+
+    //反序列化protobuf数据
+    PqtelMsg msg;
+    msg.ParseFromArray(proto_msg,proto_len);
+
+    int code = msg.response().result();
+    string describe = msg.response().error_describe();
+    printf("CLI_RecvData  Get Login_Rep code[%d], describe[%s] \n",code,describe.c_str());
+
+    //循环发送
+    sleep(3);
+    CLI_SendMsg(ssock);
+       
+    return 0;
+}
+
+int CLI_ReConncent(void *arg)
+{
+    static int time = 0;
+    while(!g_is_con)
+    {
+        if(time==0 || time==3)
+        {
+            cout<<"-----------------------------begin  reconnect to SVR------------------------------------"<<endl;
+            int ret = CLI_business(PJ_SSL_SOCK_PROTO_TLS1, PJ_SSL_SOCK_PROTO_TLS1, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_FALSE, PJ_FALSE);
+            cout<<" reconnect  to SVR  ret ======== "<<ret<<endl;
+        }
+        
+        time++;
+        sleep(1);
+    }
+    return 0;
+}
+
+pj_bool_t CLI_DataRead(pj_ssl_sock_t *ssock, void *data, pj_size_t size, pj_status_t status, pj_size_t *remainder)
+{
+    int ret;
+    void *dataTmp = NULL;
+    //根据socket获取信息
+    struct PJ_Data *st = (struct PJ_Data*) pj_ssl_sock_get_user_data(ssock);
+
+    if (status != PJ_SUCCESS || size == 0 ) 
+    {
+        printf("CLI_DataRead  size --- %d  ， 服务器将此连接关闭了，开始重新连接  \n",(int)size);
+        pj_ssl_sock_close(ssock);
+        if (st->ioqueue)
+        pj_ioqueue_destroy(st->ioqueue);
+        if (st->pool)
+        pj_pool_release(st->pool);
+        //定时重连
+        g_is_con = PJ_FALSE;
+        CLI_business(PJ_SSL_SOCK_PROTO_TLS1, PJ_SSL_SOCK_PROTO_TLS1, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_FALSE, PJ_FALSE);
+
+        return PJ_FALSE;
+    }
+    dataTmp = data;
+    while( size > 0)
+    {
+        pqtel_head *head = (pqtel_head *)data;
+        pj_size_t packetLen = ntohs(head->msglen) + sizeof(pqtel_head);
+        if (size < sizeof(pqtel_head)) 
+        {
+            if (dataTmp != data) {
+                pj_memcpy(dataTmp, data, size);
+            }
+            *remainder = size;
+            return PJ_TRUE;
+        } 
+        else if (size < packetLen) 
+        {
+            if (dataTmp != data) {
+                pj_memcpy(dataTmp, data, size);
+            }
+            *remainder = size;
+            return PJ_TRUE;
+        }
+
+        printf("CLI_DataRead  recv packet --- [%d]/[%d] \n", (int)size, (int)packetLen);
+        ret = CLI_RecvData(ssock, (char *)data, packetLen);
+        if(ret < 0)
+        {
+            printf("CLI_DataRead  Recv Data error,ret is %d \n",ret);
+            pj_ssl_sock_close(ssock);
+            return PJ_FALSE;
+        }
+        data = (pj_uint8_t*)data + packetLen;
+        size = size - packetLen;
+    }
+
+    return PJ_TRUE;
+}
+
+pj_bool_t CLI_ConnectComplete(pj_ssl_sock_t *ssock, pj_status_t status)
+{
+    int ret;
+    char buf1[32] = {0};
+    char buf2[32] = {0};
+    pj_ssl_sock_info info;
+
+    //根据socket获取信息
+    struct PJ_Data *st = (struct PJ_Data*) pj_ssl_sock_get_user_data(ssock);
+    
+    if (status != PJ_SUCCESS) {
+        printf("CLI_connect  连接服务器失败，重新连接 \n");
+        pj_ssl_sock_close(ssock);
+        if (st->ioqueue)
+        pj_ioqueue_destroy(st->ioqueue);
+        if (st->pool)
+        pj_pool_release(st->pool);
+        //隔三秒重连
+        sleep(3);
+        CLI_business(PJ_SSL_SOCK_PROTO_TLS1, PJ_SSL_SOCK_PROTO_TLS1, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_FALSE, PJ_FALSE);
+        
+        return PJ_FALSE;
+    }
+    g_is_con = PJ_TRUE;
+
+    status = pj_ssl_sock_get_info(ssock, &info);
+    if (status != PJ_SUCCESS) {
+        printf("...ERROR pj_ssl_sock_get_info() \n");
+        goto on_return;
+    }
+    pj_sockaddr_print((pj_sockaddr_t*)&info.local_addr, buf1, sizeof(buf1), 1);
+    pj_sockaddr_print((pj_sockaddr_t*)&info.remote_addr, buf2, sizeof(buf2), 1);
+    printf("CLI_connect  ownaddr[%s] Connected to [%s] OK \n", buf1, buf2);
+
+    //打印SSL信息
+    if (st->is_verbose)
+        dump_ssl_info(&info);
+
+    //开始接收数据
+    status = pj_ssl_sock_start_read(ssock, st->pool, 1024, 0);
+    if (status != PJ_SUCCESS) {
+        printf("CLI_connect ssl_read() error \n");
+        goto on_return;
+    }
+
+    //发送数据
+    ret = CLI_SendMsg(ssock);
+    if( ret < 0 )
+    {
+        printf("CLI_connect  send msg Error \n");
+        return PJ_FALSE;
+    }
+
+on_return:
+    if (status != PJ_SUCCESS) {
+        pj_ssl_sock_close(ssock);
+        return PJ_FALSE;
+    }
+
+    return PJ_TRUE;
+}
+
+
+int CLI_business(pj_ssl_sock_proto srv_proto, pj_ssl_sock_proto cli_proto,pj_ssl_cipher srv_cipher, pj_ssl_cipher cli_cipher,
+                                                                                        pj_bool_t req_client_cert, pj_bool_t client_provide_cert)
+{
+    pj_ioqueue_t        *ioqueue = NULL;
+    pj_ssl_sock_t       *ssock_cli = NULL;
+    pj_pool_t           *pool = NULL;
+    pj_ssl_sock_param   param;
+    struct PJ_Data      cli_data = {0};
+    pj_sockaddr         listen_addr, addr;
+    pj_ssl_cert_t       *cert = NULL;
+    pj_status_t         status;
+    pj_ssl_cipher       ciphers[1];
+    pj_str_t            tmp_st1, tmp_st2;
+    pj_time_val         delay = {0, 100};
+
+     //创建内存池
+    pool = pj_pool_create(mem, "CLI_business", 32*1024, 32*1024, NULL);
+    if(pool == NULL)
+    {
+        printf("CLI_business  create pool error\n");
+        return -1;
+    }
+
+    //创建IO队列
+    status  = pj_ioqueue_create(pool, 10 , &ioqueue);
+    if (status != PJ_SUCCESS)
+    {
+        printf("CLI_business create ioqueue error \n");
+        return -2;
+    }
+   
+   //socket所需参数，默认初始化
+    pj_ssl_sock_param_default(&param);
+    param.cb.on_connect_complete = &CLI_ConnectComplete;
+    param.cb.on_data_read = &CLI_DataRead;
+    param.ioqueue = ioqueue;
+    param.ciphers = ciphers;
+
+    //初始化默认地址
+    pj_str_t tmp_st;
+    pj_sockaddr_init(PJ_AF_INET, &addr, pj_strset2(&tmp_st, (char*)SVR_IP), SVR_PORT);
+
+    /* === CLIENT === */
+    param.proto = cli_proto;
+    param.user_data = &cli_data;
+    param.ciphers_num = (cli_cipher == -1)? 0 : 1;
+    ciphers[0] = cli_cipher;
+
+    cli_data.pool = pool;
+    cli_data.is_verbose = PJ_FALSE;
+    cli_data.is_done = PJ_FALSE;
+
+    //创建socket
+    status = pj_ssl_sock_create(pool, &param, &ssock_cli);
+    if (status != PJ_SUCCESS) {
+        goto on_return;
+    }
+
+    //读取SSL信息
+    if (!client_provide_cert) 
+    {
+        pj_str_t ca_file = pj_str(CERT_CA_FILE);
+        pj_str_t null_str = pj_str("");
+        status = pj_ssl_cert_load_from_files(pool, &ca_file, &null_str, &null_str, &null_str, &cert);
+        if (status != PJ_SUCCESS) {
+            goto on_return;
+        }
+    }
+    //设置SSL密码
+    status = pj_ssl_sock_set_certificate(ssock_cli, pool, cert);
+    if (status != PJ_SUCCESS) {
+        goto on_return;
+    }
+    printf("CLI_business  Now begin Connect to ---[%s:%d] \n",SVR_IP,SVR_PORT);
+
+    //获取监听地址
+    pj_sockaddr_init(PJ_AF_INET, &addr, pj_strset2(&tmp_st1, NULL), 0);
+    pj_sockaddr_init(PJ_AF_INET, &listen_addr, pj_strset2(&tmp_st2, (char *)SVR_IP), SVR_PORT);
+    //开始连接服务器
+    status = pj_ssl_sock_start_connect(ssock_cli, pool, &addr, &listen_addr, pj_sockaddr_get_len(&addr));
+    if (status == PJ_SUCCESS) {
+        CLI_ConnectComplete(ssock_cli, PJ_SUCCESS);
+    } else if (status == PJ_EPENDING) {
+        printf("CLI_business  Connect status is PJ_EPENDING \n");
+        status = PJ_SUCCESS;
+    } else {
+        cout << "CLI_business  Connect to SVR ERROR" <<endl;
+        goto on_return;
+    }
+
+    //轮询获取io队列中的事件，0表示超时没事件；<0表示轮询出错；>1表示获取到的事件数
+    while ( !cli_data.is_done) 
+    {
+        pj_ioqueue_poll(ioqueue, &delay);
+    }
+
+    /* Clean up sockets */
+    while (pj_ioqueue_poll(ioqueue, &delay) > 0);
+
+    cout<<"CLI_business  Done "<<endl;
+on_return:
+    if (ssock_cli)
+        pj_ssl_sock_close(ssock_cli);
+    if (ioqueue)
+        pj_ioqueue_destroy(ioqueue);
+    if (pool)
+        pj_pool_release(pool);
+
+    return status;
+}
+
+int main()
+{
+	//初始化pjlib库返回PJ_SUCCESS表示成功
+    pj_init();
+
+    //内存池工厂的初始化
+    pj_caching_pool_init(&caching_pool, NULL, 64*1024);
+    mem = &caching_pool.factory;
+
+	//设置日志级别
+    pj_log_set_level(5);
+
+    int ret = CLI_business(PJ_SSL_SOCK_PROTO_TLS1, PJ_SSL_SOCK_PROTO_TLS1, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_TLS_RSA_WITH_AES_256_CBC_SHA, PJ_FALSE, PJ_FALSE);
+    cout << "main  get ret --- "<< ret <<endl;
+
+    //将内存池预分配的内存还给系统
+    pj_caching_pool_destroy(&caching_pool);
+
+    //停止pjlib
+    pj_shutdown();
+    
+    return 0;
+}
+
+  
+
+
+makefile:
+
+CC = g++
+CFLAG = -g -Wall -std=c++11 
+
+PATHINC = /home/hwq/include
+PJLIB 		= /home/hwq/lib/libpj.a
+PATHOBJ = ./obj
+
+LINKLIB =   $(PJLIB)  -ldl -lpthread -lssl -lcrypto -lprotobuf
+LINKINC = -I$(PATHINC) 
+
+SRC = cli.cpp PQTEL.pb.cpp
+OBJ = $(PATHOBJ)/cli.o $(PATHOBJ)/PQTEL.pb.o
+
+TARGET = cli
+.PHONY:clean
+
+all:$(TARGET)
+
+$(TARGET):$(OBJ)
+	$(CC) $(CFLAG) -o $(TARGET) $(OBJ) $(LINKLIB)
+	
+$(OBJ):$(SRC)
+	$(CC) $(CFLAG) -c cli.cpp 						-o $(PATHOBJ)/cli.o 					$(LINKINC)
+	$(CC) $(CFLAG) -c PQTEL.pb.cpp 					-o $(PATHOBJ)/PQTEL.pb.o 				$(LINKINC)
+
+clean:
+	rm -rf $(TARGET)
+	rm -rf $(PATHOBJ)/*.o
+
+
+
+
+https://blog.csdn.net/m0_46083365/article/details/103716337
+
