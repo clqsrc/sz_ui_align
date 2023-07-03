@@ -1,0 +1,107 @@
+
+
+
+编译出来的文件中确实是有这个的。位置类似于
+
+D:\test1\pjsip1\pjproject-2.13_win\pjsip-apps\bin\samples\i386-win32-vc14-release
+
+下面是一个测试文章
+
+文中的 coturn 应该是一个开源服务器。
+
+https://www.jianshu.com/p/09725372f917
+-----------------------------------------------
+
+coturn 与 pjnath联调
+自由侠
+IP属地: 广东
+0.274
+2021.04.11 23:05:43
+字数 333阅读 404
+
+背景:
+
+       为了理解ICE的交互流程, 特地调试了pjnath (ICE client) 与 coturn (turn server, 也包含了stun server).
+
+step 1: 启动 turnserver
+
+./turnserver -a -f -u yyq:yyq -v -r guizhou
+
+step 2:  分别启动 client / peer
+
+启动client:
+
+./icedemo -s 43.128.22.4 -u yyq -p yyq -t 43.128.22.4
+
+启动peer:
+
+./icedemo -s 43.128.22.4 -u yyq -p yyq -t 43.128.22.4
+
+step 3:
+
+分别创建本地示例
+
+输入命令 'c' 即可.
+
+step4:
+
+分别初始化ICE session
+
+client 作为offerer:
+
+输入命令 i o;
+
+peer作为answerer:
+
+输入命令i a;
+
+step 5:
+
+分别显示本地的ICE 信息:
+
+输入命令 s;
+
+step 6:
+
+分别输入对端ICE 信息:
+
+client端:
+
+输入r, copy "peer" 的 local sdp 信息, 然后粘贴, 并按回车键.
+
+peer端:
+
+输入r, copy "client"的 local sdp 信息, 然后粘贴, 并按回车键.
+
+step 7:
+
+开始ICE 协商.
+
+client端:
+
+输入b .
+
+peer端:
+
+输入b .
+
+两边输入间隙不能太久, 因为需要同时开始, 否则会超时.
+
+step 8：
+
+ICE协商完毕后即可互发消息了。
+
+client 向 peer发消息:
+
+client 端输入 x  1 "msg content", 按下回车键， 即可发送到peer端.
+
+peer 向 client 发消息:
+
+与client端的操作一样.
+
+
+发送信息 和 接收信息成功.
+
+
+
+
