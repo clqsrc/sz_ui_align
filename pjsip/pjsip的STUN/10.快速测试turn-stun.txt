@@ -1,0 +1,9 @@
+
+
+快速的测试stun/turn server呢?
+
+可以在这里进行测试
+
+https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
+
+
