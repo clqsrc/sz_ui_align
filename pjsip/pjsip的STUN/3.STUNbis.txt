@@ -68,3 +68,101 @@ Library Organization
 
 　　传输无关/session 层
 　　　session对象(比如 STUN session, TURNsession, ICE session)是维护通信协议中session的核心对象，它是与传输无关的（意思是说它自己没有专门用于传输数据的socket，它只有发送和接受数据的接口，至于发送和接收数据时用到的具体的协议它是不关心的）。这样，不管传输层使用的什么协议，开发者都可以重用这个对象，比如使用UDP, TCP或者TLS或者是开发者自己实现的其他某种协议。
+
+
+-----------------------------------------------
+https://www.cnblogs.com/ishang/p/3413262.html
+
+ 中文翻译：pjsip教程(三)之ICE stream transport的使用
+
+　　1:pjsip教程(一)之PJNATH简介
+
+　　2:pjsip教程(二)之ICE穿越打洞：Interactive Connectivity Establishment简介
+
+　　3:pjsip教程(三)之ICE stream transport的使用
+
+　　4:pjsip文档(四)之ICE Session的使用方法
+
+本文原文地址：http://www.pjsip.org/pjnath/docs/html/group__PJNATH__ICE__STREAM__TRANSPORT.htm#ga6fb7cfdde71523f9fce885fd5cad982d
+学习使用 ICE stream transport
+
+下面的步骤描述了怎样使用ICE session:
+
+    首先初始化结构体： pj_ice_strans_cfg. 这个结构体中包含了ICE stream transport 的配置信息，其中就包括了SUTN以及TURN的配置信息.
+    使用 pj_ice_strans_create()方法创建stream transport的实例. 该函数的成功调用还需要以下列出的重要的参数:
+        pj_ice_strans_cfg ：主配置信息
+        components 的个数
+        用于产生回调的结构体的实例：pj_ice_strans_cb .
+    当调用函数pj_ice_strans_create()后，初始化的过程会在后台运行，该初始化过程主要是收集本地的候选地址，最后，当初始化完成，应用程序会在回调函数on_ice_complete 中返回
+    当想要开启一个媒体流时(例如，想进行视频或语音电话)，使用pj_ice_strans_init_ice()创建一个ICE session用于进行打洞.
+    通常在两个客户端开始打洞之前，双方都需要知道对方的ICE信息(ICE信息，包括用户名，密码以及3组候选地址),那么可以使用下面的方法得到自己的ICE信息:
+        pj_ice_strans_get_ufrag_pwd()
+        pj_ice_strans_enum_cands()
+        pj_ice_strans_get_def_cand()
+        应用程序需要将以上信息封装为SDP消息发送至对方.
+    当应用程序收到远程客户端发来的ICE消息后，就可以开始ICE探测了。开始ICE探测需要调用pj_ice_strans_start_ice()方法.
+    需要注意的是，PJNATH库不支持直接处理SDP消息，SDP消息的封装与拆解还需应用程序自己实现。
+    一旦ICE的探测协商开始后，程序最终将会在回调函数on_ice_complete() 中返回。on_ice_complete() 属于结构体： pj_ice_strans_cb.
+    应用程序在程序运行的任何时刻都能发送或者接受数据，但是ICE的stream transport 对象它能否发送数据，取决于它发送数据时候的状态。状态分为三种：1，探测协商之前，这种状态下可以发送数据，并且使用的是默认的地址；2，探测协商的过程中，此时不能发送数据；3，探测协商完成之后，这种状态下也可以发送数据，且发送数据的地址为探测成功的地址对！
+    应用程序使用pj_ice_strans_sendto()发送数据，并在pj_ice_strans_cb的on_rx_data()回调中返回.
+    当需要结束媒体Session时，使用pj_ice_strans_stop_ice()回收ICE Session。
+
+关于ICE stream transport，在单次媒体交互完成后，可以选择销毁ICE stream transport或保留它以备后用。保留ICE stream transport有利有弊，好处是减少下次会话时创建它的时间；坏处是应用程序需要与STUN server以及relay server中相应的端口保活，这会无形中造成电量的损耗(consume power)， 而电量损耗的高低是移动设备应用的重要参考标准之一。
+
+    转载请注明：
+
+    　　名称：pjsip教程(三)之ICE stream transport的使用
+
+    　　作者：大雪先生
+
+    　　链接：http://www.cnblogs.com/ishang/p/3413262.html 
+
+-----------------------------------------------
+https://www.cnblogs.com/ishang/p/3413241.html
+
+ 中文翻译：pjsip教程(二)之ICE穿越打洞：Interactive Connectivity Establishment简介
+
+　　1:pjsip教程(一)之PJNATH简介
+
+　　2:pjsip教程(二)之ICE穿越打洞：Interactive Connectivity Establishment简介
+
+　　3:pjsip教程(三)之ICE stream transport的使用
+
+　　4:pjsip文档(四)之ICE Session的使用方法
+
+原文地址：http://www.pjsip.org/docs/latest/pjnath/docs/html/group__PJNATH__ICE.htm
+
+Introduction to ICE
+
+　　ICE是提供客户端穿越能力的有力武器，只要在两个客户端之间确实存在一条可以通信的路径，ICE肯定就能找到该路径，并且该路径是两个客户端之间通信路径中最高效的最节省资源的(在两个客户端之间经ICE探测后，可能存在多条路径，而ICE保证从它那里获取的路径是最高效的).
+
+　　ICE把几个协议结合在一起，在两个客户端之间能提供几条候选路径，这在最大程度上保证了两端通信成功的几率。并且它还提供了在几条通信路径中给出优先顺序的能力，让使用中继(中继的方式代价比较昂贵)的传输方式的优先级降到最低，只有在其他路径都行不通的情况下，才会启用该路径。具体的ICE协商的过程包括以下几个几步:
+
+    1：候选地址的收集：ICE客户端收集本地所有可能用于通信的地址。所收集的地址类型分3种：主机候选地址(host candidate），这个地址其实就是本地物理网卡的地址；服务器反射候选地址(server reflexive candidate，其实就是在NAT上关于本地ip的映射地址)，这个地址通过STUN服务器获取；中转/中继候选地址(relay candidate)，这个地址是在使用中继(relay)的传输方式时，在中继服务器(或者称为TURN服务器)上为本地机器所分配的地址。
+    2：候选地址的优先策略：一般情况下，使用中继方式而产生的中继候选地址的优先权最低，因为它的代价最昂贵。
+    3：将本地候选地址编码，把编码后的候选地址传送至对端，双方通过报告/应答的方式进行协商。
+    4：为候选地址配对儿：将本端的地址与对端的地址一一进行配对。此时应该已经通过某种方式得到了对端的候选地址。
+    5：为每对儿地址做连接测试。
+    6：得到结果：由于已经对所有候选地址一一配对，并一一进行连接测试，所以，如果确实存在一个可以通信的路径，ICE肯定会找到他。
+
+Using ICE transport
+
+　　ICE stream transport 是一个现成可用的对象，可以使用它来进行ICE操作，而且它为应用程序提供了数据发送与接受的接口，而数据收发的路径，正是经ICE协商过后的高效的路径。
+
+Creating custom ICE transport
+
+　　如果ICE stream transport 还是不能满足您的需求，那么您还可以通过使用本软件包提供的ICE Session以及自己的数据传输策略去实现自己的运输层，ICE stream transport 在这方面为您提供了很好的借鉴。
+
+    　　转载请注明：
+
+    　　名称：pjsip教程(二)之ICE穿越打洞：Interactive Connectivity Establishment简介
+
+    　　作者：大雪先生
+
+    　　链接：http://www.cnblogs.com/ishang/p/3413241.html 
+
+分类: pjsip/ice
+标签: C++ , pjsip , ice 
+
+
+
