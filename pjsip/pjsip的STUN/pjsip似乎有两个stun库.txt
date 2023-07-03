@@ -1,0 +1,57 @@
+
+
+1.
+在传统的 INSTALL.txt 中写明了
+
+ - pjlib:       portability and basic framework library
+ - pjlib-util:  lexical scanner, XML, STUN, MD5, DNS, etc.
+ - pjmedia:     media framework and codecs
+ - pjsip:       SIP stacks (core, UA layer, SIMPLE, etc.)
+ - pjsip-apps:  SIP apps (pjsua, pjsip-perf)
+
+即是在  pjlib-util 库中。不过源码中注释说这是老版本的。新版本似乎应该是 
+
+PJNATH - Open Source ICE, STUN, and TURN Library 
+
+PJNATH (PJSIP NAT Helper)是一个开源的并且是使用标准协议(STUN,TURN,ICE)提供NAT设备穿越功能的库.
+
+https://blog.csdn.net/a511244213/article/details/49590379
+
+2.
+-----------------------------------------------
+PJNATH 测试一
+暴走小清新
+于 2018-11-27 14:55:41 发布 1682
+收藏 3
+版权
+
+PJNATH是pjsip库中的主要功能之一，本博客主要记录PJNATH功能相关的使用说明。
+
+P2P相关的理论参考：https://www.cnblogs.com/pannengzhi/p/5041546.html
+
+一、源代码编译及版本
+
+网址：https://www.pjsip.org/
+
+版本：pjproject-2.8.tar.bz2
+
+解压编译命令：make dep;make;make install
+
+二、pjnath测试程序
+
+pjnath有三个测试程序，pjnath-test*、pjturn-srv*、pjturn-client*（*代表的编译工具名）,他们分别为pjnath测试代码、turn服务器、turn客户端。
+
+pjturn-srv*和pjturn-client*是配套测试的，pjturn-srv*直接运行可以输入d查看当前状态，如果客户端连接会显示客户端状态。
+
+pjturn-client*运行指定服务器地址和用户名（用户名密码在pjturn-srv*中已经有定义，参考auth.c文件）：./pjturn-client-x86_64-unknown-linux-gnu  172.24.6.239:34780 -u 100 -p 100 
+
+首先，allocate你的中继地址
+
+然后绑定通道，b/bb
+
+最后测试发送数据到peer：
+
+ 
+————————————————
+https://blog.csdn.net/rui631483900/article/details/84562271
+
