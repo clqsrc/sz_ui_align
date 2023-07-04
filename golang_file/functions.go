@@ -936,6 +936,78 @@ func IsDirectory(fn string) bool {
 	
 }//
 
+
+//2023 文件的大小
+func GetFileSize(fn string) int64 {
+	//_, err := os.Stat(path)
+	info, err := os.Stat(fn)
+	if err == nil {
+
+		//return info.IsDir();
+		return info.Size();
+
+		//return true;
+	}
+	// if os.IsNotExist(err) {
+	// 	fmt.Println("DirectoryExists:", err)
+	// 	return false
+	// }
+	return -1;	
+	
+}//
+
+
+//2023 文件的最后修改日期
+func GetLastWriteTime(fn string) string {
+	//_, err := os.Stat(path)
+	info, err := os.Stat(fn)
+	if err == nil {
+
+		//return info.IsDir();
+		// return info.ModTime();
+		modTime := info.ModTime()
+		r := modTime.Format(time.RFC3339);
+	
+
+		return r;
+	}
+	// if os.IsNotExist(err) {
+	// 	fmt.Println("DirectoryExists:", err)
+	// 	return false
+	// }
+	return "";	
+	
+}//
+
+//2023 取文件的 md5
+func GetFileMd5(fn string) string {
+	// 打开文件
+	//file, err := os.Open("filename.ext")
+	file, err := os.Open(fn);
+	if err != nil {
+		fmt.Println("GetFileMd5()", err);
+		return "";
+	}
+	defer file.Close();
+
+	// 计算MD5值
+	hash := md5.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		fmt.Println("GetFileMd5()", err);
+		return "";
+	}
+
+	// 将MD5值转换成hex格式
+	md5Bytes := hash.Sum(nil)
+	md5Hex := make([]byte, 32)
+	hex.Encode(md5Hex, md5Bytes)
+
+	fmt.Printf("GetFileMd5() MD5 Hash of file: %s", string(md5Hex));
+
+	return string(md5Hex);
+}//
+
+
 //复制文件
 func CopyFile(src,dst string) (w int64, err error){
 	srcFile,err := os.Open(src);
