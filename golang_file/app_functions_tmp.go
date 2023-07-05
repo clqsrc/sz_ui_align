@@ -67,5 +67,36 @@ func ShellOpen_OS(fn string){
 
 
 
+/*
+//取一个 div 对应的 icon 的文件名
+func (f *TDesktopForm) GetIconFullpath(sender vcl.IObject) string {
+
+	div := sender;
+
+	////div_ := (vcl.IObject)(div);
+
+	////div__ := div_.(*vcl.TPanel);  //奇怪，这样转换是错误的
+
+	//https://gitee.com/ying32/govcl/wikis/pages?sort_id=2321552&doc_id=102420
+	//参考以上资料，要用它封装的函数
+	div__ := vcl.AsPanel(div);
+	fmt.Println("OnClick_PopMenuItem_IconFile_ShowInfo()", div__);
+
+	var i int64 = int64(div__.Handle()); //govcl 的 Handle() 返回值是 uintptr ，在权威 《Go程序设计语言》中说了，uintptr 的返回值要尽快转换成 unsafe.Pointer
+	//因为 uintptr 指向的指针值因为 gc 的原因是有可能改变的。也就是说理论上 uintptr 应该只是作为临时变量，不能当做长期使用的成员变量这样的
+
+	fmt.Println("OnClick_PopMenuItem_IconFile_ShowInfo()", i);
+
+	tmphandle := div__.Handle();
+	fn := mm[uint64(tmphandle)].(string);
+	
+	return fn;
+}//
+
+*/
+
+
+
+
 
 
