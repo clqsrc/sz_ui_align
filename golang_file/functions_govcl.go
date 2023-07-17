@@ -50,6 +50,37 @@ func govcl_OpenSelectFile() string {
 	return r;
 }//
 
+//询问对话框
+func ShowMessage_Select_govcl(msg string) bool {
+    // 创建一个新的消息框
+	// vcl.MessageDlg()
+    // dlg := vcl.NewMessageDialog(nil, "Are you sure you want to quit?", vcl.MtConfirmation, vcl.MbYesNo)
+
+    // // 运行对话框并处理响应
+    // switch dlg.ShowModal() {
+    // case vcl.MrYes:
+    //     println("Yes button clicked!")
+    // case vcl.MrNo:
+    //     println("No button clicked!")
+    // }
+
+    // // 关闭对话框
+    // dlg.Free()
+
+	// 显示询问对话框
+	//if vcl.MessageDlg("Do you want to quit?", types.MtConfirmation, vcl.MbYesNo) == types.MrYes {
+	//buttons := types.TMsgDlgButtons(types.MbYes).Include(types.MbNo); //types.MbYes | types.MbNo
+	if vcl.MessageDlg(msg, types.MtConfirmation, types.MbYes, types.MbNo) == types.MrYes {
+			// 如果用户点击了 "Yes" 按钮，则退出程序
+		//vcl.Application.Terminate()
+		return true;
+	}	
+
+	return false;
+}//
+
+
+
 //注意, govcl 目前只支持 29 个定时器，所以执行完要立即释放
 //线程里生成的定时器是不起作用的，所以暂时只能这样用
 func run_in_ui_govcl_v2(thread_run func(), ui_run func()) {
