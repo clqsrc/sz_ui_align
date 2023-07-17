@@ -145,6 +145,14 @@ func View_SetRect(view vcl.IControl, rect crect)  { //* vcl.TPanel){
 
 }//
 
+func View_Show(view vcl.IControl) {
+	view.Show();
+}//
+
+func View_Hide(view vcl.IControl) {
+	view.Hide();
+}//
+
 //set rect 有时候还是不太方便
 func View_SetPos(view vcl.IControl, x,y int32)  { //* vcl.TPanel){
 
@@ -211,6 +219,30 @@ func UI_CreateViewClass(parentView vcl.IWinControl, ui_class string) vcl.IContro
 
 		return div;
 	}//edit
+
+	if (ui_class == "label") {
+		var div = vcl.NewLabel(parentView.Owner()); //按道理这样更合理，因为下面的 parent 实际上一般情况下是可以更改的
+
+		div.SetParent(parentView);
+		div.SetBounds(10, 10, 100, 22);
+
+		div.SetAutoSize(false);  //否则调整不了高度
+		//div.SetAlign(types.AlLeft);
+
+		// div.SetBevelInner(types.BvNone);
+		// div.SetBevelOuter(types.BvNone);
+
+		// div.SetParentFont(true);
+
+		//div.SetBorderStyle(types.BsNone);
+		div.SetTransparent(true);
+		div.SetWordWrap(true); //自动换行 //这个似乎对连续英文无效，实际上是单词折行。怎样全部折行呢
+		div.SetAlignment(types.TaCenter); //文字居中
+
+		div.Show();
+
+		return div;
+	}//label
 
 	return nil;
 }//
@@ -287,5 +319,6 @@ func Hex2U8(s string)uint8{
 
 	return n2;
 }//
+
 
 
