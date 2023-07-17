@@ -50,4 +50,34 @@ func govcl_OpenSelectFile() string {
 	return r;
 }//
 
+//注意, govcl 目前只支持 29 个定时器，所以执行完要立即释放
+//线程里生成的定时器是不起作用的，所以暂时只能这样用
+func run_in_ui_govcl_v2(thread_run func(), ui_run func()) {
+
+	time := vcl.NewTimer(nil);
+
+	in_thread := false;  //理论上应该加锁
+
+	time.SetOnTimer(func(sender vcl.IObject) {
+
+		if (true == in_thread) { return; }  //线程还没执行完
+
+		time.Free();
+
+		ui_run();
+
+	});
+	
+	go func ()  {
+		in_thread = true;
+		//buf := HttpGet_TimeOut(url, 5);
+		//buf = HttpGet_TimeOut(url, 5);
+
+		thread_run();
+
+		in_thread = false;
+
+	}();
+
+}//
 
