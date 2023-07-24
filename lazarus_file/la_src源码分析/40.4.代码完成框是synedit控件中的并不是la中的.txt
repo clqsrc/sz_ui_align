@@ -1,0 +1,90 @@
+
+40.4.代码完成框是synedit控件中的并不是la中的
+
+
+从以下代码中的 Editor 定义就可以看到，它是跳转到 syn 中了。
+
+
+procedure TSourceEditor.StartIdentCompletionBox(JumpToError,
+  CanAutoComplete: boolean);
+var
+  I: Integer;
+  TextS, TextS2: String;
+  LogCaret: TPoint;
+  UseWordCompletion: Boolean;
+  Completion: TSourceEditCompletion;
+  CompletionRect: TRect;
+begin
+  {$IFDEF VerboseIDECompletionBox}
+  debugln(['TSourceEditor.StartIdentCompletionBox JumpToError: ',JumpToError]);
+  {$ENDIF}
+  if (FEditor.ReadOnly) then exit;                           //clq 2020 好像这个就是代码提示弹出控制
+  Completion := Manager.DefaultCompletionForm;
+  if (Completion.CurrentCompletionType<>ctNone) then exit;
+  Completion.IdentCompletionJumpToError := JumpToError;
+  Completion.CurrentCompletionType:=ctIdentCompletion;
+  TextS := FEditor.LineText;
+  LogCaret:=FEditor.LogicalCaretXY;
+  Completion.Editor:=FEditor;    
+
+>>
+所以可以利用 synedit CommandProcessed 事件来完整输入任意字符都弹出代码完成框的功能。
+
+procedure TSourceEditor.UserCommandProcessed(Sender: TObject;
+  var Command: TSynEditorCommand; var AChar: TUTF8Char; Data: pointer);
+// called after the source editor processed a key
+var Handled: boolean;
+begin
+  Handled:=true;
+  case Command of
+
+  ecNone: ;
+
+  ecChar:
+    begin
+      if AutoBlockCompleteChar(AChar) then
+        Handled:=true;
+      if EditorOpts.AutoDisplayFunctionPrototypes then
+         if (aChar = '(') or (aChar = ',') then
+            SourceNotebook.StartShowCodeContext(False);
+
+      //clq 2020 似乎可以当做 synedit 的 CommandProcessed 事件
+
+      if   (AChar<>' ') //忽略空格
+        and(AChar<>';') //忽略分号
+      then
+      StartIdentCompletionBox(False, False); //ok!!!
+    end;
+
+  else
+    begin
+      Handled:=false;
+      if FaOwner<>nil then
+        TSourceNotebook(FaOwner).ParentCommandProcessed(Self,Command,aChar,Data,
+                                                        Handled);
+    end;
+  end;
+  if Handled then Command:=ecNone;
+end; 
+
+
+  //----------------------------------------------------------------
+  //clq 2020 代码弹出测试
+  //StartIdentCompletionBox(CodeToolsOpts.IdentComplJumpToError,true);
+  ////StartIdentCompletionBox(False, False); //ok!!!
+
+  //让它按任意键(字符、数字)时都能弹出代码提示
+  if (Command=ecChar) and (AChar>='0') then //其实还可以更详细的进行控制
+  begin
+    //TextS := FEditor.LineText;
+
+    //FEditor.LineText := FEditor.LineText + AChar;  AChar := #0; //这样不行，会导致编辑器内容混乱，还是应该找到编辑器修改完内容后的事件
+
+    ////StartIdentCompletionBox(False, False); //ok!!!
+    //StartIdentCompletionBox(False, True); //参数上不知道会有什么区别
+
+    //在这里弹出的话，AChar 会被代码完成框忽略，所以还要再想办法//按道理 synedit CommandProcessed 事件后会有完整的内容 //目前是换到 UserCommandProcessed 来完成，比较好用了
+  end;
+             
+
+

@@ -1,0 +1,70 @@
+
+
+可以用上一版本的 lazarus 调试它自身，不过版本间控件有时候会很不相同。所以要在 
+path -> othre unit .. 中加入以下路径
+
+
+frames;..\converter;..\debugger;..\debugger\frames;..\packager;..\designer;..\packager\frames;..\ide;..\components;..\components\ideintf;..\lcl;..\lcl\interfaces\win32;..\lcl\widgetset;..\lcl\forms;..\components\lazcontrols;..\components\debuggerintf;..\components\synedit;..\components\lazdebuggergdbmi;..\components\lazutils;..\components\codetools
+
+
+include 目录中有可能要加入
+
+include;..\lcl\include;include\win64
+
+
+工程项目在源码目录中的 
+D:\test1\la_src\ide
+
+原始运行时没有编译动作，要修改项目属性的
+Compiler Commands->Compiler->Call on->Run
+
+设置好后编译还是非常快，而且很容易成功的。
+
+----------------------------------------------------------------
+自动提示可以修改以下地方实现，不过最后的结果还是无法和 cnpack 的相比。
+原理就是弹出代码提示窗口，默认是用 快捷键 ctrl+space 弹出的那个。个人感觉还是用原版算了，将快捷键改成 alt+space 就比较好用了。
+
+procedure TSourceEditor.ProcessCommand(Sender: TObject;
+  var Command: TSynEditorCommand; var AChar: TUTF8Char; Data: pointer);
+// these are normal commands for synedit (lower than ecUserFirst),
+// define extra actions here
+// for non synedit keys (bigger than ecUserFirst) use ProcessUserCommand
+var
+  AddChar: Boolean;
+  s: String;
+  i: Integer;
+begin
+  //DebugLn('TSourceEditor.ProcessCommand Command=',dbgs(Command));
+  FSharedValues.SetActiveSharedEditor(Self);
+  AutoStartCompletionBoxTimer.AutoEnabled:=false;    //clq 2020 要在项目的 include path 中加入 D:\test1\la_src\ide\include\win64 才可以编译 //ll
+ ...
+
+
+
+  //----------------------------------------------------------------
+  //clq 2020 代码弹出测试
+  //StartIdentCompletionBox(CodeToolsOpts.IdentComplJumpToError,true);
+  ////StartIdentCompletionBox(False, False); //ok!!!
+
+  //让它按任意键(字符、数字)时都能弹出代码提示
+  if (Command=ecChar) and (AChar>='0') then //其实还可以更详细的进行控制
+  begin
+
+    StartIdentCompletionBox(False, False); //ok!!!
+    //StartIdentCompletionBox(False, True); //参数上不知道会有什么区别
+
+  end;
+
+
+  //----------------------------------------------------------------
+
+  //debugln('TSourceEditor.ProcessCommand B IdentCompletionTimer.AutoEnabled=',dbgs(AutoStartCompletionBoxTimer.AutoEnabled));
+end; 
+
+
+
+
+
+
+
+

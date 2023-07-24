@@ -1,0 +1,17 @@
+40.5.如果设置错误32位的lazarus也调试不了32位的exe
+
+
+
+
+用
+$(LazarusDir)\mingw\$(TargetCPU)-$(TargetOS)\bin\gdb.exe
+
+代替
+D:\new\lazarus64\mingw\x86_64-win64\bin\gdb.exe
+
+>>
+如果不是自己带的，则为
+D:\new\lazarus64\mingw\$(TargetCPU)-$(TargetOS)\bin\gdb.exe
+
+这些变量最好是安装一个官方的 lazarus (最好是64位)来对比，如果出错，十有八九是这些参数写死了，没有用 la 预定义变量。
+
