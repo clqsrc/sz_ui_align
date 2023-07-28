@@ -30,6 +30,8 @@ import (
 	// "encoding/json"
 	// "log"
 	"strconv"
+	"runtime"
+	"math"
 )
 
 type crect struct {
@@ -105,14 +107,28 @@ func UI_CreateView(parentView vcl.IWinControl) *vcl.TPanel {
 
 }//
 
+//安全的除法 //即不会除 0 错
+func SafeDiv_int32(v int32, x float64) int32 {
+
+	if (0 == v) { return v; }
+	if (0 == x) { return v; }
+
+	return int32(math.Round(float64(v) / float64(x)));  //math.Round 取最接近的整数
+}//
+
 func View_GetRect(view vcl.IWinControl) crect { //* vcl.TPanel){
 
 	var rect crect;
 
-	rect.left = view.Left();
-	rect.top = view.Top();
-	rect.width = view.Width();
+	rect.left   = view.Left();
+	rect.top    = view.Top();
+	rect.width  = view.Width();
 	rect.height = view.Height();
+
+	rect.left   = SafeDiv_int32(rect.left,   g_ui_scale);
+	rect.top    = SafeDiv_int32(rect.top,    g_ui_scale);
+	rect.width  = SafeDiv_int32(rect.width,  g_ui_scale);
+	rect.height = SafeDiv_int32(rect.height, g_ui_scale);
 
 	return rect;
 }//
@@ -120,6 +136,52 @@ func View_GetRect(view vcl.IWinControl) crect { //* vcl.TPanel){
 
 //放大系数 //可以修改，一般高分屏设置为 2 就可以了，但是有 1.5 这样的情况
 var g_ui_scale float64 = 1; //2;
+//var g_ui_scale float64 = UI_View_GetScale(); //1; //2;
+
+//自动判断 //还是手工调用比较好，因为有可能一些东西没初始化好
+func UI_View_GetScale() float64 {
+
+	if ("windows" == runtime.GOOS) {
+
+		//这个也可以，不过要在 vcl.Application.CreateForm(&mainForm); 之后才行
+		// h := vcl.Application.MainForm().Canvas().TextHeight("A");
+		// vcl.ShowMessage(IntToStr(int64(h)));
+
+		//h 默认一般是 17 ，高分下就是 31 。所以确实可以用来做简单的判断
+		bmp := vcl.NewBitmap();
+		//bmp.Canvas().Font().SetName("宋体"); //ok 16,33
+		// bmp.Canvas().Font().SetName("simsun"); //ok 16,33
+		bmp.Canvas().Font().SetName("arial");  //ok 18, 36    //似乎用这个更准确一点
+		bmp.Canvas().Font().SetSize(12);
+
+		//--------------------------------------------------------
+		// Courier New 是 Windows 的缺省等宽字体
+		// Courier 是一个等宽字体的粗衬线字体，主要是依据打字机所打印出来的字型来设计，于1955年由 Howard "Bud" Kettler 设计完成。
+		// 原来的 Courier 字体是 IBM 公司在1950年代设计给打印机使用的字体，但是并未维护他们的专利，使得这个字型成为整个打字机制造业的标准。
+		// 在现今的电子时代，此字体也常被使用，因为其等宽的特性可以轻易地对齐字段的左右边界，也成为脚本和程式设计中源代码的常用字体。
+		// 12pt的 Courier New 字体曾是美国国务院的公文标准字体，但于2004年1月停用，改使用14pt 的 Times New Roman，因为其具“现代性”和“易读性”。
+		//----
+		//《华盛顿邮报》获得的一份2023年1月17日发出的电报显示，Times New Roman等衬线字体不利于光学字符识别技术（OCR），改用Calibri字体将使存在视觉或阅读障碍的人士更容易阅读部门通信。
+		// 不过 Calibri 字体是无衬线(笔画等宽)字体，在高分屏下没有衬线字体漂亮。
+		//--------------------------------------------------------
+
+		h2 := bmp.Canvas().TextHeight("A");
+		vcl.ShowMessage("bmp: " + IntToStr(int64(h2)));  //结果是 16 (原始的情况) 或者 33 (两倍的情况), 所以确实可以用来大致计算缩放的比例
+
+		if (h2 > 0){
+			g_ui_scale = math.Round(float64(h2) / float64(16));  //math.Round 取最接近的整数
+
+			return g_ui_scale;
+		}//if 2
+		 
+
+		return 2;
+
+	}else{
+		return 1;
+	}//if 1
+
+}//
 
 //func View_SetRect(view vcl.IWinControl, rect crect)  { //* vcl.TPanel){
 func View_SetRect(view vcl.IControl, rect crect)  { //* vcl.TPanel){
@@ -193,6 +255,17 @@ func UI_CreateViewClass(parentView vcl.IWinControl, ui_class string) vcl.IContro
 		// div.SetBevelOuter(types.BvNone);
 
 		// div.SetParentFont(true);
+
+		//--------
+		//govcl 的 Stretch 没法等比例缩放，所以只能手要再调整
+
+		div.SetStretch(true);            //设置拉伸缩放
+		div.SetProportional(true);       //设置等比缩放
+		div.SetCenter(true);             //图片显示在中间
+		//div.SetAntialiasingMode(types.AmDontCare);
+		div.SetAntialiasingMode(types.AmOn);   //缩放时反锯齿，不过似乎无效
+
+		//--------
 
 		div.Show();
 
