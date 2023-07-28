@@ -1,0 +1,24 @@
+
+
+原文为
+
+http://newbt.net/ms/vdisk/show_bbs.php?id=E93EAB7A55483E71A173E9607DD32783&pid=160
+
+--------------------------------------------------------
+
+
+[msys2] 程序中控制 msys2 的方式2 可能是比较正式的官方方法
+
+msys2_shell.cmd -defterm -no-start
+
+来自 https://www.ngui.cc/el/2771820.html
+
+另外一种未证实的方法为
+bash -l -c "pacman ..."
+
+来自 https://qa.1r1g.com/sf/ask/1876692891/
+不过从文章来看应该只是设想，还没完善实现。
+
+另外从文章 https://blog.csdn.net/hunterhuang2013/article/details/70880569
+来看，msys2 默认环境下的 gcc 居然也是可以用的，而且提供有 fork 这样的函数调用。以后再研究。
+
