@@ -95,3 +95,21 @@ var JSVM_List = make([]string, 0);
 JSVM_List = append(JSVM_List, "");
 
 
+//--------------------------------------------------------
+//动态数组初始化与可变参数
+
+
+path := "D:/new/msys64";
+//fn = "msys2_shell.cmd -defterm -no-start"; //不行，没反应
+fn := "msys2_shell.cmd";  //不行，会弹出窗口 //加 “-defterm -no-start" 参数后是可以的
+
+//var arg [] string;
+var arg [] string = [] string{"-defterm", "-no-start"};
+
+f.run_cmd(path, fn, arg...);
+
+func run_cmd(path_, fn_ string, arg ... string) {}
+
+
+
+
