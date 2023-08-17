@@ -1,0 +1,48 @@
+
+http://newbt.net/ms/vdisk/show_bbs.php?id=B303FD1CF3F6FC52E81F24E0440F62AA&pid=164
+
+[golang/切片]golang 其实是可以多次操作一个切片的不同部分的
+
+	var buf = make([]byte, 1024 * 1024 * 5); //不能超过 4 m
+	//n, err := reader.Read(buf);  //这个可能只会读取一部分 //比如 oss 是 32768 一次，是要多次读取的
+	
+	n, err := io.ReadFull(reader, buf);
+
+	rbuf := buf[:n];
+
+	// //----
+	// n, err = reader.Read(buf);
+	// rbuf2 := buf[:n];
+
+	// //----  //重复读取可以看下 ReadFull 的代码，写得很好，也可以看切片的 block 操作
+	// rbuf = append(rbuf, rbuf2...);
+	// //--
+
+	s = string(rbuf);
+
+
+--------------------------------------------------------
+func ReadFull(r Reader, buf []byte) (n int, err error) {
+	return ReadAtLeast(r, buf, len(buf))
+}
+
+
+func ReadAtLeast(r Reader, buf []byte, min int) (n int, err error) {
+	if len(buf) < min {
+		return 0, ErrShortBuffer
+	}
+	for n < min && err == nil {
+		var nn int
+		nn, err = r.Read(buf[n:])
+		n += nn
+	}
+	if n >= min {
+		err = nil
+	} else if n > 0 && err == EOF {
+		err = ErrUnexpectedEOF
+	}
+	return
+}
+
+
+
