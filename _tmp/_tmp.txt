@@ -25,5 +25,82 @@ Python-Lark是一个强大的、现代的解析库，专为Python开发者设计
 2.+使用ply和pyleri解析TypeScript代码
 3.+使用lark解析TypeScript代码
 
+-----------------------------------------------
+以下是一个使用Python编写的代码分析器示例,可以对多种编程语言的源代码进行分析:
+
+import ast
+import codestyle
+import codex
+import dx
+import git
+import keyword
+import re
+import tokenize
+import traceback
+import yaml
+
+
+def analyze_code(code_path):
+    # 读取代码文件内容
+    with codex.open(filename=code_path, encoding="utf-8") as f:
+        code = f.read()
+
+    # 解析代码
+    lines = ast.parse(code)
+
+    # 查找关键字
+    keywords = keyword.kwlist(code)
+
+    # 代码格式检查
+    formatted_code = codestyle.check_style(code)
+
+    # 代码结构分析
+    structure = ast.parse(formatted_code)
+
+    # 代码树分析
+    tree = ast.tree(structure)
+
+    # 打印树节点
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            print(f"Assignment: {node.targets}")
+        elif isinstance(node, ast.AnnAssign):
+            print(f"Annotation: {node.targets}")
+        elif isinstance(node, ast.Import):
+            print(f"Import: {node.module}")
+
+    # 打印注释
+    comments = [co.comments[0] for co in ast.walk(tree)]
+    for comment in comments:
+        print(f"{comment.body.strip()}")
+
+    # 打印错误信息
+    errors = []
+    for usage in ast.walk(tree):
+        if isinstance(usage, ast.Import):
+            errors.append(f"{usage.module} is imported but not defined")
+        elif isinstance(usage, ast.ImportFrom):
+            errors.append(f"{usage.module} is imported from but not defined")
+
+    if errors:
+        print("\nErrors:")
+        for error in errors:
+            print(f"{error}")
+
+# 示例:分析Python代码
+analyze_code("my_program.py")
+
+# 输出
+
+该示例使用Python内置的ast、codestyle和codex库来分析代码文件。分析包括:代码格式检查、代码树分析、注释分析以及错误检查。
+
+在这个示例中,分析的代码是“my_program.py”文件。输出将显示该文件中的关键字、注释以及错误信息。
+
+你可以根据需要修改示例以分析其他编程语言的代码。例如,要分析Java代码,可以使用Java ast库和Java Codex库,以及Java代码格式检查工具和Java注释工具。
+
+
+
+
+
 
 
