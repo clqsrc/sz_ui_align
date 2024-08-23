@@ -13,5 +13,17 @@ tsc --outFile modules.js main.ts app.ts
 -----------------------------------------------
 https://github.com/lark-parser/lark
 
+https://blog.csdn.net/liuyuan_jq/article/details/137432643
+参考
+
+https://github.com/lark-parser/lark/blob/master/examples/calc.py
+Python-Lark是一个强大的、现代的解析库，专为Python开发者设计，用于处理各种语法结构的文本解析任务。这个库的出现旨在简化和优化文本解析的过程，使开发者能够高效地构建解析器，处理从简单的命令行语法到复杂的编程语言语法等各种输入。
+
+使用Python解析TypeScript代码的工具和库
+除了ast模块之外，Python还提供了一些其他的工具和库，可以帮助我们解析  比如ply和pyleri，
+1.+使用ast模块解析TypeScript代码
+2.+使用ply和pyleri解析TypeScript代码
+3.+使用lark解析TypeScript代码
+
 
 
