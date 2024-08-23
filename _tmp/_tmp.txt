@@ -31,6 +31,10 @@ https://github.com/search?q=parsing%20toolkit&type=repositories
 
 BNF(Backus-Naur Form)是一种用于描述语言结构的文法表示方法。它由美国数学家约翰·伯纳德·纳尔逊(John Backus Naur)于1962年提出,用于描述自然语言。
 
+https://blog.csdn.net/gitblog_00063/article/details/138744646
+Chevrotain的核心在于它的灵活性和效率。你可以直接在JavaScript中编写和修改语法规则，这使得开发过程更加敏捷，调试也更为方便。此外，Chevrotain还提供了丰富的API和DSL（领域特定语言），用于创建和操作词法分析器和解析器。一个值得注意的特性是其内置的支持LL(K)和通过第三方插件实现的LL(*)解析，这使得处理复杂语法结构变得轻松。
+
+
 -----------------------------------------------
 -----------------------------------------------
 以下是一个使用Python编写的代码分析器示例,可以对多种编程语言的源代码进行分析:
