@@ -137,6 +137,11 @@ https://github.com/gbegreg/GBE3D
 
 ----
 应该还有很多。这些仅仅是用关键字 “FMX.Controls3D game” 在 bing 国际中搜索的前几页。所以应该不用担心。而且前面的示例更新非常多，非常近。
+----
+这些是他的开源游戏
+https://github.com/DeveloppeurPascal/DevPas-Games-Pack
+他的网站上似乎还有电子书。
+
 
 
 
