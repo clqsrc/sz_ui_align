@@ -114,6 +114,16 @@ analyze_code("my_program.py")
 
 你可以根据需要修改示例以分析其他编程语言的代码。例如,要分析Java代码,可以使用Java ast库和Java Codex库,以及Java代码格式检查工具和Java注释工具。
 
+-----------------------------------------------
+===============================================
+https://github.com/DeveloppeurPascal/Delphi-Game-Engine
+
+中提到 fmx 本身就是游戏引擎，无需第三方库。还给出了很多参考。
+例如
+https://github.com/DeveloppeurPascal/Delphi-FMX-Game-Snippets
+有很多示例。作者应该是个法国人。
+
+
 
 
 
