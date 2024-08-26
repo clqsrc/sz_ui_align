@@ -142,6 +142,21 @@ https://github.com/gbegreg/GBE3D
 https://github.com/DeveloppeurPascal/DevPas-Games-Pack
 他的网站上似乎还有电子书。
 
+--------
+另外根据 delphi 11/12 的宣传页面的游戏画面可以搜索到
+
+Delphi开发的即时战略游戏《Rise of Legions》
+https://blog.csdn.net/xyzhan/article/details/124962125
+这个页面还介绍了很多。
+还有 delphi 官方的
+https://www.embarcadero.com/case-study/broken-games-case-study
+https://delphi.embarcadero.com/
+https://store.steampowered.com/app/748940/Rise_of_Legions/
+
+似乎是说这个就是用 fmx 开发的。
+
+
+
 
 
 
