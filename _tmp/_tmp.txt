@@ -123,6 +123,25 @@ https://github.com/DeveloppeurPascal/Delphi-Game-Engine
 https://github.com/DeveloppeurPascal/Delphi-FMX-Game-Snippets
 有很多示例。作者应该是个法国人。
 
+另外他也推荐了
+https://github.com/Fr0sT-Brutal/awesome-pascal?tab=readme-ov-file#game-dev
+从这里面看
+https://github.com/BeRo1985/kraft
+的物理引擎似乎是可以用的。
+
+----
+这是另外一个。
+https://github.com/gbegreg/FMXFPS
+这是 fps 游戏。用到了以下的修改控件，可以一看
+https://github.com/gbegreg/GBE3D
+
+----
+应该还有很多。这些仅仅是用关键字 “FMX.Controls3D game” 在 bing 国际中搜索的前几页。所以应该不用担心。而且前面的示例更新非常多，非常近。
+
+
+
+
+
 
 
 
