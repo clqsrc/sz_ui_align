@@ -1,3 +1,11 @@
+
+在线的 arm 模拟器
+https://cpulator.01xz.net/?sys=arm
+
+https://blog.csdn.net/qq_19859865/article/details/142537207
+
+-----------------------------------------------
+
 无损放大
 https://github.com/upscayl/upscayl
 https://www.uisdc.com/animatediff-lightning
