@@ -1,4 +1,14 @@
 
+WifiP2pManager.IPeerListListener
+
+Wi-Fi直连技术允许iOS和Android设备之间进行直接连接，无需通过传统的无线路由器或热点。‌ 这种技术通过Wi-Fi Direct标准实现，使得设备之间可以直接通信，适用于多人游戏、文件共享等场景。
+
+在技术实现方面，Android设备自Android 4.0（API级别14）起支持Wi-Fi P2P技术，通过WifiP2pManager类和其他相关API，可以实现设备间的发现、连接和数据传输。iOS设备则通过AirDrop功能实现类似的近距离无线传输，但需要双方设备都开启Wi-Fi和蓝牙。
+
+具体操作步骤方面，对于Android设备，需要开启Wi-Fi和蓝牙，通过WifiP2PManager进行设备发现和连接。对于iOS设备，需要在控制中心开启AirDrop，并选择“所有人”或“仅限联系人”进行文件传输。双方设备需要在彼此的可传输范围内，并且AirDrop设置匹配，才能成功传输数据‌。
+
+-----------------------------------------------
+
 https://www.cnblogs.com/superanyi/archive/2011/04/07/2008632.html
 
 -----------------------------------------------
