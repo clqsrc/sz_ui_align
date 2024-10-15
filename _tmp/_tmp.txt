@@ -8,6 +8,8 @@ https://www.cnblogs.com/lori/p/17766768.html
 
 为了确保在不同语言下生成相同的 TOTP 结果，你需要确保使用相同的密钥和相同的时间戳步长。同时，你还需要确保使用相同的哈希算法（通常是 HMAC-SHA1 或 HMAC-SHA256）。
 
+https://www.cnblogs.com/Fogram-c/p/16978939.html
+
 -----------------------------------------------
 
 WifiP2pManager.IPeerListListener
