@@ -147,6 +147,12 @@ fn main2() {
 
 }//
 
+----
+这个功能应该是有一定限制的。
+https://cloud.tencent.com/developer/article/1680248
+没错，它的行为几乎就是try/catch了。panic！宏也被捕获了，程序并也没有挂，返回了Err。尽管如此，Rust的目的并不是让它成为try/catch机制的实现，而是当Rust和其他编程语言互动时，避免其他语言代码块throw出异常。所以呢，错误处理的正道还是用Result。
+从catch_unwind的名字上，需要留意下unwind这个限定词，它意味着只有默认进行栈反解的panic可以被捕获到，如果是设为直接终止程序的panic，就逮不住了。
+细节可进一步参考Rust Documentation。
 
 
 
