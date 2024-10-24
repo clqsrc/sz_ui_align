@@ -40,6 +40,115 @@ void main() {
 
 不过实测似乎不能捕获数组越界。
 
+----
+不过 Rust 的 catch_unwind 似乎可以捕获除 0 错误。不知是否可以捕获内存越界。
+
+
+fn main() {
+
+    main2();
+    return;
+
+    let s = "123aaa中文";
+
+    //let c = s[0];  //不行
+
+    //let mut x=&s[1..3];
+
+    let mut x = &s[1..2];
+    
+    x = &s[2..2];
+
+    println!("Hello, world! {}{}", s, x);
+
+    //----------------------------------------------- 了解字符串特性 
+    //https://www.cnblogs.com/azoux/p/18294699
+
+    // 创建单个字符
+    let c: char = 'a';
+
+    // 遍历字符串中的字符
+    for c in "hello".chars() {
+        println!("{}", c);
+
+        if (c == 'o'){
+            println!("ooo{}", c);
+        }
+
+    }
+
+    
+
+    // 判断字符是否是数字
+    let c = '7';
+    if c.is_digit(10) {
+        println!("'{}' is a digit", c);
+    }
+
+    // 创建一个空的 String
+    let mut s = String::new();
+    
+    // 从字符串字面量创建 String
+    let data = "initial contents";
+    let mut s = data.to_string(); // 或者 let s = String::from(data);
+    
+    // 追加字符串
+    s.push_str(" more content");
+    
+    // 添加单个字符
+    s.push('!');
+    
+    println!("{}", s); // 输出: initial contents more content!
+
+    f1(0);
+
+
+    println!("aaa{}", s); // 输出: initial contents more content!
+
+}//
+
+fn f1(i:i32){
+    //let mut i = 1;
+    1 / i;
+
+    //let mut i = 1 - 1;
+    1 / i;
+
+}//
+
+use std::panic;
+
+fn main2() {
+    // 使用 catch_unwind 捕获 panic
+    let result = panic::catch_unwind(|| {
+        // 这里是可能导致 panic 的代码
+        let x = 10;
+        let y = 0;
+        //println!("Result: {}", x / y); // 这里会导致 panic
+
+        println!("test...\r\n");
+
+        f1(0);
+
+
+    });
+
+    match result {
+        Ok(_) => println!("No panic occurred."),
+        Err(err) => {
+            // 处理 panic
+            println!("A panic occurred: {:?}", err);
+        }
+    }
+
+    println!("Program continues after panic handling.");
+
+    println!("ok!!!\r\n");
+
+}//
+
+
+
 
 -----------------------------------------------
 
