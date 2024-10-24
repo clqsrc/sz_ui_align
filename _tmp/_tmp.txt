@@ -11,6 +11,34 @@ https://zhuanlan.zhihu.com/p/667948711
 但与其他编程语言不同的是，Rust 语言中不存在异常。它通常使用 Result 类型来处理可恢复的错误。当遇到不可恢复的错误时，Rust 会提供一个特殊的宏panic!。当这个宏执行时，程序会打印错误信息，展开（unwind）并清理当前堆栈（Stack），然后退出程序的执行。
 正如另一位开发人员所说，“Windows 内核中的恐慌通常是最后的手段，只应保留在内核损坏且无法恢复的情况下。” 因此，很多人认为Rust在内核代码中调用Panic的方式是不可取的，这可能会导致系统崩溃。
 
+----
+d 语言能捕获除0错吗
+
+在 D 语言中，除以零的错误处理是通过异常机制来实现的。D 语言的设计允许开发者捕获运行时错误，包括除以零的情况。以下是 D 语言如何处理除以零错误的详细信息：
+1. 运行时检查
+D 语言在运行时会检查除以零的情况。如果发生除以零，D 语言会抛出一个 FloatingPointError 或 DivisionByZero 异常（具体取决于上下文和数据类型）。
+2. 异常处理机制
+D 语言提供了强大的异常处理机制，允许开发者捕获和处理运行时错误。你可以使用 try 和 catch 语句来捕获除以零的异常。
+3. 示例代码
+以下是一个简单的 D 语言示例，展示如何捕获除以零的错误：
+import std.stdio;
+import core.runtime; // 导入运行时库以处理异常
+
+void main() {
+    double numerator = 10.0;
+    double denominator = 0.0;
+
+    try {
+        double result = numerator / denominator; // 可能会抛出异常
+        writeln("Result: ", result);
+    } catch (FloatingPointError e) {
+        writeln("Error: Division by zero");
+    } catch (Exception e) {
+        writeln("An unexpected error occurred: ", e.msg);
+    }
+}
+
+
 
 -----------------------------------------------
 
