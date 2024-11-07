@@ -2,6 +2,14 @@
 https://spidermonkey.dev/
 firefox 的 js 引擎
 https://www.orcode.com/question/530548_k4e88e.html
+还有 python 的接口
+https://blog.csdn.net/gitblog_00128/article/details/141881145
+
+import spidermonkey
+
+# 初始化 JS 上下文
+jsctx = spidermonkey.Runtime().new_context()
+
 
 -----------------------------------------------
 zig 语言圣经
