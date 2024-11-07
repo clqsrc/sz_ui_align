@@ -1,3 +1,9 @@
+
+https://spidermonkey.dev/
+firefox 的 js 引擎
+https://www.orcode.com/question/530548_k4e88e.html
+
+-----------------------------------------------
 zig 语言圣经
 https://course.ziglang.cc/advanced/interact-with-c
 -----------------------------------------------
