@@ -1,4 +1,9 @@
+https://www.emojiall.com/zh-hant/sub-categories/I14
+https://juejin.cn/post/7225074892357173308
 
+https://www.unicode.org/charts/PDF/U13000.pdf
+https://www.unicode.org/reports/tr51/#EBNF_and_Regex
+-----------------------------------------------
 https://spidermonkey.dev/
 firefox 的 js 引擎
 https://www.orcode.com/question/530548_k4e88e.html
