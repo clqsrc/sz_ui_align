@@ -3,6 +3,18 @@ https://juejin.cn/post/7225074892357173308
 
 https://www.unicode.org/charts/PDF/U13000.pdf
 https://www.unicode.org/reports/tr51/#EBNF_and_Regex
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Unicode Character U+13000</title>
+</head>
+<body>
+    <p>字符实体表示：&#x13000;</p>
+    <!-- 直接输入，确保浏览器支持 -->
+    <p>直接输入：𓀀</p>
+</body>
+</html>
 -----------------------------------------------
 https://spidermonkey.dev/
 firefox 的 js 引擎
