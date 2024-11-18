@@ -1,4 +1,17 @@
 
+https://www.cnblogs.com/chinasoft/p/14111805.html
+2019年6月25日，EMB 官方与FMXlinux 达成协议，在以后的新产品中，可以免费使用FMXLinux, 用户
+可以通过Getit 现在并安装FMXLinux。
+--
+一个比较好的教程
+https://www.cnblogs.com/ypldbk/p/14356233.html
+
+需要在 linux 上先安装 LinuxPAServer22.0.tar.gz
+C:\Program Files (x86)\Embarcadero\Studio\22.0\PAServer
+
+
+-----------------------------------------------
+
 https://zhuanlan.zhihu.com/p/372821243
 https://www.osgeo.cn/pygis/cartopy-intro.html
 -----------------------------------------------
