@@ -1,4 +1,11 @@
 
+lsp 服务器如何调用，很值得一看
+https://github.com/rickard67/LSP-Pascal-Library?tab=readme-ov-file#goto-type-definition-request
+
+参考
+https://www.cnblogs.com/-867259206/p/17981984
+
+-----------------------------------------------
 https://www.cnblogs.com/chinasoft/p/14111805.html
 2019年6月25日，EMB 官方与FMXlinux 达成协议，在以后的新产品中，可以免费使用FMXLinux, 用户
 可以通过Getit 现在并安装FMXLinux。
