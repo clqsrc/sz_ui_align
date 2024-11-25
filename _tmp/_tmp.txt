@@ -1,4 +1,8 @@
 
+WinDynamicDesktop_5.6.0_x64_Portable
+
+-----------------------------------------------
+
 lsp 服务器如何调用，很值得一看
 https://github.com/rickard67/LSP-Pascal-Library?tab=readme-ov-file#goto-type-definition-request
 
