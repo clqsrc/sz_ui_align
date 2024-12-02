@@ -1,4 +1,9 @@
 
+出乎众人意料的是，就在 Google 因涉嫌违反反垄断法规被美国司法部调查，并有可能面临被迫出售 Chrome 浏览器的局面时，Chrome 却联合 Opera、Vivaldi、Waterfox 和 Wavebox 成立了一个名为“浏览器选择联盟”（简称 BCA）的组织，剑指微软的 Edge 浏览器。
+
+同时该组织还特地上线了一个网站（https://browserchoicealliance.org/），其在首页直接写道，「在过去十年中，微软一直在使用各种转变策略，包括暗中操作和误导性用户界面，阻止用户可靠地访问他们喜欢的浏览器或将其设置为默认浏览器。」于是，该“浏览器选择联盟”呼吁欧盟委员会将微软的 Edge 列为《数字市场法》（DMA）下的守门人。
+https://blog.csdn.net/csdnnews/article/details/144158311
+---
 https://t.cj.sina.com.cn/articles/view/1746173800/68147f68019013c5f
 
 促使不少 Firefox 用户转向了分支版本 Pale Moon——目前此分支仍在面向 Windows 与 Linux 的环境里积极发展。Pale Moon 保留了 Australis 之前的 UI，继续坚持单线程设计（因此内存效率更高），而且仍然支持经典的 Firefox 扩展。它还衍生出另一个后续项目 Basilisk，属于基于更高 Firefox 代码库版本的分支更新。
