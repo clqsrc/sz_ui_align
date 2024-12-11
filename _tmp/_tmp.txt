@@ -1,4 +1,35 @@
 
+有没有 c 语言的 hashmap 库
+是的，C语言中有多个hashmap库可供使用。‌
+
+https://github.com/rxi/map
+
+    ‌rxi/map‌：这是一个在GitHub上广泛使用的C语言map库。该库提供了一个简单的API来初始化、设置键值对和获取值。使用示例如下：
+
+
+Before using a map it should first be initialised using the map_init() function.
+
+map_int_t m;
+map_init(&m);
+
+Values can added to a map using the map_set() function.
+
+map_set(&m, "testkey", 123);
+
+To retrieve a value from a map, the map_get() function can be used. map_get() will return a pointer to the key's value, or NULL if no mapping for that key exists.
+
+int *val = map_get(&m, "testkey");
+if (val) {
+  printf("value: %d\n", *val);
+} else {
+  printf("value not found\n");
+}
+
+When you are done with a map the map_deinit() function should be called on it. This will free any memory the map allocated during use.
+//要记得释放 //https://blog.csdn.net/gitblog_09402/article/details/142232840
+map_deinit(&m);
+
+-----------------------------------------------
 
 worktile的头像
 
