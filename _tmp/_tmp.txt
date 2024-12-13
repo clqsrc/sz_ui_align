@@ -7,6 +7,28 @@ Ionic Creator 是一个基于云的拖放式界面设计工具，用于快速设
 1. 使用 Cordova 或 Capacitor
 Cordova 和 Capacitor 都是 Ionic 团队开发的工具，它们允许你使用 Web 技术来创建跨平台的移动应用。你可以使用这些工具将你的原生 JavaScript 代码打包成 iOS 应用。
 
+在 Ionic 中，Cordova 和 Capacitor 都是用于将 Web 技术打包成原生移动应用的工具，但它们在设计理念、功能和集成方式上有所不同。以下是它们的主要区别：
+
+1. 设计理念
+Cordova：Cordova 是一个较老的框架，它通过使用 WebView 和插件来将 Web 应用打包成原生应用。Cordova 提供了一套插件系统，允许你调用原生功能，如摄像头、地理位置、文件系统等。
+Capacitor：Capacitor 是由 Ionic 团队开发的下一代跨平台应用开发工具。它旨在提供更好的性能和更简单的与原生代码的集成。Capacitor 使用原生桥接技术，而不是 WebView，来调用原生功能。
+2. 性能
+Cordova：由于使用 WebView，Cordova 应用的性能可能不如原生应用或使用 Capacitor 构建的应用。
+Capacitor：Capacitor 直接使用原生桥接技术，因此能够提供更好的性能和更接近原生的用户体验。
+3. 生态系统和插件
+Cordova：Cordova 拥有一个庞大的社区和丰富的插件生态系统。许多插件都是为 Cordova 设计的，可以直接在 Cordova 项目中使用。
+Capacitor：Capacitor 的插件生态系统正在迅速增长，许多现有的 Cordova 插件也可以在 Capacitor 项目中使用。Capacitor 还提供了一些新的插件和 API，以简化与原生代码的集成。
+4. 开发体验
+Cordova：Cordova 使用较老的插件系统和 WebView，可能需要更多的配置和调试工作。
+Capacitor：Capacitor 提供了更现代的 API 和开发体验，使得与原生代码的集成更简单和直观。
+5. 支持
+Cordova：Cordova 是一个开源项目，由 Apache 基金会维护。虽然社区活跃，但官方支持可能不如 Capacitor。
+Capacitor：Capacitor 由 Ionic 团队维护，提供了官方支持和文档。Ionic 团队还提供了商业支持和培训服务。
+总结
+选择 Cordova 还是 Capacitor 取决于你的项目需求、团队技能和偏好。如果你需要一个成熟且社区支持广泛的解决方案，Cordova 可能是一个好选择。如果你需要更好的性能和更简单的与原生代码的集成，Capacitor 可能更适合你的项目。
+
+无论选择哪种工具，你都可以利用 Ionic 的 UI 组件库和 Web 技术来构建跨平台的移动应用。
+
 -----------------------------------------------
 https://lewan.baidu.com/lewan?gameName=%E5%AE%87%E5%AE%99%E6%9C%BA%E5%99%A8%E4%BA%BA&type=12&gameId=618842239952814080&idfrom=5019&sid=61027,61161,60853,61361,61365,61390,61393,61399
 宇宙机器人
