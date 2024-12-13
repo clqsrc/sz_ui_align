@@ -1,6 +1,7 @@
-Ionic Creator 之前是一个基于云的工具，没有本地版本。然而，随着 Ionic Creator 的更新和发展，Ionic 团队引入了新的功能和工具，包括 Ionic Studio，这是一个桌面版的 Ionic 开发环境。
+Ionic Creator 之前是一个基于云的工具，没有本地版本。
+Ionic CLI 是一个命令行工具，用于创建、开发和构建 Ionic 应用。它支持使用各种前端技术栈，包括 Angular、React 和 Vue.js。
 
-Ionic Studio 是一个本地安装的应用程序，提供了类似于 Ionic Creator 的可视化设计工具，同时还集成了 Ionic CLI 和其他开发工具。这使得开发者可以在本地环境中设计和开发 Ionic 应用，而无需依赖云服务。
+Ionic Creator 是一个基于云的拖放式界面设计工具，用于快速设计和原型化 Ionic 应用界面。它允许用户无需编写代码即可创建应用界面，并将设计导出为 Ionic 代码。
 
 -----------------------------------------------
 https://lewan.baidu.com/lewan?gameName=%E5%AE%87%E5%AE%99%E6%9C%BA%E5%99%A8%E4%BA%BA&type=12&gameId=618842239952814080&idfrom=5019&sid=61027,61161,60853,61361,61365,61390,61393,61399
