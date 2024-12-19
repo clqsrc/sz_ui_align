@@ -1,3 +1,33 @@
+有没有基于 canvas 的 ui
+
+https://github.com/leaferjs/leafer-ui
+--
+盘点20个优秀的画布 Canvas 开源项目
+https://baijiahao.baidu.com/s?id=1767543704639446606&wfr=spider&for=pc
+全文大纲
+
+    lucky-canvas 是一套基于 TS + Canvas 开发的【大转盘 / 九宫格 / 老虎机】抽奖插件。
+    Excalidraw 是一个开源的在线白板工具。
+    fireworks-js 是一个基于 Canvas 的动画库
+    canvas-editor 是一个基于 canvas/svg 的富文本编辑器
+    Luckysheet 是一个纯前端基于 Canvas 的类似 excel 的在线表格
+    canvas-confetti 是一个基于 Canvas 的库，用于在 Web 页面中实现炫酷的彩色纸屑动画效果
+    x-spreadsheet 是一个基于 Web(es6) canvas 构建的轻量级 Excel 开发库
+    QRCanvas 是一个基于 canvas 的 JavaScript 二维码生成工具
+    Signature Pad 是一个基于 Canvas 实现的签名库
+    Rough.js 基于 Canvas 的可以绘制出粗略的手绘风格的图形库。
+    Fabric.js是一个强大且简单的Javascript HTML5 Canvas库。
+    uCharts 是一款高性能的前端应用图表库
+    SpriteJS 是一款由360奇舞团开源的跨终端 canvas 绘图框架
+    oCanvas是一个JavaScript框架，用于简化HTML5 Canvas标签的使用
+    jCanvas 就是一个 jQuery 的绘图插件
+    RGraph是一个使用HTML5 Canvas标签实现的图表制作Library
+    Two.js 是面向现代 Web 浏览器的一个二维绘图 API
+    Paper.js是一款开源的矢量图形脚本框架
+    EaselJS 是一个封装了 HTML5 画布(Canvas) 元素的 JavaScript 库
+    Pixi.js 是一个 2D webGL 渲染器，提供无缝 Canvas 回退，支持主流浏览器，包括桌面和移动
+
+-----------------------------------------------
 lazarus 自带一个 chm 帮助文件浏览器
 这是没有用到系统浏览器的，是一个自绘组件。很值得一看。
 源码在
