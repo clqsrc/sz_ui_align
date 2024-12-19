@@ -1,3 +1,23 @@
+lazarus 自带一个 chm 帮助文件浏览器
+这是没有用到系统浏览器的，是一个自绘组件。很值得一看。
+源码在
+D:\new\lazarus\components\chmhelp\lhelp
+帮助文件本身在，例如 语法文件是 prog.chm
+D:\new\lazarus\docs\chm
+用到的组件为
+  TIpHtml = class;
+  TIpAbstractHtmlDataProvider = class;
+  TIpHtmlNode = class;
+  TIpHtmlNodeCore = class;
+  TIpHtmlNodeBlock = class;
+  TIpHtmlNodeAlignInline = class; 
+在 IpHtml.pas 中，目录为 D:\new\lazarus\components\turbopower_ipro
+
+官方文档
+https://wiki.lazarus.freepascal.org/Webbrowser
+也很值得一看，有很多浏览器组件的使用方法。
+
+-----------------------------------------------
 
 https://github.com/rspivak/
  slimit Public
