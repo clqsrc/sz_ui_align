@@ -1,3 +1,9 @@
+https://try.moonbitlang.cn/
+https://github.com/moonbitlang/moonbit-compiler
+https://docs.moonbitlang.cn/
+https://www.moonbitlang.cn/
+https://blog.csdn.net/csdnnews/article/details/144598041?spm=1000.2115.3001.5927
+-----------------------------------------------
 有没有基于 canvas 的 ui
 
 https://github.com/leaferjs/leafer-ui
